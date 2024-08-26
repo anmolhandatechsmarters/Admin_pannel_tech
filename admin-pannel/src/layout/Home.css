@@ -1,0 +1,25 @@
+
+.main-box{
+    height: 50%;
+}
+.main-home-box{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50vh;
+}
+
+.main-home-box h1 {
+    font-size: 2rem;
+    opacity: 0;     
+    animation: fadeIn 2s ease-in forwards; 
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}

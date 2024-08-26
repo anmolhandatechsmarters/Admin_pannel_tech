@@ -9,11 +9,20 @@ const connection = mysql.createConnection({
 });
 
 // SQL to create the table
-const createTableQuery = `
+
+const createTablerole = `
+    CREATE TABLE IF NOT EXISTS role (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    role VARCHAR(255) NOT NULL
+);
+
+`;
+
+const createTableuser = `
     CREATE TABLE IF NOT EXISTS users (
         id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
         email VARCHAR(255) NOT NULL UNIQUE,
-        emp_id VARCHAR(255) UNIQUE,
+        emp_id VARCHAR(255) UNIQUE NOT NULL,
         first_name VARCHAR(255) NOT NULL,
         last_name VARCHAR(255) NOT NULL,
         street1 VARCHAR(255) NOT NULL,
@@ -21,7 +30,7 @@ const createTableQuery = `
         city VARCHAR(255) NOT NULL,
         state VARCHAR(255) NOT NULL,
         country VARCHAR(255) NOT NULL,
-        role VARCHAR(255) NOT NULL,
+        role INT,
         status ENUM('0', '1') DEFAULT '0',
         last_login VARCHAR(255),
         user_agent VARCHAR(255),
@@ -29,9 +38,12 @@ const createTableQuery = `
         created_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         created_by VARCHAR(255),
-        password VARCHAR(255) NOT NULL
+        password VARCHAR(255) NOT NULL,
+        FOREIGN KEY (role) REFERENCES role(id)
     );
 `;
+
+
 
 connection.connect((err) => {
     if (err) {
@@ -41,7 +53,7 @@ connection.connect((err) => {
     console.log("Connected to database.");
 
     // Check and create table
-    connection.query(createTableQuery, (err, results) => {
+    connection.query(createTableuser, (err, results) => {
         if (err) {
             console.log("Error creating table: " + err.message);
         } else {
@@ -49,5 +61,14 @@ connection.connect((err) => {
         }
     });
 });
+
+connection.query(createTablerole , (err,result)=>{
+    if (err) {
+        console.log("Error creating table: " + err.message);
+    } else {
+        console.log("Table checked/created successfully.");
+    }
+})
+
 
 module.exports = connection;

@@ -1,134 +1,116 @@
-// src/RegistrationForm.js
 import React, { useState, useEffect } from 'react';
 import { countries, states, cities } from './CountryData.js';
 import axios from 'axios';
 import './Resgister.css';
 
 const RegistrationForm = () => {
-    const[getip,setgetip]=useState([])
+    const [ip, setIp] = useState('');
 
-    useEffect(()=>{
-      const fetchip=async()=>{
-        try{ 
-            const response=await axios.get("https://api.ipify.org?format=json")
-            setgetip(response.data)
-        }catch{
-    console.log("Error")
-        }
-      }
-      fetchip()
-    })
-
-
-
-
+    const [role, setRole] = useState('');
+    const userAgent = navigator.userAgent;
     const [formData, setFormData] = useState({
         email: '',
         emp_id: '',
         password: '',
         confirmPassword: '',
-        role:getip,
+        role: '',
         first_name: '',
         last_name: '',
         street1: '',
         street2: '',
         city: '',
         state: '',
-        country: ''
+        country: '',
+        ip: '',
+        user_agent: userAgent,
     });
-
-
-
-
 
     const [stateList, setStateList] = useState([]);
     const [cityList, setCityList] = useState([]);
     const [selectedCountry, setSelectedCountry] = useState('');
     const [selectedState, setSelectedState] = useState('');
 
+    useEffect(() => {
+        const fetchIp = async () => {
+            try {
+                const response = await axios.get("https://api.ipify.org?format=json");
+                setIp(response.data.ip);
+                setFormData(prevData => ({ ...prevData, ip: response.data.ip }));
+            } catch (error) {
+                console.error("Error fetching IP", error);
+            }
+        };
 
-
-
-
-
+        fetchIp();
+    }, []); // Empty dependency array to run only once on mount
 
     useEffect(() => {
         if (selectedCountry) {
             setStateList(states[selectedCountry] || []);
             setCityList([]);
             setSelectedState('');
-            setFormData({
-                ...formData,
-                state: '',
-                city: ''
-            });
+            setFormData(prevData => ({ ...prevData, state: '', city: '' }));
         }
     }, [selectedCountry]);
-
-
-    
 
     useEffect(() => {
         if (selectedState) {
             const stateCities = cities[selectedCountry] ? cities[selectedCountry][selectedState] : [];
             setCityList(stateCities || []);
-            setFormData({
-                ...formData,
-                city: ''
-            });
+            setFormData(prevData => ({ ...prevData, city: '' }));
         }
     }, [selectedState, selectedCountry]);
 
-
-
-
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value
-        });
+        setFormData(prevData => ({ ...prevData, [name]: value }));
     };
 
     const handleCountryChange = (e) => {
         const value = e.target.value;
         setSelectedCountry(value);
-        setFormData({
-            ...formData,
+        setFormData(prevData => ({
+            ...prevData,
             country: value,
             state: '',
             city: ''
-        });
+        }));
     };
 
     const handleStateChange = (e) => {
         const value = e.target.value;
         setSelectedState(value);
-        setFormData({
-            ...formData,
+        setFormData(prevData => ({
+            ...prevData,
             state: value,
             city: ''
-        });
+        }));
+    };
+
+    const handleRoleChange = (e) => {
+        const value = e.target.value;
+        setRole(value);
+        setFormData(prevData => ({ ...prevData, role: value }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         // Check if password and confirm password match
         if (formData.password !== formData.confirmPassword) {
             alert('Passwords do not match!');
             return;
         }
-    
+
         // Check if required fields are filled
-        const requiredFields = ['email', 'emp_id', 'password', 'confirmPassword', 'first_name', 'last_name', 'street1', 'city', 'state', 'country'];
+        const requiredFields = ['email', 'password', 'confirmPassword', 'first_name', 'last_name', 'street1', 'city', 'state', 'country'];
         for (const field of requiredFields) {
             if (!formData[field]) {
                 alert(`${field.replace(/([A-Z])/g, ' $1').toUpperCase()} is required.`);
                 return;
             }
         }
-    
+
         try {
             const result = await axios.post('http://localhost:7000/user/submitdata', formData, {
                 headers: {
@@ -140,7 +122,6 @@ const RegistrationForm = () => {
             console.error('Error submitting form data', error);
         }
     };
-    
 
     return (
         <div className="Register-container">
@@ -159,27 +140,21 @@ const RegistrationForm = () => {
                         />
                     </div>
                     <div className="register-form-group">
-                        <label htmlFor="email">role:</label>
-                        <input
-                            type="text"
+                        <label htmlFor="role">Role:</label>
+                        <select
                             id="role"
                             name="role"
                             value={formData.role}
-                            onChange={handleChange}
+                            onChange={handleRoleChange}
                             required
-                        />
+                        >
+                            <option value="">Select Role</option>
+                            <option value="Admin">Admin</option>
+                            <option value="Hr">Hr</option>
+                            <option value="Employee">Employee</option>
+                        </select>
                     </div>
-                    <div className="register-form-group">
-                        <label htmlFor="emp_id">Employee ID:</label>
-                        <input
-                            type="text"
-                            id="emp_id"
-                            name="emp_id"
-                            value={formData.emp_id}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
+
                     <div className="register-form-group">
                         <label htmlFor="password">Password:</label>
                         <input
@@ -208,7 +183,7 @@ const RegistrationForm = () => {
                         <label htmlFor="first_name">First Name:</label>
                         <input
                             type="text"
-                            id="firstName"
+                            id="first_name"
                             name="first_name"
                             value={formData.first_name}
                             onChange={handleChange}

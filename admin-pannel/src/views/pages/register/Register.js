@@ -1,116 +1,110 @@
 import React, { useState, useEffect } from 'react';
-import { countries, states, cities } from './CountryData.js';
 import axios from 'axios';
-import './Resgister.css';
+import countriesData from './countries.json';
+import statesData from './states.json';
+import citiesData from './cities.json';
+import "./Resgister.css";
 
-const RegistrationForm = () => {
-    const [ip, setIp] = useState('');
-
-    const [role, setRole] = useState('');
-    const userAgent = navigator.userAgent;
-    const [formData, setFormData] = useState({
-        email: '',
-        emp_id: '',
-        password: '',
-        confirmPassword: '',
-        role: '',
-        first_name: '',
-        last_name: '',
-        street1: '',
-        street2: '',
-        city: '',
-        state: '',
-        country: '',
-        ip: '',
-        user_agent: userAgent,
-    });
-
-    const [stateList, setStateList] = useState([]);
-    const [cityList, setCityList] = useState([]);
-    const [selectedCountry, setSelectedCountry] = useState('');
-    const [selectedState, setSelectedState] = useState('');
-
+const Register = () => {
+    const [getipa,setgetip]=useState('')
     useEffect(() => {
         const fetchIp = async () => {
             try {
-                const response = await axios.get("https://api.ipify.org?format=json");
-                setIp(response.data.ip);
-                setFormData(prevData => ({ ...prevData, ip: response.data.ip }));
+                const response = await axios.get('https://api.ipify.org?format=json');
+                setgetip(response.data.ip);
+                console.log("ip",response.data.ip)
             } catch (error) {
-                console.error("Error fetching IP", error);
+                console.error('Error fetching IP:', error);
             }
         };
 
         fetchIp();
-    }, []); // Empty dependency array to run only once on mount
+    }, []); 
+
+    
+    const [formData, setFormData] = useState({
+        email: '',
+        password: '',
+        first_name: '', // Added
+        last_name: '',  // Added
+        role: '',
+        country: '',
+        state: '',
+        city: '',
+        street1: '',
+        street2: '',
+        user_agent: navigator.userAgent,
+        ip:getipa,
+    });
+
+
+
+
+    const [options, setOptions] = useState({
+        roles: ['HR', 'Admin', 'Employee'],
+        countries: [],
+        states: [],
+        cities: []
+    });
 
     useEffect(() => {
-        if (selectedCountry) {
-            setStateList(states[selectedCountry] || []);
-            setCityList([]);
-            setSelectedState('');
-            setFormData(prevData => ({ ...prevData, state: '', city: '' }));
+        // Ensure data is arrays
+        if (Array.isArray(countriesData.countries)) {
+            setOptions(prevOptions => ({
+                ...prevOptions,
+                countries: countriesData.countries
+            }));
+        } else {
+            console.error('Countries data is not an array:', countriesData.countries);
         }
-    }, [selectedCountry]);
 
-    useEffect(() => {
-        if (selectedState) {
-            const stateCities = cities[selectedCountry] ? cities[selectedCountry][selectedState] : [];
-            setCityList(stateCities || []);
-            setFormData(prevData => ({ ...prevData, city: '' }));
+        if (Array.isArray(statesData.states)) {
+            setOptions(prevOptions => ({
+                ...prevOptions,
+                states: statesData.states
+            }));
+        } else {
+            console.error('States data is not an array:', statesData.states);
         }
-    }, [selectedState, selectedCountry]);
+
+        if (Array.isArray(citiesData.cities)) {
+            setOptions(prevOptions => ({
+                ...prevOptions,
+                cities: citiesData.cities
+            }));
+        } else {
+            console.error('Cities data is not an array:', citiesData.cities);
+        }
+    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prevData => ({ ...prevData, [name]: value }));
-    };
+        setFormData(prevFormData => ({ ...prevFormData, [name]: value }));
 
-    const handleCountryChange = (e) => {
-        const value = e.target.value;
-        setSelectedCountry(value);
-        setFormData(prevData => ({
-            ...prevData,
-            country: value,
-            state: '',
-            city: ''
-        }));
-    };
+        if (name === 'country') {
+            // Filter states based on selected country
+            const filteredStates = statesData.states.filter(state => state.country_id === value);
+            setOptions(prevOptions => ({
+                ...prevOptions,
+                states: filteredStates,
+                cities: []
+            }));
+            setFormData(prevFormData => ({ ...prevFormData, state: '', city: '' }));
+        }
 
-    const handleStateChange = (e) => {
-        const value = e.target.value;
-        setSelectedState(value);
-        setFormData(prevData => ({
-            ...prevData,
-            state: value,
-            city: ''
-        }));
-    };
-
-    const handleRoleChange = (e) => {
-        const value = e.target.value;
-        setRole(value);
-        setFormData(prevData => ({ ...prevData, role: value }));
+        if (name === 'state') {
+            // Filter cities based on selected state
+            const filteredCities = citiesData.cities.filter(city => city.state_id === value);
+            setOptions(prevOptions => ({
+                ...prevOptions,
+                cities: filteredCities
+            }));
+            setFormData(prevFormData => ({ ...prevFormData, city: '' }));
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        // Check if password and confirm password match
-        if (formData.password !== formData.confirmPassword) {
-            alert('Passwords do not match!');
-            return;
-        }
-
-        // Check if required fields are filled
-        const requiredFields = ['email', 'password', 'confirmPassword', 'first_name', 'last_name', 'street1', 'city', 'state', 'country'];
-        for (const field of requiredFields) {
-            if (!formData[field]) {
-                alert(`${field.replace(/([A-Z])/g, ' $1').toUpperCase()} is required.`);
-                return;
-            }
-        }
-
         try {
             const result = await axios.post('http://localhost:7000/user/submitdata', formData, {
                 headers: {
@@ -118,166 +112,159 @@ const RegistrationForm = () => {
                 }
             });
             console.log(result.data);
+            console.log(getipa)
+            alert('Registration successful!');
         } catch (error) {
-            console.error('Error submitting form data', error);
+            console.error('Error submitting form', error);
+            alert('Registration failed.');
         }
     };
 
     return (
-        <div className="Register-container">
-            <h1>Register</h1>
-            <form className="registration-form" onSubmit={handleSubmit}>
-                <div className="row">
-                    <div className="register-form-group">
-                        <label htmlFor="email">Email:</label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-                    <div className="register-form-group">
-                        <label htmlFor="role">Role:</label>
-                        <select
-                            id="role"
-                            name="role"
-                            value={formData.role}
-                            onChange={handleRoleChange}
-                            required
-                        >
-                            <option value="">Select Role</option>
-                            <option value="Admin">Admin</option>
-                            <option value="Hr">Hr</option>
-                            <option value="Employee">Employee</option>
-                        </select>
-                    </div>
-
-                    <div className="register-form-group">
-                        <label htmlFor="password">Password:</label>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-                    <div className="register-form-group">
-                        <label htmlFor="confirmPassword">Confirm Password:</label>
-                        <input
-                            type="password"
-                            id="confirmPassword"
-                            name="confirmPassword"
-                            value={formData.confirmPassword}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="register-form-group">
-                        <label htmlFor="first_name">First Name:</label>
+        <div className="register-container">
+            <h1>Registration Form</h1>
+            <form onSubmit={handleSubmit}>
+            <div className="row">
+                    <div className="col">
+                        <label>First Name:</label>
                         <input
                             type="text"
-                            id="first_name"
                             name="first_name"
                             value={formData.first_name}
                             onChange={handleChange}
                             required
                         />
                     </div>
-                    <div className="register-form-group">
-                        <label htmlFor="last_name">Last Name:</label>
+                    <div className="col">
+                        <label>Last Name:</label>
                         <input
                             type="text"
-                            id="last_name"
                             name="last_name"
                             value={formData.last_name}
                             onChange={handleChange}
                             required
                         />
                     </div>
-                    <div className="register-form-group">
-                        <label htmlFor="country">Country:</label>
+                </div>
+
+                <div className="row">
+                    <div className="col">
+                        <label>Email:</label>
+                        <input
+                            type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+                    <div className="col">
+                        <label>Password:</label>
+                        <input
+                            type="password"
+                            name="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+                </div>
+
+                
+                <div className="row">
+                    <div className="col">
+                        <label>Role:</label>
                         <select
-                            id="country"
+                            name="role"
+                            value={formData.role}
+                            onChange={handleChange}
+                            required
+                        >
+                            <option value="">Select a role</option>
+                            {options.roles.map(role => (
+                                <option key={role} value={role}>{role}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="col">
+                        <label>Country:</label>
+                        <select
                             name="country"
                             value={formData.country}
-                            onChange={handleCountryChange}
+                            onChange={handleChange}
                             required
                         >
-                            <option value="">Select Country</option>
-                            {countries.map((item) => (
-                                <option key={item.id} value={item.id}>
-                                    {item.name}
-                                </option>
+                            <option value="">Select a country</option>
+                            {options.countries.map(country => (
+                                <option key={country.id} value={country.id}>{country.name}</option>
                             ))}
                         </select>
                     </div>
-                    <div className="register-form-group">
-                        <label htmlFor="state">State:</label>
+                </div>
+
+                <div className="row">
+                    <div className="col">
+                        <label>State:</label>
                         <select
-                            id="state"
                             name="state"
                             value={formData.state}
-                            onChange={handleStateChange}
+                            onChange={handleChange}
                             required
                         >
-                            <option value="">Select State</option>
-                            {stateList.map((item) => (
-                                <option key={item.id} value={item.id}>
-                                    {item.name}
-                                </option>
-                            ))}
+                            <option value="">Select a state</option>
+                            {options.states
+                                .filter(state => state.country_id === formData.country)
+                                .map(state => (
+                                    <option key={state.id} value={state.id}>{state.name}</option>
+                                ))}
                         </select>
                     </div>
-                    <div className="register-form-group">
-                        <label htmlFor="city">City:</label>
+
+                    <div className="col">
+                        <label>City:</label>
                         <select
-                            id="city"
                             name="city"
                             value={formData.city}
                             onChange={handleChange}
                             required
                         >
-                            <option value="">Select City</option>
-                            {cityList.map((item) => (
-                                <option key={item.id} value={item.id}>
-                                    {item.name}
-                                </option>
-                            ))}
+                            <option value="">Select a city</option>
+                            {options.cities
+                                .filter(city => city.state_id === formData.state)
+                                .map(city => (
+                                    <option key={city.id} value={city.id}>{city.name}</option>
+                                ))}
                         </select>
                     </div>
-                    <div className="register-form-group">
-                        <label htmlFor="street1">Street 1:</label>
+                </div>
+
+                <div className="row">
+                    <div className="col">
+                        <label>Street 1:</label>
                         <input
                             type="text"
-                            id="street1"
                             name="street1"
                             value={formData.street1}
                             onChange={handleChange}
                             required
                         />
                     </div>
-                    <div className="register-form-group">
-                        <label htmlFor="street2">Street 2:</label>
+                    <div className="col">
+                        <label>Street 2:</label>
                         <input
                             type="text"
-                            id="street2"
                             name="street2"
                             value={formData.street2}
                             onChange={handleChange}
                         />
                     </div>
                 </div>
-                <button type="submit" className="register-button">Register</button>
+
+                <button type="submit">Register</button>
             </form>
         </div>
     );
 };
 
-export default RegistrationForm;
+export default Register;

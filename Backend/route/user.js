@@ -19,17 +19,17 @@ router.get("/allusershow", (req, res) => {
 });
 
 // Submit new user data
-router.post("/submitdata", (req, res) => {
-    const getip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-    const { email, first_name, last_name, street1, street2, city, state, country, role, status = '0', last_login = new Date(), user_agent, ip = getip, created_on = new Date(), updated_on = new Date(), created_by = 'Admin', password } = req.body;
-
+router.post("/submitdata",  (req, res) => {
+    const getips = req.headers['x-forwarded-for'] || req.connection.remoteAddress
+    const { email, first_name, last_name, street1, street2, city, state, country, role, status = '0', last_login = new Date(), user_agent, ip=getips, created_on = new Date(), updated_on = new Date(), created_by = 'Admin', password } = req.body;
+    console.log(ip)
     // Ensure required fields are not null
     if (!first_name || !last_name || !email || !password || !street1 || !city || !state || !country) {
         return res.status(400).json({ message: "Required fields are missing." });
     }
 
-    // Use transactions to ensure both insert operations are successful
-    connection.beginTransaction((err) => {
+    // Begin transaction
+     connection.beginTransaction((err) => {
         if (err) {
             console.error('Error starting transaction:', err);
             return res.status(500).json({ message: "Error starting transaction", error: err });
@@ -45,12 +45,19 @@ router.post("/submitdata", (req, res) => {
                 });
             }
 
+            // Generate a unique emp_id based on role ID or other unique factor
+            const generateEmpId = (roleId) => {
+                return "Emp" + roleId; // Example logic, replace with actual ID generation logic
+            };
+
+            const emp_id = generateEmpId(roleResult.insertId);
+
             // Insert into 'users' table
             const insertUserQuery = `
-                INSERT INTO users (email, first_name, last_name, street1, street2, city, state, country, role, status, last_login, user_agent, ip, created_on, updated_on, created_by, password) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO users (email, emp_id, first_name, last_name, street1, street2, city, state, country, role, status, last_login, user_agent, ip, created_on, updated_on, created_by, password) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `;
-            connection.query(insertUserQuery, [email, first_name, last_name, street1, street2, city, state, country, roleResult.insertId, status, last_login, user_agent, ip, created_on, updated_on, created_by, password], (error, userResult) => {
+            connection.query(insertUserQuery, [email, emp_id, first_name, last_name, street1, street2, city, state, country, roleResult.insertId, status, last_login, user_agent, ip, created_on, updated_on, created_by, password], (error, userResult) => {
                 if (error) {
                     console.error('Error inserting user:', error);
                     return connection.rollback(() => {
@@ -58,30 +65,16 @@ router.post("/submitdata", (req, res) => {
                     });
                 }
 
-                // Get the last inserted ID and format emp_id
-                const userId = userResult.insertId;
-                const emp_id = `Emp${userId}`;
-
-                // Update the emp_id field
-                connection.query("UPDATE users SET emp_id = ? WHERE id = ?", [emp_id, userId], (updateError) => {
-                    if (updateError) {
-                        console.error('Error updating emp_id:', updateError);
+                // Commit transaction
+                connection.commit((err) => {
+                    if (err) {
+                        console.error('Error committing transaction:', err);
                         return connection.rollback(() => {
-                            res.status(500).json({ message: "Error updating emp_id", error: updateError });
+                            res.status(500).json({ message: "Error committing transaction", error: err });
                         });
                     }
 
-                    // Commit transaction
-                    connection.commit((commitErr) => {
-                        if (commitErr) {
-                            console.error('Error committing transaction:', commitErr);
-                            return connection.rollback(() => {
-                                res.status(500).json({ message: "Error committing transaction", error: commitErr });
-                            });
-                        }
-
-                        res.status(201).json({ message: "User data submitted successfully", emp_id });
-                    });
+                    res.status(201).json({ message: "User data submitted successfully", result: userResult });
                 });
             });
         });
@@ -170,6 +163,9 @@ router.post('/login', (req, res) => {
                 console.error(updateError);
                 return res.status(500).json({ message: "Failed to update last login time" });
             }
+
+          
+
 
             // Generate JWT
             const token = jwt.sign(

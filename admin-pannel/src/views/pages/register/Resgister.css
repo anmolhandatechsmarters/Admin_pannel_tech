@@ -1,79 +1,69 @@
-/* src/RegistrationForm.css */
-.Register-container {
+/* Main container styling */
+.register-container {
     max-width: 800px;
-    margin: 0 auto;
+    width: 100%; /* Ensure it takes up full width on smaller screens */
+    margin: auto; /* Center the container horizontally */
     padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    background-color: #f9f9f9;
+    box-sizing: border-box; /* Include padding in the element's total width and height */
+    display: flex;
+    flex-direction: column; /* Stack child elements vertically */
+    align-items: center; /* Center elements horizontally */
 }
 
-h1 {
+/* Center heading text */
+.register-container h1 {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 20px; /* Space below the heading */
 }
 
-.registration-form {
+/* Flexbox for rows to ensure responsiveness */
+.register-container .row {
     display: flex;
-    flex-direction: column;
-}
-
-.row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
+    flex-wrap: wrap; /* Allow flex items to wrap to the next line */
     margin-bottom: 15px;
+    width: 100%; /* Full width of the container */
 }
 
-.register-form-group {
-    flex: 1;
-    min-width: 200px;
-    margin-bottom: 15px;
+/* Column styling */
+.register-container .col {
+    flex: 1; /* Flex items take equal width */
+    min-width: 200px; /* Ensure columns are not too narrow on small screens */
+    margin-right: 10px;
 }
 
-.register-form-group label {
+/* Remove right margin from the last column */
+.register-container .col:last-child {
+    margin-right: 0;
+}
+
+/* Label styling */
+.register-container label {
     display: block;
     margin-bottom: 5px;
-    font-weight: bold;
 }
 
-.register-form-group input,
-.registerform-group select {
+/* Input and select styling */
+.register-container input, 
+.register-container select {
     width: 100%;
     padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    box-sizing: border-box; /* Include padding in width/height */
 }
 
-.register-form-group input:focus,
-.register-form-group select:focus {
-    border-color: #007bff;
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(38, 143, 255, 0.25);
-}
-
-.register-button {
+/* Button styling */
+.register-container button {
+    padding: 10px 20px;
     background-color: #007bff;
     color: white;
     border: none;
-    padding: 10px 15px;
-    font-size: 16px;
-    border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    text-align: center;
+    margin-top: 20px; /* Space above the button */
+    width: 100%; /* Full width of the parent container */
+    max-width: 200px; /* Optional: limit button width */
 }
 
-.register-button:hover {
+/* Button hover styling */
+.register-container button:hover {
     background-color: #0056b3;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .row {
-        flex-direction: column;
-    }
-
-    .register-form-group {
-        width: 100%;
-    }
 }

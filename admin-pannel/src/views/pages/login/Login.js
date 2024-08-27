@@ -42,7 +42,7 @@ const handleSubmit = async (event) => {
       localStorage.setItem('role', result.data.user.role);
       switch (result.data.user.role) {
         case 'Admin':
-          navigate("/user/admin");
+          navigate("/dashboard");
           break;
         case 'Employee':
           navigate("/user/employee");
@@ -51,7 +51,7 @@ const handleSubmit = async (event) => {
           navigate("/user/hr");
           break;
         default:
-          navigate("/dashboard");
+          navigate("/404");
           break;
       }
     } else {

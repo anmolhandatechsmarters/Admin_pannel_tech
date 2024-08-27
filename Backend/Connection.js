@@ -1,19 +1,35 @@
-const mysql = require("mysql2");
-require("dotenv").config();
-const fs = require("fs");
+const mysql = require('mysql2');
+require('dotenv').config();
+const fs = require('fs');
 
-// Create a connection to the database
-const connection = mysql.createConnection({
+// Create a pool of connections to the database
+const pool = mysql.createPool({
     host: process.env.DATABASE_HOST,
     user: process.env.DATABASE_USER,
     password: process.env.DATABASE_PASS,
-    database: process.env.DATABASE
+    database: process.env.DATABASE,
+    waitForConnections: true,  // Wait for connections to become available
+    connectionLimit: 10,       // Adjust the limit based on your needs
+    queueLimit: 0              // No limit on the queue of pending connections
 });
+
+// Promisify the pool for Node.js async/await
+const promisePool = pool.promise();
+
+// Function to execute SQL queries
+const executeQuery = async (query, values = []) => {
+    try {
+        const [results] = await promisePool.query(query, values);
+        return results;
+    } catch (err) {
+        throw new Error(`Query failed: ${err.message}`);
+    }
+};
 
 // SQL queries to create tables
 const createCountryTable = `
 CREATE TABLE IF NOT EXISTS countries (
-  id INT PRIMARY KEY,
+  id INT PRIMARY KEY AUTO_INCREMENT,
   sortname VARCHAR(2),
   name VARCHAR(255),
   phoneCode INT
@@ -22,7 +38,7 @@ CREATE TABLE IF NOT EXISTS countries (
 
 const createStateTable = `
 CREATE TABLE IF NOT EXISTS states (
-  id INT PRIMARY KEY,
+  id INT PRIMARY KEY AUTO_INCREMENT,
   name VARCHAR(255),
   country_id INT,
   FOREIGN KEY (country_id) REFERENCES countries(id)
@@ -31,7 +47,7 @@ CREATE TABLE IF NOT EXISTS states (
 
 const createCityTable = `
 CREATE TABLE IF NOT EXISTS cities (
-  id INT PRIMARY KEY,
+  id INT PRIMARY KEY AUTO_INCREMENT,
   name VARCHAR(255),
   state_id INT,
   FOREIGN KEY (state_id) REFERENCES states(id)
@@ -69,16 +85,6 @@ CREATE TABLE IF NOT EXISTS users (
   FOREIGN KEY (role) REFERENCES role(id)
 );
 `;
-
-// Function to execute SQL queries
-const executeQuery = (query, values = []) => {
-    return new Promise((resolve, reject) => {
-        connection.query(query, values, (err, results) => {
-            if (err) return reject(err);
-            resolve(results);
-        });
-    });
-};
 
 // Function to create tables
 const createTables = async () => {
@@ -143,27 +149,23 @@ const insertData = async () => {
         console.log('Data migration completed successfully!');
     } catch (error) {
         console.error('Error migrating data:', error);
-    } finally {
-        connection.end();
     }
 };
 
 // Connect to the database and perform operations
-connection.connect(async (err) => {
-    if (err) {
-        console.error("Database connection failed: " + err.stack);
-        return;
+const initializeDatabase = async () => {
+    try {
+        console.log("Connecting to database...");
+        await createTables();
+        await insertData();
+    } catch (err) {
+        console.error("Database initialization failed: ", err.message);
+    } finally {
+        // Close the pool when all operations are done
+        pool.end();
     }
-    console.log("Connected to database.");
+};
 
-    // Create tables and then insert data
-    await createTables();
-    await insertData();
-});
+initializeDatabase();
 
-
-
-
-
-module.exports = connection
-
+module.exports = promisePool;

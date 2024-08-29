@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef,useState } from 'react'
 import PropTypes from 'prop-types'
 
 import {
@@ -36,6 +36,65 @@ const WidgetsDropdown = (props) => {
       }
     })
   }, [widgetChartRef1, widgetChartRef2])
+  const [alluser,setalluser]=useState(0)
+
+  useEffect(()=>{
+    //function of alluser show
+    
+      const allusershow=async()=>{
+        try{
+        const result=await axios.get("http://localhost:7000/user/totaluser",{
+          headers:{
+            "Content-Type":"application/json"
+          }
+    
+        })
+        setalluser(result.data)
+        console.log(result.data)
+      }catch{
+        console.log("error")
+      }
+      }
+     
+    //fucntion of allactiveuser show
+    
+    const allactiveusershow=async()=>{
+      try{
+        const result=await axios.get("http://localhost:7000/user/allactiveuser",{
+          headers:{
+            "Content-Type":"application/json",
+          }
+        })
+        setactiveuser(result.data)
+      }catch{
+    console.log(error)
+      }
+    }
+    
+    //all in active user show
+    const allinactiveusershow=async()=>{
+      try{
+        const result=await axios.get("http://localhost:7000/user/allinactiveuser",{
+          headers:{
+            "Content-Type":"application/json"
+          }
+        })
+        setinactiveuser(result.data)
+    
+      }catch{
+    console.log("error")
+      }
+    }
+    
+    
+    //funciton call
+    allusershow()
+    allactiveusershow()
+    allinactiveusershow()
+    
+    },[])
+
+
 
   return (
     <CRow className={props.className} xs={{ gutter: 4 }}>
@@ -44,13 +103,10 @@ const WidgetsDropdown = (props) => {
           color="primary"
           value={
             <>
-              26K{' '}
-              <span className="fs-6 fw-normal">
-                (-12.4% <CIcon icon={cilArrowBottom} />)
-              </span>
+              {alluser}
             </>
           }
-          title="Users"
+          title="Totle-Users"
           action={
             <CDropdown alignment="end">
               <CDropdownToggle color="transparent" caret={false} className="text-white p-0">

@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import classNames from 'classnames'
-
+import "./Dashobard.css"
+import axios from "axios"
 import {
   CAvatar,
   CButton,
@@ -176,23 +177,86 @@ const Dashboard = () => {
     },
   ]
 
+const [alluser,setalluser]=useState(0)
+const [activeuser,setactiveuser]=useState(0)
+const[inactiveuser,setinactiveuser]=useState(0)
+
+useEffect(()=>{
+//function of alluser show
+
+  const allusershow=async()=>{
+    try{
+    const result=await axios.get("http://localhost:7000/user/totaluser",{
+      headers:{
+        "Content-Type":"application/json"
+      }
+
+    })
+    setalluser(result.data)
+    console.log(result.data)
+  }catch{
+    console.log("error")
+  }
+  }
+ 
+//fucntion of allactiveuser show
+
+const allactiveusershow=async()=>{
+  try{
+    const result=await axios.get("http://localhost:7000/user/allactiveuser",{
+      headers:{
+        "Content-Type":"application/json",
+      }
+    })
+    setactiveuser(result.data)
+     console.log(result.data)
+  }catch{
+console.log(error)
+  }
+}
+
+//all in active user show
+const allinactiveusershow=async()=>{
+  try{
+    const result=await axios.get("http://localhost:7000/user/allinactiveuser",{
+      headers:{
+        "Content-Type":"application/json"
+      }
+    })
+    setinactiveuser(result.data)
+    console.log(result.data)
+
+  }catch{
+console.log("error")
+  }
+}
+
+
+//funciton call
+allusershow()
+allactiveusershow()
+allinactiveusershow()
+
+},[])
+
+
   return (
     <>
-      <WidgetsDropdown className="mb-4" />
+      {/* <WidgetsDropdown className="mb-4" />
       <CCard className="mb-4">
         <CCardBody>
           <CRow>
-            <CCol sm={5}>
+            {/* <CCol sm={5}>
               <h4 id="traffic" className="card-title mb-0">
                 Traffic
               </h4>
               <div className="small text-body-secondary">January - July 2023</div>
-            </CCol>
-            <CCol sm={7} className="d-none d-md-block">
-              <CButton color="primary" className="float-end">
+            </CCol> */}
+           {/* <CCol sm={7} className="d-none d-md-block">
+              {/* <CButton color="primary" className="float-end">
                 <CIcon icon={cilCloudDownload} />
-              </CButton>
-              <CButtonGroup className="float-end me-3">
+              </CButton> */}
+              {/* <CButtonGroup className="float-end me-3">
                 {['Day', 'Month', 'Year'].map((value) => (
                   <CButton
                     color="outline-secondary"
@@ -379,7 +443,82 @@ const Dashboard = () => {
             </CCardBody>
           </CCard>
         </CCol>
-      </CRow>
+      </CRow> */} 
+
+{/* -------------------------------------------My Code -------------------------------------- */}
+
+<div className="dashboard-container">
+  <div className="dashboard-card">
+    <div className="dashboard-card-content">
+      <div className="dashboard-user-number">
+        {alluser}
+      </div>
+      <div className="dashboard-label">
+    Total number of user
+      </div>
+    </div>
+  </div>
+
+  <div className="dashboard-card">
+    <div className="dashboard-card-content">
+      <div className="dashboard-user-number">
+        {activeuser}
+      </div>
+      <div className="dashboard-label">
+        Total active user
+      </div>
+    </div>
+  </div>
+
+  <div className="dashboard-card">
+    <div className="dashboard-card-content">
+      <div className="dashboard-user-number">
+        {inactiveuser}
+      </div>
+      <div className="dashboard-label">
+        Total inactive user
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div>
+
+<CTable>
+  <CTableHead>
+    <CTableRow>
+      <CTableHeaderCell scope="col">#</CTableHeaderCell>
+      <CTableHeaderCell scope="col">Class</CTableHeaderCell>
+      <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
+      <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
+    </CTableRow>
+  </CTableHead>
+  <CTableBody>
+    <CTableRow>
+      <CTableHeaderCell scope="row">1</CTableHeaderCell>
+      <CTableDataCell>Mark</CTableDataCell>
+      <CTableDataCell>Otto</CTableDataCell>
+      <CTableDataCell>@mdo</CTableDataCell>
+    </CTableRow>
+    <CTableRow>
+      <CTableHeaderCell scope="row">2</CTableHeaderCell>
+      <CTableDataCell>Jacob</CTableDataCell>
+      <CTableDataCell>Thornton</CTableDataCell>
+      <CTableDataCell>@fat</CTableDataCell>
+    </CTableRow>
+    <CTableRow>
+      <CTableHeaderCell scope="row">3</CTableHeaderCell>
+      <CTableDataCell colSpan={2}>Larry the Bird</CTableDataCell>
+      <CTableDataCell>@twitter</CTableDataCell>
+    </CTableRow>
+  </CTableBody>
+</CTable>  
+</div>
+
+
+
+
     </>
   )
 }

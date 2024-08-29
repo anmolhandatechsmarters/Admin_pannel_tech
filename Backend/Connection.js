@@ -8,25 +8,14 @@ const pool = mysql.createPool({
     user: process.env.DATABASE_USER,
     password: process.env.DATABASE_PASS,
     database: process.env.DATABASE,
-    waitForConnections: true,  // Wait for connections to become available
-    connectionLimit: 10,       // Adjust the limit based on your needs
-    queueLimit: 0              // No limit on the queue of pending connections
+    waitForConnections: true,
+    connectionLimit: 10, // Adjust connection limit based on your needs
+    queueLimit: 0
 });
 
-// Promisify the pool for Node.js async/await
 const promisePool = pool.promise();
 
-// Function to execute SQL queries
-const executeQuery = async (query, values = []) => {
-    try {
-        const [results] = await promisePool.query(query, values);
-        return results;
-    } catch (err) {
-        throw new Error(`Query failed: ${err.message}`);
-    }
-};
-
-// SQL queries to create tables
+// Define SQL queries for creating tables
 const createCountryTable = `
 CREATE TABLE IF NOT EXISTS countries (
   id INT PRIMARY KEY AUTO_INCREMENT,
@@ -86,6 +75,16 @@ CREATE TABLE IF NOT EXISTS users (
 );
 `;
 
+// Function to execute a query
+const executeQuery = async (query, values = []) => {
+    try {
+        const [results] = await promisePool.query(query, values);
+        return results;
+    } catch (err) {
+        throw new Error(`Query failed: ${err.message}`);
+    }
+};
+
 // Function to create tables
 const createTables = async () => {
     try {
@@ -97,51 +96,40 @@ const createTables = async () => {
         console.log("Tables checked/created successfully.");
     } catch (error) {
         console.error("Error creating tables:", error);
+        throw error; // Rethrow error to handle it in the initialization function
     }
 };
 
 // Function to truncate tables
 const truncateTables = async () => {
     try {
-        // Disable foreign key checks
         await executeQuery('SET FOREIGN_KEY_CHECKS = 0');
-
-        // Truncate tables
         await executeQuery('TRUNCATE TABLE cities');
         await executeQuery('TRUNCATE TABLE states');
         await executeQuery('TRUNCATE TABLE countries');
-
-        // Re-enable foreign key checks
         await executeQuery('SET FOREIGN_KEY_CHECKS = 1');
-
         console.log("Tables truncated successfully.");
     } catch (error) {
         console.error("Error truncating tables:", error);
+        throw error; // Rethrow error to handle it in the initialization function
     }
 };
 
-// Function to insert data
+// Function to insert data into tables
 const insertData = async () => {
     try {
-        // Truncate tables first
         await truncateTables();
 
-        // Read and parse JSON files
         const citiesData = JSON.parse(fs.readFileSync('cities.json', 'utf8')).cities;
         const countriesData = JSON.parse(fs.readFileSync('countries.json', 'utf8')).countries;
         const statesData = JSON.parse(fs.readFileSync('states.json', 'utf8')).states;
 
-        // Insert countries
         for (const country of countriesData) {
             await executeQuery('INSERT IGNORE INTO countries SET ?', country);
         }
-
-        // Insert states
         for (const state of statesData) {
             await executeQuery('INSERT IGNORE INTO states SET ?', state);
         }
-
-        // Insert cities
         for (const city of citiesData) {
             await executeQuery('INSERT IGNORE INTO cities SET ?', city);
         }
@@ -149,10 +137,11 @@ const insertData = async () => {
         console.log('Data migration completed successfully!');
     } catch (error) {
         console.error('Error migrating data:', error);
+        throw error; // Rethrow error to handle it in the initialization function
     }
 };
 
-// Connect to the database and perform operations
+// Main function to initialize the database
 const initializeDatabase = async () => {
     try {
         console.log("Connecting to database...");
@@ -160,12 +149,8 @@ const initializeDatabase = async () => {
         await insertData();
     } catch (err) {
         console.error("Database initialization failed: ", err.message);
-    } finally {
-        // Close the pool when all operations are done
-        pool.end();
     }
 };
 
 initializeDatabase();
-
 module.exports = promisePool;

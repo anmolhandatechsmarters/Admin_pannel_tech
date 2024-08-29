@@ -1,0 +1,18 @@
+/* src/App.css or any relevant CSS file */
+.signup-card {
+    width: 100%; /* Full width on smaller screens */
+  }
+  
+  @media (max-width: 768px) {
+    .signup-card {
+      width: 100%; /* Ensure card is full width on medium screens */
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .signup-card {
+      width: 100%; /* Ensure card is full width on small screens */
+      padding: 1rem; /* Adjust padding for smaller screens */
+    }
+  }
+  

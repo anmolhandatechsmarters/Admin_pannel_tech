@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom'; 
-
 import axios from 'axios';
+import "./Login.css"
 import {
   CButton,
   CCard,
@@ -24,43 +24,42 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      const result = await axios.post("http://localhost:7000/user/login", {
+        email,
+        password
+      }, {
+        headers: {
+          "Content-Type": "application/json",
+        }
+      });
 
-const handleSubmit = async (event) => {
-  event.preventDefault();
-  try {
-    const result = await axios.post("http://localhost:7000/user/login", {
-      email,
-      password
-    }, {
-      headers: {
-        "Content-Type": "application/json",
+      if (result.data.success) {
+        localStorage.setItem('token', result.data.token);  // Store JWT token
+        localStorage.setItem('role', result.data.user.role);
+        switch (result.data.user.role) {
+          case 'Admin':
+            navigate("/dashboard");
+            break;
+          case 'Employee':
+            navigate("/user/employee");
+            break;
+          case 'Hr':
+            navigate("/user/hr");
+            break;
+          default:
+            navigate("/404");
+            break;
+        }
+      } else {
+        setError(result.data.message);
       }
-    });
-
-    if (result.data.success) {
-      localStorage.setItem('token', result.data.token);  // Store JWT token
-      localStorage.setItem('role', result.data.user.role);
-      switch (result.data.user.role) {
-        case 'Admin':
-          navigate("/dashboard");
-          break;
-        case 'Employee':
-          navigate("/user/employee");
-          break;
-        case 'Hr':
-          navigate("/user/hr");
-          break;
-        default:
-          navigate("/404");
-          break;
-      }
-    } else {
-      setError(result.data.message);
+    } catch (error) {
+      setError("An error occurred during login. Please try again.");
     }
-  } catch (error) {
-    setError("An error occurred during login. Please try again.");
-  }
-};
+  };
 
   return (
     <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">
@@ -106,21 +105,21 @@ const handleSubmit = async (event) => {
                         </CButton>
                       </CCol>
                       <CCol xs={6} className="text-right">
+                        <Link to="/forgetpassword">
                         <CButton color="link" className="px-0">
                           Forgot password?
-                        </CButton>
+                        </CButton></Link>
                       </CCol>
                     </CRow>
                   </CForm>
                 </CCardBody>
               </CCard>
-              <CCard className="text-white bg-primary py-5" style={{ width: '44%' }}>
+              <CCard className="text-white bg-primary py-5 signup-card">
                 <CCardBody className="text-center">
                   <div>
                     <h2>Sign up</h2>
                     <p>
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                      tempor incididunt ut labore et dolore magna aliqua.
+                      If you have not any account Firstly register your email and password for this registration you can click the following Register Now button.
                     </p>
                     <Link to="/register">
                       <CButton color="primary" className="mt-3" active tabIndex={-1}>

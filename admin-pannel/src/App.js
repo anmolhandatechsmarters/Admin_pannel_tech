@@ -10,10 +10,9 @@ import Employee from './Mytemppage/Employee';
 import HR from './Mytemppage/HR';
 import Admin from './Mytemppage/Admin';
 import PrivateRoute from './Mytemppage/Privaterouting';
-import Layout from './views/forms/layout/Layout'
-import Dashboard from './views/dashboard/Dashboard'
 import UnauthorizedPage from './Mytemppage/Unauthorized'
-
+import Forgetpassword from './views/notifications/ForgetPasswordlogin/Forgetpassword'
+import Confirmpassword from './views/notifications/ForgetPasswordlogin/Confirmpassword'
 // Containers
 const DefaultLayout = React.lazy(() => import('./layout/DefaultLayout'))
 
@@ -52,14 +51,16 @@ const App = () => {
       >
         <Routes>
           <Route exact path="/" name="Login Page" element={<Login />} />
+          <Route exact path="/login" name="Login Page" element={<Login />} />
+          <Route exact path="/forgetpassword" name="Login Page" element={<Forgetpassword/>} />
           <Route exact path="/register" name="Register Page" element={<Register />} />
           <Route exact path="/404" name="Page 404" element={<Page404 />} />
           <Route exact path="/500" name="Page 500" element={<Page500 />} />
           <Route path="*" name="default" element={<DefaultLayout />} />
-<Route path="/user/employee" element={<PrivateRoute element={Employee} allowedRoles={['Employee', 'Hr', 'Admin']} />} />
-           <Route path="/user/hr" element={<PrivateRoute element={HR} allowedRoles={['Hr', 'Admin']} />} />     <Route path="/user/admin" element={<PrivateRoute element={Admin} allowedRoles={['Admin']} />} />
+<Route path="/user/employee" element={<PrivateRoute element={Employee} allowedRoles={['Employee', 'HR', 'Admin']} />} />
+           <Route path="/user/hr" element={<PrivateRoute element={HR} allowedRoles={['HR', 'Admin']} />} />     <Route path="/user/admin" element={<PrivateRoute element={Admin} allowedRoles={['Admin']} />} />
 <Route path='/unauthorized' element={<UnauthorizedPage/>}/>
-
+<Route exact path="/Confirmforgetpassword" name="Page 500" element={<Confirmpassword/>} />
 
         </Routes>
       </Suspense>

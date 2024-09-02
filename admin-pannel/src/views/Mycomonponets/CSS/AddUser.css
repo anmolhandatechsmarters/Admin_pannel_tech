@@ -1,0 +1,86 @@
+/* AddUser.css */
+.adminadduser-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.adminadduser-container h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+}
+
+.adminadduser-container form {
+    display: flex;
+    flex-direction: column;
+}
+
+.adminadduser-container .row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.adminadduser-container .col {
+    flex: 1;
+    min-width: 250px;
+    padding: 10px;
+}
+
+.adminadduser-container label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.adminadduser-container input, select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.adminadduser-container input[type="text"],
+.adminadduser-container input[type="email"],
+.adminadduser-container input[type="password"] {
+    font-size: 16px;
+}
+
+.adminadduser-container select {
+    font-size: 16px;
+}
+
+.adminadduser-container button {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.adminadduser-container button:hover {
+    background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+    .adminadduser-container .row {
+        flex-direction: column;
+    }
+    
+    .adminadduser-container .col {
+        margin-bottom: 15px;
+    }
+
+    .adminadduser-container button {
+        width: 100%;
+    }
+}

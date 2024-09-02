@@ -8,44 +8,46 @@ const Forgetpassword = () => {
   const [otp, setOtp] = useState('');
   const [step, setStep] = useState('email');
   const [notification, setNotification] = useState('');
-  const [notificationColor, setNotificationColor] = useState(''); // New state for notification color
+  const [notificationColor, setNotificationColor] = useState('');
   const navigate = useNavigate();
 
   const handleEmailSubmit = async (event) => {
     event.preventDefault();
-    setNotification('Please wait, sending email...'); // Update notification
-    setNotificationColor('blue'); // Set color for waiting message
+    setNotification('Please wait, sending email...');
+    setNotificationColor('blue');
     try {
       const result = await axios.post('http://localhost:7000/user/forgetpassword', { email });
       if (result.data.success) {
         setStep('otp');
         setNotification('Check your email and enter the OTP.');
-        setNotificationColor('green'); // Set color for OTP entry message
+        setNotificationColor('green');
       } else {
         setNotification(result.data.message);
-        setNotificationColor('red'); // Set color for error message
+        setNotificationColor('red');
       }
     } catch (error) {
       setNotification('An error occurred. Please try again.');
-      setNotificationColor('red'); // Set color for error message
+      setNotificationColor('red');
     }
   };
 
   const handleOtpSubmit = async (event) => {
     event.preventDefault();
-    setNotification('Verifying OTP...'); // Update notification
-    setNotificationColor('blue'); // Set color for verifying message
+    setNotification('Verifying OTP...');
+    setNotificationColor('blue');
     try {
       const result = await axios.post('http://localhost:7000/user/verifyotp', { email, otp });
       if (result.data.success) {
+        localStorage.setItem('forgetpasswordtoken', result.data.token);
+        localStorage.setItem('forgetpassword', 'true');
         navigate('/confirmforgetpassword', { state: { email } });
       } else {
         setNotification('Your OTP is not valid.');
-        setNotificationColor('red'); // Set color for error message
+        setNotificationColor('red');
       }
     } catch (error) {
       setNotification('An error occurred. Please try again.');
-      setNotificationColor('red'); // Set color for error message
+      setNotificationColor('red');
     }
   };
 

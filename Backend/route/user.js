@@ -5,17 +5,16 @@ const jwt = require('jsonwebtoken');
 const { authentication, authorize } = require('../middleware/auth'); // Update path as needed
 const { createTransport } = require("nodemailer");
 const crypto = require('crypto');
+const { Generatetoken } = require('../middleware/token');
 
-// In-memory store for OTPs (for demonstration purposes)
-const otpStore = {}; // { email: { otp: '123456', expiresAt: Date.now() + 300000 } } (5 minutes expiry)
+const otpStore = {}; 
 
 // Generate OTP function
 function generateOTP() {
     return crypto.randomInt(100000, 999999).toString();
 }
 
-//2857CC8AABE52BEDE1ACDA9703748E8728338711250D3F304426388F258E5902DCA7596582707AB5AE6D2C448D7FEB1E
-const TOKEN = "0352e093a9446bed578611667154c6b6";
+
 //httu fcbd cqba eici
 var transporter = createTransport({
     service:"gmail",
@@ -26,7 +25,7 @@ var transporter = createTransport({
       pass: "httu fcbd cqba eici"
     }
   });
-//lgmr qnvg oyjg dblo
+
 
 // Get all users
 router.get('/allusershow', async (req, res) => {
@@ -92,21 +91,7 @@ router.patch('/updatedata', async (req, res) => {
 });
 
 // Delete a user
-router.delete('/deleteuser', async (req, res) => {
-    const { id } = req.body;
 
-    if (!id) {
-        return res.status(400).json({ message: 'Id is required' });
-    }
-
-    try {
-        const [result] = await promisePool.query('DELETE FROM users WHERE id = ?', [id]);
-        res.status(200).json({ message: 'User deleted successfully', result });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error occurred while deleting user', error });
-    }
-});
 
 // Show roles from the database
 router.get('/showroledatabase', async (req, res) => {
@@ -229,96 +214,112 @@ router.get("/allinactiveuser", async (req, res) => {
 
 router.post("/forgetpassword", async (req, res) => {
     const { email } = req.body;
-
+  
     try {
-        const query = "SELECT * FROM users WHERE email = ?";
-        const [rows] = await promisePool.query(query, [email]);
-
-        if (rows.length === 0) {
-            return res.status(404).json({ success: false, message: "No user found with that email." });
+      const query = "SELECT * FROM users WHERE email = ?";
+      const [rows] = await promisePool.query(query, [email]);
+  
+      if (rows.length === 0) {
+        return res.status(404).json({ success: false, message: "No user found with that email." });
+      }
+  
+      const otp = generateOTP();
+      otpStore[email] = { otp, expiresAt: Date.now() + 5 * 60 * 1000 }; // OTP valid for 5 minutes
+  
+      const mailOptions = {
+        from: "anmol@gmail.com",
+        to: email,
+        subject: "Password Reset OTP",
+        text: `Your OTP is ${otp}. It will expire in 5 minutes.`
+      };
+  
+      transporter.sendMail(mailOptions, (err, info) => {
+        if (err) {
+          console.error('Error sending email:', err);
+          return res.status(500).json({ success: false, message: 'Error sending email.' });
+        } else {
+          console.log('Email sent:', info.response);
+          return res.json({ success: true, message: 'Email sent successfully. Please check your email.' });
         }
-
-        // Generate OTP
-        const otp = generateOTP();
-        otpStore[email] = { otp, expiresAt: Date.now() + 5 * 60 * 1000 }; // OTP valid for 5 minutes
-
-        const mailOptions = {
-            from: "anmol@gmail.com",
-            to: email,
-            subject: "Password Reset OTP",
-            text: `Your OTP is ${otp}. It will expire in 5 minutes.`
-        };
-
-        transporter.sendMail(mailOptions, (err, info) => {
-            if (err) {
-                console.error('Error sending email:', err);
-                return res.status(500).json({ success: false, message: 'Error sending email.' });
-            } else {
-                console.log('Email sent:', info.response);
-                return res.json({ success: true, message: 'Email sent successfully. Please check your email.' });
-            }
-        });
-
+      });
+  
     } catch (error) {
-        console.error('Error:', error);
-        return res.status(500).json({ success: false, message: 'Internal server error.' });
+      console.error('Error:', error);
+      return res.status(500).json({ success: false, message: 'Internal server error.' });
     }
-});
-
-
-router.post("/verifyotp", async (req, res) => {
+  });
+  
+  router.post("/verifyotp", async (req, res) => {
     const { email, otp } = req.body;
-
+  
     try {
-        const otpRecord = otpStore[email];
-
-        if (!otpRecord) {
-            return res.status(400).json({ success: false, message: "OTP not found or expired." });
-        }
-
-        if (Date.now() > otpRecord.expiresAt) {
-            delete otpStore[email]; // Remove expired OTP
-            return res.status(400).json({ success: false, message: "OTP has expired." });
-        }
-
-        if (otp !== otpRecord.otp) {
-            return res.status(400).json({ success: false, message: "Invalid OTP." });
-        }
-
-        delete otpStore[email]; // OTP is valid, remove it after successful verification
-
-        return res.json({ success: true, message: "OTP verified successfully." });
-
+      const otpRecord = otpStore[email];
+  
+      if (!otpRecord) {
+        return res.status(400).json({ success: false, message: "OTP not found or expired." });
+      }
+  
+      if (Date.now() > otpRecord.expiresAt) {
+        delete otpStore[email];
+        return res.status(400).json({ success: false, message: "OTP has expired." });
+      }
+  
+      if (otp !== otpRecord.otp) {
+        return res.status(400).json({ success: false, message: "Invalid OTP." });
+      }
+  
+      const token = jwt.sign({ email }, process.env.JWT_SECRET || "defaultsecret", { expiresIn: '1h' });
+  
+      delete otpStore[email];
+  
+      return res.json({ success: true, token, message: "OTP verified successfully." });
+  
     } catch (error) {
-        console.error('Error:', error);
-        return res.status(500).json({ success: false, message: 'Internal server error.' });
+      console.error('Error:', error);
+      return res.status(500).json({ success: false, message: 'Internal server error.' });
     }
-});
-
-
-router.post('/updatepassword', async (req, res) => {
-    const { email, newPassword } = req.body; 
-
+  });
+  
+  router.get('/verifyforgetpasswordtoken', async (req, res) => {
+    const token = req.headers['authorization']?.split(' ')[1];
+  
+    if (!token) {
+      return res.status(401).json({ success: false, message: 'No token provided.' });
+    }
+  
     try {
-       
-        if (!email || !newPassword) {
-            return res.status(400).json({ success: false, message: 'Email and password must be provided.' });
-        }
-
-    
-        const query = 'UPDATE users SET password = ? WHERE email = ?';
-        const [result] = await promisePool.query(query, [newPassword, email]);
-
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ success: false, message: 'User not found.' });
-        }
-
-        return res.json({ success: true, message: 'Password updated successfully.' });
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'anmol');
+      res.json({ success: true });
     } catch (error) {
-        console.error('Error updating password:', error);
-        return res.status(500).json({ success: false, message: 'Internal server error.' });
+      console.error('Error verifying token:', error);
+      res.status(401).json({ success: false, message: 'Invalid or expired token.' });
     }
-});
+  });
+  
+  router.post('/updatepassword', async (req, res) => {
+    const { email, newPassword } = req.body;
+  
+    try {
+      if (!email || !newPassword) {
+        return res.status(400).json({ success: false, message: 'Email and password must be provided.' });
+      }
+  
+      const query = 'UPDATE users SET password = ? WHERE email = ?';
+      const [result] = await promisePool.query(query, [newPassword, email]);
+  
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ success: false, message: 'User not found.' });
+      }
+  
+      return res.json({ success: true, message: 'Password updated successfully.' });
+    } catch (error) {
+      console.error('Error updating password:', error);
+      return res.status(500).json({ success: false, message: 'Internal server error.' });
+    }
+  });
+  
+
+
 
 
 

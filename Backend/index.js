@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const connection = require("./Connection.js");
 const UserRouter = require("./route/user.js");
+const AdminRouter=require("./route/admin.js")
 require("dotenv").config();
 
 const app = express();
@@ -14,7 +15,7 @@ app.use(express.json());
 
 // Define routes
 app.use("/user", UserRouter);
-
+app.use("/admin",AdminRouter)
 
 app.listen(PORT, () => {
   console.log("The Port number is", PORT);

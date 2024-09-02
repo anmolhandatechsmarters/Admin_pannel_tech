@@ -1,12 +1,13 @@
 
-import React from 'react'
+import React, { lazy } from 'react'
 import Home from './layout/Home'
 
 
+const ShowAllUser =React.lazy(()=>import("./views/Mycomonponets/ShowALLUser/ShowAllUser"))
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
 const Typography = React.lazy(() => import('./views/theme/typography/Typography'))
-
+const AddUser =React.lazy(()=>import('./views/Mycomonponets/Adduser/AddUser'))
 // Base
 const Accordion = React.lazy(() => import('./views/base/accordion/Accordion'))
 const Breadcrumbs = React.lazy(() => import('./views/base/breadcrumbs/Breadcrumbs'))
@@ -57,6 +58,9 @@ const routes = [
   { path: '/',  name: 'Home' ,element:Home},
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
   { path: '/theme', name: 'Theme', element: Colors, exact: true },
+  // { path: '/adduser', name: 'adduser', element:Addser, exact: true },
+  {path:"/adduser" , name:"AddUser" , element:AddUser, exact:true},
+  {path:"/alluser" , name:"AllUser" , element:ShowAllUser, exact:true},
   { path: '/theme/colors', name: 'Colors', element: Colors },
   { path: '/theme/typography', name: 'Typography', element: Typography },
   { path: '/base', name: 'Base', element: Cards, exact: true },

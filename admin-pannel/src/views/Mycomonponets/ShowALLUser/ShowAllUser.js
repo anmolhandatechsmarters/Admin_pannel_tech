@@ -3,9 +3,9 @@ import axios from 'axios';
 import "../CSS/ShowUser.css"; // Ensure your CSS file is correctly located
 import { MdDelete, MdDownloadDone, MdCancel } from "react-icons/md";
 import { FaEdit } from "react-icons/fa";
-import countries from "../../pages/register/countries.json";
-import states from "../../pages/register/states.json";
-import cities from "../../pages/register/cities.json";
+import countriesData from '../../../views/pages/register/countries.json';
+import statesData from '../../../views/pages/register/states.json';
+import citiesData from '../../../views/pages/register/cities.json';
 import { FcAlphabeticalSortingAz, FcAlphabeticalSortingZa } from "react-icons/fc";
 
 const ShowAllUser = () => {
@@ -15,10 +15,45 @@ const ShowAllUser = () => {
   const [total, setTotal] = useState(0);
   const [editUserId, setEditUserId] = useState(null);
   const [editUserData, setEditUserData] = useState({});
-  const [usersort, setUsersort] = useState({ column: 'id', order: 'asc' }); // Added sorting state
+  const [usersort, setUsersort] = useState({ column: 'id', order: 'asc' });
   const limit = 10; // Number of items per page
 
-  // Fetch users data
+  const [options, setOptions] = useState({
+    roles: ['HR', 'Employee'],
+    countries: [],
+    states: [],
+    cities: []
+  });
+
+  useEffect(() => {
+    if (Array.isArray(countriesData.countries)) {
+      setOptions(prevOptions => ({
+        ...prevOptions,
+        countries: countriesData.countries
+      }));
+    } else {
+      console.error('Countries data is not an array:', countriesData.countries);
+    }
+
+    if (Array.isArray(statesData.states)) {
+      setOptions(prevOptions => ({
+        ...prevOptions,
+        states: statesData.states
+      }));
+    } else {
+      console.error('States data is not an array:', statesData.states);
+    }
+
+    if (Array.isArray(citiesData.cities)) {
+      setOptions(prevOptions => ({
+        ...prevOptions,
+        cities: citiesData.cities
+      }));
+    } else {
+      console.error('Cities data is not an array:', citiesData.cities);
+    }
+  }, []);
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -34,22 +69,19 @@ const ShowAllUser = () => {
     };
 
     fetchUsers();
-  }, [page, search, usersort]); // Added usersort to dependency array
+  }, [page, search, usersort]);
 
-  // Handle search input change
   const handleSearch = (e) => {
     setSearch(e.target.value);
     setPage(1);
   };
 
-  // Handle page change
   const handlePageChange = (newPage) => {
     if (newPage > 0 && newPage <= Math.ceil(total / limit)) {
       setPage(newPage);
     }
   };
 
-  // Handle sorting
   const handleSorting = (column) => {
     setUsersort(prevSort => ({
       column,
@@ -58,7 +90,6 @@ const ShowAllUser = () => {
     setPage(1);
   };
 
-  // Delete a user
   const deleteUser = async (id) => {
     const confirmDeleteUser = window.confirm("Are you sure you want to delete this user?");
     if (confirmDeleteUser) {
@@ -66,7 +97,6 @@ const ShowAllUser = () => {
         await axios.delete(`http://localhost:7000/admin/deleteuser/${id}`, {
           headers: { "Content-Type": "application/json" }
         });
-        // Refetch users list
         const response = await axios.get("http://localhost:7000/admin/showalluser", {
           params: { page, limit, search, sort: usersort }
         });
@@ -78,7 +108,6 @@ const ShowAllUser = () => {
     }
   };
 
-  // Handle input changes for user data
   const handleEditChange = (e) => {
     const { name, value } = e.target;
     setEditUserData(prevState => ({
@@ -87,23 +116,19 @@ const ShowAllUser = () => {
     }));
   };
 
-  // Start editing a user
   const startEditing = (user) => {
     setEditUserId(user.id);
     setEditUserData({ ...user });
   };
 
-  // Save edited user data
   const saveChanges = async () => {
-    console.log("Saving changes with data:", editUserData); // Debugging line
-
     try {
       const response = await axios.put(`http://localhost:7000/admin/updateuser/${editUserId}`, editUserData, {
         headers: { "Content-Type": "application/json" }
       });
-
+      console.log(response.data)
+  
       if (response.status === 200) {
-        // Refetch users list after saving changes
         const userResponse = await axios.get("http://localhost:7000/admin/showalluser", {
           params: { page, limit, search, sort: usersort }
         });
@@ -114,20 +139,18 @@ const ShowAllUser = () => {
         throw new Error(response.data.message || 'Error updating user');
       }
     } catch (error) {
-      console.error("Error updating user:", error);
+      console.error("Error updating user:", error.response ? error.response.data : error.message);
       alert(`Error updating user: ${error.response?.data?.message || error.message}`);
     }
   };
+  
 
-  // Cancel editing
   const handleCancel = () => {
     setEditUserId(null);
   };
 
-  // Ensure these are arrays
-  const countriesList = Array.isArray(countries) ? countries : [];
-  const statesList = Array.isArray(states) ? states : [];
-  const citiesList = Array.isArray(cities) ? cities : [];
+  const filteredStates = options.states.filter(state => state.country_id === editUserData.country);
+  const filteredCities = options.cities.filter(city => city.state_id === editUserData.state);
 
   return (
     <div className="table-container">
@@ -266,7 +289,7 @@ const ShowAllUser = () => {
                   {editUserId === user.id ? (
                     <input
                       type="text"
-                      name="employeeid"
+                      name="emp_id"
                       value={editUserData.emp_id || ''}
                       onChange={handleEditChange}
                     />
@@ -283,7 +306,7 @@ const ShowAllUser = () => {
                       required
                     >
                       <option value="">Select a role</option>
-                      {['HR','Employee'].map(role => (
+                      {options.roles.map(role => (
                         <option key={role} value={role}>{role}</option>
                       ))}
                     </select>
@@ -300,7 +323,7 @@ const ShowAllUser = () => {
                       required
                     >
                       <option value="">Select a country</option>
-                      {countriesList.map(country => (
+                      {options.countries.map(country => (
                         <option key={country.id} value={country.id}>{country.name}</option>
                       ))}
                     </select>
@@ -317,11 +340,9 @@ const ShowAllUser = () => {
                       required
                     >
                       <option value="">Select a state</option>
-                      {statesList
-                        .filter(state => state.country_id === editUserData.country)
-                        .map(state => (
-                          <option key={state.id} value={state.id}>{state.name}</option>
-                        ))}
+                      {filteredStates.map(state => (
+                        <option key={state.id} value={state.id}>{state.name}</option>
+                      ))}
                     </select>
                   ) : (
                     user.state
@@ -336,11 +357,9 @@ const ShowAllUser = () => {
                       required
                     >
                       <option value="">Select a city</option>
-                      {citiesList
-                        .filter(city => city.state_id === editUserData.state)
-                        .map(city => (
-                          <option key={city.id} value={city.id}>{city.name}</option>
-                        ))}
+                      {filteredCities.map(city => (
+                        <option key={city.id} value={city.id}>{city.name}</option>
+                      ))}
                     </select>
                   ) : (
                     user.city

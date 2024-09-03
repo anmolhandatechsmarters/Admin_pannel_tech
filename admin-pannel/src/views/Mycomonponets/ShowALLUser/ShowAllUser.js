@@ -1,20 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import "../CSS/ShowUser.css"; // Ensure your CSS file is correctly located
-import { MdDelete, MdDownloadDone, MdCancel } from "react-icons/md";
-import { FaEdit } from "react-icons/fa";
-
+import { MdDelete, MdEdit } from "react-icons/md";
 import { FcAlphabeticalSortingAz, FcAlphabeticalSortingZa } from "react-icons/fc";
+
 const ShowAllUser = () => {
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
-
   const [usersort, setUsersort] = useState({ column: 'id', order: 'asc' });
-  const limit = 10; 
-
-
+  const limit = 10;
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -70,10 +68,9 @@ const ShowAllUser = () => {
     }
   };
 
-
-const userdataedit=(userid)=>{
-  navigator("/edituser")
-}
+  const userdataedit = (userid) => {
+    navigate(`/edituser/${userid}`);
+  };
 
   return (
     <div className="table-container">
@@ -148,49 +145,21 @@ const userdataedit=(userid)=>{
             users.map((user) => (
               <tr key={user.id}>
                 <td>{user.id}</td>
-                <td>
-                  
-             {user.first_name}
-             
-                </td>
-                <td>
-                  {
-                    user.last_name
-                  }
-                </td>
-                <td>
-                  {
-                    user.email
-                  }
-                </td>
-                <td>
-                  {
-                    user.emp_id
-                  }
-                </td>
-                <td>
-                  {
-                    user.role
-                  }
-                </td>
-           
-        
-          
+                <td>{user.first_name}</td>
+                <td>{user.last_name}</td>
+                <td>{user.email}</td>
+                <td>{user.emp_id}</td>
+                <td>{user.role}</td>
                 <td>{new Date(user.last_login).toLocaleString()}</td>
                 <td>
-                  
-                   
-                    <span>
-                      <MdDelete onClick={() => deleteUser(user.id)} style={{ cursor: 'pointer', color: 'red' }} />
-                      <FaEdit onClick={() => userdataedit(user.id)} style={{ cursor: 'pointer', color: 'blue' }} />
-                    </span>
-                  
+                  <MdDelete onClick={() => deleteUser(user.id)} style={{ cursor: 'pointer', color: 'red' }} />
+                  <MdEdit onClick={() => userdataedit(user.id)} style={{ cursor: 'pointer', color: 'blue' }} />
                 </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="11">No users found</td>
+              <td colSpan="8">No users found</td>
             </tr>
           )}
         </tbody>

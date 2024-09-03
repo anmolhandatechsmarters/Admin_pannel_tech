@@ -7,31 +7,31 @@ router.post('/adduser', async (req, res) => {
 
   // Validate required fields
   if (!email || !first_name || !last_name || !street1 || !city || !state || !country || !password) {
-      return res.status(400).json({ message: 'Required fields are missing.' });
+    return res.status(400).json({ message: 'Required fields are missing.' });
   }
 
   try {
-      await promisePool.query('START TRANSACTION');
+    await promisePool.query('START TRANSACTION');
 
-      // Insert into role table
-      const [roleResult] = await promisePool.query('INSERT INTO role (role) VALUES (?)', [role]);
+    // Insert into role table
+    const [roleResult] = await promisePool.query('INSERT INTO role (role) VALUES (?)', [role]);
 
-      // Generate employee ID
-      const emp_id = `Emp${roleResult.insertId}`;
+    // Generate employee ID
+    const emp_id = `Emp${roleResult.insertId}`;
 
-      // Insert into users table
-      await promisePool.query(
-          `INSERT INTO users (email, emp_id, first_name, last_name, street1, street2, city, state, ip, country, role, status, created_on, updated_on, created_by, password) 
+    // Insert into users table
+    await promisePool.query(
+      `INSERT INTO users (email, emp_id, first_name, last_name, street1, street2, city, state, ip, country, role, status, created_on, updated_on, created_by, password) 
            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-          [email, emp_id, first_name, last_name, street1, street2, city, state, ip, country, roleResult.insertId, status, created_on, updated_on, created_by, password]
-      );
+      [email, emp_id, first_name, last_name, street1, street2, city, state, ip, country, roleResult.insertId, status, created_on, updated_on, created_by, password]
+    );
 
-      await promisePool.query('COMMIT');
-      res.status(201).json({ message: 'User data submitted successfully' });
+    await promisePool.query('COMMIT');
+    res.status(201).json({ message: 'User data submitted successfully' });
   } catch (error) {
-      await promisePool.query('ROLLBACK');
-      console.error(error);
-      res.status(500).json({ message: 'Error occurred while submitting data', error });
+    await promisePool.query('ROLLBACK');
+    console.error(error);
+    res.status(500).json({ message: 'Error occurred while submitting data', error });
   }
 });
 
@@ -136,39 +136,99 @@ router.get('/showalluser', async (req, res) => {
 //edit delete api
 
 router.delete('/deleteuser/:id', async (req, res) => {
-    const { id } = req.params; // Extract id from URL parameters
+  const { id } = req.params; // Extract id from URL parameters
 
-    if (!id) {
-        return res.status(400).json({ message: 'Id is required' });
-    }
+  if (!id) {
+    return res.status(400).json({ message: 'Id is required' });
+  }
 
-    try {
-        const [result] = await promisePool.query('DELETE FROM users WHERE id = ?', [id]);
-        res.status(200).json({ message: 'User deleted successfully', result });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error occurred while deleting user', error });
-    }
+  try {
+    const [result] = await promisePool.query('DELETE FROM users WHERE id = ?', [id]);
+    res.status(200).json({ message: 'User deleted successfully', result });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error occurred while deleting user', error });
+  }
 });
 
 
+router.get('/getuser/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [rows] = await promisePool.query('SELECT * FROM users WHERE id = ?', [id]);
+    if (rows.length > 0) {
+      res.json(rows[0]);
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
+// Update user
+router.put('/updateuser/:id', async (req, res) => {
+  const { id } = req.params;
+  const userData = req.body;
+  try {
+    const [result] = await promisePool.query('UPDATE users SET ? WHERE id = ?', [userData, id]);
+    if (result.affectedRows > 0) {
+      res.json({ message: 'User updated successfully' });
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    console.error('Error updating user:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
+// Fetch roles
+router.get('/roles', async (req, res) => {
+  try {
+    const [rows] = await promisePool.query('SELECT * FROM role');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching roles:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
+// Fetch countries
+router.get('/countries', async (req, res) => {
+  try {
+    const [rows] = await promisePool.query('SELECT * FROM countries');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching countries:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
+// Fetch states by country
+router.get('/states/:countryId', async (req, res) => {
+  const { countryId } = req.params;
+  try {
+    const [rows] = await promisePool.query('SELECT * FROM states WHERE country_id = ?', [countryId]);
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching states:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
-
-
-
-
-
-
-
-
-
-
-
-
+// Fetch cities by state
+router.get('/cities/:stateId', async (req, res) => {
+  const { stateId } = req.params;
+  try {
+    const [rows] = await promisePool.query('SELECT * FROM cities WHERE state_id = ?', [stateId]);
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching cities:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
 
 

@@ -161,99 +161,12 @@ router.delete('/deleteuser/:id', async (req, res) => {
 
 
 
-// Update user endpoint
-// router.put('/updateuser/:id', async (req, res) => {
-//   const userId = req.params.id;
-//   const { first_name, last_name, email, role, country, state, city } = req.body;
-
-//   try {
-//     // Validate that country, state, city, and role are valid
-//     // This validation might vary based on your schema
-//     const countryExists = await promisePool.query('SELECT * FROM countries WHERE id = ?', [country]);
-//     const stateExists = await promisePool.query('SELECT * FROM states WHERE id = ?', [state]);
-//     const cityExists = await promisePool.query('SELECT * FROM cities WHERE id = ?', [city]);
-//     const roleExists = ['HR','Employee'].includes(role);
-
-//     if (!countryExists.length || !stateExists.length || !cityExists.length || !roleExists) {
-//       return res.status(400).json({ message: 'Invalid country, state, city, or role' });
-//     }
-
-//     // Update the user record
-//     await promisePool.query('UPDATE users SET first_name = ?, last_name = ?, email = ?, role = ?, country = ?, state = ?, city = ? WHERE id = ?',
-//       [first_name, last_name, email, role, country, state, city, userId]);
-
-//     res.status(200).json({ message: 'User updated successfully' });
-//   } catch (error) {
-//     console.error('Error updating user:', error);
-//     res.status(500).json({ message: 'Server error' });
-//   }
-// });
 
 
-// router.put('/updateuser/:id', async (req, res) => {
-//   const userId = req.params.id;
-//   const { first_name, last_name, email, role, country, state, city } = req.body;
-
-//   try {
-//     // Validate that country, state, city, and role are valid
-//     const countryExists = await promisePool.query('SELECT * FROM countries WHERE id = ?', [country]);
-//     const stateExists = await promisePool.query('SELECT * FROM states WHERE id = ?', [state]);
-//     const cityExists = await promisePool.query('SELECT * FROM cities WHERE id = ?', [city]);
-
-//     // Fetch role ID from the roles table
-//     const [roles] = await promisePool.query('SELECT id FROM role WHERE role = ?', [role]);
-//     if (!countryExists.length || !stateExists.length || !cityExists.length || roles.length === 0) {
-//       return res.status(400).json({ message: 'Invalid country, state, city, or role' });
-//     }
-//     const roleId = role[0].id;
-
-//     // Update the user record
-//     await promisePool.query('UPDATE users SET first_name = ?, last_name = ?, email = ?, role = ?, country = ?, state = ?, city = ? WHERE id = ?',
-//       [first_name, last_name, email, roleId, country, state, city, userId]);
-
-//     res.status(200).json({ message: 'User updated successfully' });
-//   } catch (error) {
-//     console.error('Error updating user:', error);
-//     res.status(500).json({ message: 'Server error' });
-//   }
-// });
 
 
-router.put("/updateuser/:id", async (req, res) => {
-  const userid = req.params.id;
-  const { first_name, last_name, email, emp_id, role, country, state, city } = req.body;
 
-  try {
-    // Get role id
-    const [roleResult] = await promisePool.query('SELECT id FROM role WHERE role = ?', [role]);
-    if (roleResult.length === 0) return res.status(400).json({ error: "Invalid role" });
 
-    // Get country id
-    const [countryResult] = await promisePool.query('SELECT id FROM countries WHERE name = ?', [country]);
-    if (countryResult.length === 0) return res.status(400).json({ error: "Invalid country" });
-
-    // Get state id
-    const [stateResult] = await promisePool.query('SELECT id FROM states WHERE name = ?', [state]);
-    if (stateResult.length === 0) return res.status(400).json({ error: "Invalid state" });
-
-    // Get city id
-    const [cityResult] = await promisePool.query('SELECT id FROM cities WHERE name = ?', [city]);
-    if (cityResult.length === 0) return res.status(400).json({ error: "Invalid city" });
-
-    // Update user
-    await promisePool.query(
-      `UPDATE users 
-       SET first_name = ?, last_name = ?, email = ?, emp_id = ?, role = ?, country = ?, state = ?, city = ? 
-       WHERE id = ?`,
-      [first_name, last_name, email, emp_id, roleResult[0].id, countryResult[0].id, stateResult[0].id, cityResult[0].id, userid]
-    );
-
-    res.json("User updated successfully");
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "An error occurred" });
-  }
-});
 
 
 

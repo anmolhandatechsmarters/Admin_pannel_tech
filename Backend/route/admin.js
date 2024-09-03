@@ -3,45 +3,58 @@ const router = express.Router()
 const promisePool = require('../Connection');
 
 router.post('/adduser', async (req, res) => {
-    const { email, first_name, last_name, street1, street2, city, state, country, role, status = '0', created_on = new Date(), updated_on = new Date(), created_by = 'Admin', password } = req.body;
+  const { email, first_name, last_name, street1, street2, city, state, country, role, status = '0', ip = '0.0.0.0', created_on = new Date(), updated_on = new Date(), created_by = 'Admin', password } = req.body;
 
-    if (!email || !first_name || !last_name || !street1 || !city || !state || !country || !password) {
-        return res.status(400).json({ message: 'Required fields are missing.' });
-    }
+  // Validate required fields
+  if (!email || !first_name || !last_name || !street1 || !city || !state || !country || !password) {
+      return res.status(400).json({ message: 'Required fields are missing.' });
+  }
 
-    try {
-        await promisePool.query('START TRANSACTION');
+  try {
+      await promisePool.query('START TRANSACTION');
 
-        const [roleResult] = await promisePool.query('INSERT INTO role (role) VALUES (?)', [role]);
+      // Insert into role table
+      const [roleResult] = await promisePool.query('INSERT INTO role (role) VALUES (?)', [role]);
 
-        const emp_id = `Emp${roleResult.insertId}`;
+      // Generate employee ID
+      const emp_id = `Emp${roleResult.insertId}`;
 
-        await promisePool.query(
-            `INSERT INTO users (email, emp_id, first_name, last_name, street1, street2, city, state, country, role, status, created_on, updated_on, created_by, password) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-            [email, emp_id, first_name, last_name, street1, street2, city, state, country, roleResult.insertId, status, created_on, updated_on, created_by, password]
-        );
+      // Insert into users table
+      await promisePool.query(
+          `INSERT INTO users (email, emp_id, first_name, last_name, street1, street2, city, state, ip, country, role, status, created_on, updated_on, created_by, password) 
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          [email, emp_id, first_name, last_name, street1, street2, city, state, ip, country, roleResult.insertId, status, created_on, updated_on, created_by, password]
+      );
 
-        await promisePool.query('COMMIT');
-        res.status(201).json({ message: 'User data submitted successfully' });
-    } catch (error) {
-        await promisePool.query('ROLLBACK');
-        console.error(error);
-        res.status(500).json({ message: 'Error occurred while submitting data', error });
-    }
+      await promisePool.query('COMMIT');
+      res.status(201).json({ message: 'User data submitted successfully' });
+  } catch (error) {
+      await promisePool.query('ROLLBACK');
+      console.error(error);
+      res.status(500).json({ message: 'Error occurred while submitting data', error });
+  }
 });
 
 
 
+
 router.get('/showalluser', async (req, res) => {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const search = req.query.search || '';
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const search = req.query.search || '';
+  const sortColumn = req.query.sort?.column || 'id'; // Default to 'id'
+  const sortOrder = req.query.sort?.order || 'asc'; // Default to 'asc'
 
-    const offset = (page - 1) * limit;
+  const offset = (page - 1) * limit;
 
-    // SQL query with JOINs
-    const query = `
+  // Ensure sortColumn is valid to prevent SQL injection
+  const validSortColumns = ['id', 'first_name', 'last_name', 'email', 'emp_id', 'role', 'country', 'state', 'city', 'last_login'];
+  if (!validSortColumns.includes(sortColumn)) {
+    return res.status(400).send('Invalid sort column');
+  }
+
+  // SQL query with JOINs and sorting
+  const query = `
     SELECT 
       u.id, 
       u.email, 
@@ -71,43 +84,51 @@ router.get('/showalluser', async (req, res) => {
       AND (
         u.first_name LIKE ? OR
         u.last_name LIKE ? OR
-        u.email LIKE ?
+        u.email LIKE ? OR
+        u.emp_id LIKE ?
       )
+    ORDER BY ?? ${sortOrder}
     LIMIT ? OFFSET ?
   `;
 
-    const searchPattern = `%${search}%`;
+  const searchPattern = `%${search}%`;
 
-    try {
-        // Fetch paginated and filtered data
-        const [rows] = await promisePool.query(query, [searchPattern, searchPattern, searchPattern, limit, offset]);
+  try {
+    // Fetch paginated, filtered, and sorted data
+    const [rows] = await promisePool.query(query, [searchPattern, searchPattern, searchPattern, searchPattern, sortColumn, limit, offset]);
 
-        // Fetch total count for pagination information
-        const countQuery = `
+    // Fetch total count for pagination information
+    const countQuery = `
       SELECT COUNT(*) as total
       FROM users u
-      JOIN role r ON u.role = r.id
-      JOIN countries c ON u.country = c.id
-      JOIN states s ON u.state = s.id
-      JOIN cities ci ON u.city = ci.id
-      WHERE u.id != 1
+      JOIN 
+        role r ON u.role = r.id
+      JOIN 
+        countries c ON u.country = c.id
+      JOIN 
+        states s ON u.state = s.id
+      JOIN 
+        cities ci ON u.city = ci.id
+      WHERE 
+        u.id != 1
         AND (
           u.first_name LIKE ? OR
           u.last_name LIKE ? OR
-          u.email LIKE ?
+          u.email LIKE ? OR
+          u.emp_id LIKE ?
         )
     `;
 
-        const [[{ total }]] = await promisePool.query(countQuery, [searchPattern, searchPattern, searchPattern]);
+    const [[{ total }]] = await promisePool.query(countQuery, [searchPattern, searchPattern, searchPattern, searchPattern]);
 
-        res.json({
-            users: rows,
-            total
-        });
-    } catch (error) {
-        console.error("Error fetching users:", error);
-        res.status(500).send("Error fetching users");
-    }
+    res.json({
+      users: rows,
+      total
+    });
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).send("Error fetching users");
+  }
 });
 
 
@@ -158,7 +179,7 @@ router.put('/updateuser/:id', async (req, res) => {
     }
 
     // Update the user record
-    await promisePool.query('UPDATE users SET first_name = ?, last_name = ?, email = ?, role = ?, country_id = ?, state_id = ?, city_id = ? WHERE id = ?',
+    await promisePool.query('UPDATE users SET first_name = ?, last_name = ?, email = ?, role = ?, country = ?, state = ?, city = ? WHERE id = ?',
       [first_name, last_name, email, role, country, state, city, userId]);
 
     res.status(200).json({ message: 'User updated successfully' });
@@ -168,6 +189,8 @@ router.put('/updateuser/:id', async (req, res) => {
   }
 });
 
+
+router.put("/update/:id")
 
 
 

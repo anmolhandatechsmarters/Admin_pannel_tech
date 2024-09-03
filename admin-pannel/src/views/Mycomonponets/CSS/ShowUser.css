@@ -14,7 +14,7 @@
   
   th, td {
     border: 1px solid #ddd; /* Light grey border for table cells */
-    padding: 8px; /* Padding inside table cells */
+    padding: 10px; /* Padding inside table cells */
     text-align: left; /* Align text to the left */
   }
   
@@ -45,7 +45,7 @@
   
   th, td {
     border: 1px solid #ddd;
-    padding: 8px;
+    padding: 10px;
     text-align: left;
   }
   

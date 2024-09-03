@@ -12,7 +12,8 @@ const Register = () => {
             try {
                 const response = await axios.get('https://api.ipify.org?format=json');
                 setgetip(response.data.ip);
-                console.log("ip",response.data.ip)
+                console.log(response.data.ip)
+               
             } catch (error) {
                 console.error('Error fetching IP:', error);
             }
@@ -111,8 +112,6 @@ const Register = () => {
                     'Content-Type': 'application/json'
                 }
             });
-            console.log(result.data);
-            console.log(getipa)
             alert('Registration successful!');
         } catch (error) {
             console.error('Error submitting form', error);

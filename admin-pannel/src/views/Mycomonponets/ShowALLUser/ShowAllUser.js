@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import "../CSS/ShowUser.css";
+import "../CSS/ShowUser.css"; // Ensure your CSS file is correctly located
 import { MdDelete, MdDownloadDone, MdCancel } from "react-icons/md";
 import { FaEdit } from "react-icons/fa";
 import countries from "../../pages/register/countries.json";
 import states from "../../pages/register/states.json";
 import cities from "../../pages/register/cities.json";
+import { FcAlphabeticalSortingAz, FcAlphabeticalSortingZa } from "react-icons/fc";
 
 const ShowAllUser = () => {
   const [users, setUsers] = useState([]);
@@ -14,6 +15,7 @@ const ShowAllUser = () => {
   const [total, setTotal] = useState(0);
   const [editUserId, setEditUserId] = useState(null);
   const [editUserData, setEditUserData] = useState({});
+  const [usersort, setUsersort] = useState({ column: 'id', order: 'asc' }); // Added sorting state
   const limit = 10; // Number of items per page
 
   // Fetch users data
@@ -21,7 +23,7 @@ const ShowAllUser = () => {
     const fetchUsers = async () => {
       try {
         const response = await axios.get("http://localhost:7000/admin/showalluser", {
-          params: { page, limit, search },
+          params: { page, limit, search, sort: usersort },
           headers: { "Content-Type": "application/json" },
         });
         setUsers(response.data.users);
@@ -32,7 +34,7 @@ const ShowAllUser = () => {
     };
 
     fetchUsers();
-  }, [page, search]);
+  }, [page, search, usersort]); // Added usersort to dependency array
 
   // Handle search input change
   const handleSearch = (e) => {
@@ -47,6 +49,15 @@ const ShowAllUser = () => {
     }
   };
 
+  // Handle sorting
+  const handleSorting = (column) => {
+    setUsersort(prevSort => ({
+      column,
+      order: prevSort.column === column && prevSort.order === 'asc' ? 'desc' : 'asc'
+    }));
+    setPage(1);
+  };
+
   // Delete a user
   const deleteUser = async (id) => {
     const confirmDeleteUser = window.confirm("Are you sure you want to delete this user?");
@@ -57,7 +68,7 @@ const ShowAllUser = () => {
         });
         // Refetch users list
         const response = await axios.get("http://localhost:7000/admin/showalluser", {
-          params: { page, limit, search }
+          params: { page, limit, search, sort: usersort }
         });
         setUsers(response.data.users);
         setTotal(response.data.total);
@@ -84,6 +95,8 @@ const ShowAllUser = () => {
 
   // Save edited user data
   const saveChanges = async () => {
+    console.log("Saving changes with data:", editUserData); // Debugging line
+
     try {
       const response = await axios.put(`http://localhost:7000/admin/updateuser/${editUserId}`, editUserData, {
         headers: { "Content-Type": "application/json" }
@@ -92,7 +105,7 @@ const ShowAllUser = () => {
       if (response.status === 200) {
         // Refetch users list after saving changes
         const userResponse = await axios.get("http://localhost:7000/admin/showalluser", {
-          params: { page, limit, search }
+          params: { page, limit, search, sort: usersort }
         });
         setUsers(userResponse.data.users);
         setTotal(userResponse.data.total);
@@ -129,15 +142,82 @@ const ShowAllUser = () => {
       <table>
         <thead>
           <tr>
-            <th>#id</th>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Country</th>
-            <th>State</th>
-            <th>City</th>
-            <th>Last Login</th>
+            <th>
+              #id
+              <span onClick={() => handleSorting('id')}>
+                {usersort.column === 'id' ? (
+                  usersort.order === 'asc' ? <FcAlphabeticalSortingAz /> : <FcAlphabeticalSortingZa />
+                ) : <FcAlphabeticalSortingAz />}
+              </span>
+            </th>
+            <th>
+              First Name
+              <span onClick={() => handleSorting('first_name')}>
+                {usersort.column === 'first_name' ? (
+                  usersort.order === 'asc' ? <FcAlphabeticalSortingAz /> : <FcAlphabeticalSortingZa />
+                ) : <FcAlphabeticalSortingAz />}
+              </span>
+            </th>
+            <th>
+              Last Name
+              <span onClick={() => handleSorting('last_name')}>
+                {usersort.column === 'last_name' ? (
+                  usersort.order === 'asc' ? <FcAlphabeticalSortingAz /> : <FcAlphabeticalSortingZa />
+                ) : <FcAlphabeticalSortingAz />}
+              </span>
+            </th>
+            <th>
+              Email
+              <span onClick={() => handleSorting('email')}>
+                {usersort.column === 'email' ? (
+                  usersort.order === 'asc' ? <FcAlphabeticalSortingAz /> : <FcAlphabeticalSortingZa />
+                ) : <FcAlphabeticalSortingAz />}
+              </span>
+            </th>
+            <th>
+              Employee ID
+              <span onClick={() => handleSorting('emp_id')}>
+                {usersort.column === 'emp_id' ? (
+                  usersort.order === 'asc' ? <FcAlphabeticalSortingAz /> : <FcAlphabeticalSortingZa />
+                ) : <FcAlphabeticalSortingAz />}
+              </span>
+            </th>
+            <th>
+              Role
+              <span>
+                <FcAlphabeticalSortingAz />
+              </span>
+            </th>
+            <th>
+              Country
+              <span onClick={() => handleSorting('country')}>
+                {usersort.column === 'country' ? (
+                  usersort.order === 'asc' ? <FcAlphabeticalSortingAz /> : <FcAlphabeticalSortingZa />
+                ) : <FcAlphabeticalSortingAz />}
+              </span>
+            </th>
+            <th>
+              State
+              <span onClick={() => handleSorting('state')}>
+                {usersort.column === 'state' ? (
+                  usersort.order === 'asc' ? <FcAlphabeticalSortingAz /> : <FcAlphabeticalSortingZa />
+                ) : <FcAlphabeticalSortingAz />}
+              </span>
+            </th>
+            <th>
+              City
+              <span onClick={() => handleSorting('city')}>
+                {usersort.column === 'city' ? (
+                  usersort.order === 'asc' ? <FcAlphabeticalSortingAz /> : <FcAlphabeticalSortingZa />
+                ) : <FcAlphabeticalSortingAz />}
+              </span>
+            </th>
+            <th>
+              Last Login
+              <span>
+                <FcAlphabeticalSortingAz />
+              </span>
+            </th>
             <th>Action</th>
           </tr>
         </thead>
@@ -184,6 +264,18 @@ const ShowAllUser = () => {
                 </td>
                 <td>
                   {editUserId === user.id ? (
+                    <input
+                      type="text"
+                      name="employeeid"
+                      value={editUserData.emp_id || ''}
+                      onChange={handleEditChange}
+                    />
+                  ) : (
+                    user.emp_id
+                  )}
+                </td>
+                <td>
+                  {editUserId === user.id ? (
                     <select
                       name="role"
                       value={editUserData.role || ''}
@@ -191,7 +283,7 @@ const ShowAllUser = () => {
                       required
                     >
                       <option value="">Select a role</option>
-                      {['HR', 'Admin', 'Employee'].map(role => (
+                      {['HR','Employee'].map(role => (
                         <option key={role} value={role}>{role}</option>
                       ))}
                     </select>
@@ -272,7 +364,7 @@ const ShowAllUser = () => {
             ))
           ) : (
             <tr>
-              <td colSpan="10">No users found</td>
+              <td colSpan="11">No users found</td>
             </tr>
           )}
         </tbody>
@@ -282,7 +374,7 @@ const ShowAllUser = () => {
           Previous
         </button>
         <span>Page {page} of {Math.ceil(total / limit)}</span>
-        <button onClick={() => handlePageChange(page + 1)} disabled={page >= Math.ceil(total / limit)}>
+        <button onClick={() => handlePageChange(page + 1)} disabled={page === Math.ceil(total / limit)}>
           Next
         </button>
       </div>

@@ -3,6 +3,7 @@ import React, { lazy } from 'react'
 import Home from './layout/Home'
 
 
+
 const ShowAllUser =React.lazy(()=>import("./views/Mycomonponets/ShowALLUser/ShowAllUser"))
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
@@ -24,7 +25,7 @@ const Spinners = React.lazy(() => import('./views/base/spinners/Spinners'))
 const Tabs = React.lazy(() => import('./views/base/tabs/Tabs'))
 const Tables = React.lazy(() => import('./views/base/tables/Tables'))
 const Tooltips = React.lazy(() => import('./views/base/tooltips/Tooltips'))
-
+const Edituser=React.lazy(()=>import('./views/Mycomonponets/ShowALLUser/Edituser'))
 // Buttons
 const Buttons = React.lazy(() => import('./views/buttons/buttons/Buttons'))
 const ButtonGroups = React.lazy(() => import('./views/buttons/button-groups/ButtonGroups'))
@@ -58,6 +59,7 @@ const routes = [
   { path: '/',  name: 'Home' ,element:Home},
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
   { path: '/theme', name: 'Theme', element: Colors, exact: true },
+  { path: '/edituser', name: 'edituser', element: Edituser, exact: true },
   // { path: '/adduser', name: 'adduser', element:Addser, exact: true },
   {path:"/adduser" , name:"AddUser" , element:AddUser, exact:true},
   {path:"/alluser" , name:"AllUser" , element:ShowAllUser, exact:true},

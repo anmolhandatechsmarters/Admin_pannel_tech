@@ -1,29 +1,56 @@
-const express = require("express")
-const router = express.Router()
+const express = require('express');
+const router = express.Router();
 const promisePool = require('../Connection');
 
+// API to add a user
 router.post('/adduser', async (req, res) => {
-  const { email, first_name, last_name, street1, street2, city, state, country, role, status = '0', ip = '0.0.0.0', created_on = new Date(), updated_on = new Date(), created_by = 'Admin', password } = req.body;
+  const { email, first_name, last_name, street1, street2, city, state, country, role: roleName, status = '0', ip = '0.0.0.0', created_on = new Date(), updated_on = new Date(), created_by = 'Admin', password } = req.body;
 
   // Validate required fields
   if (!email || !first_name || !last_name || !street1 || !city || !state || !country || !password) {
     return res.status(400).json({ message: 'Required fields are missing.' });
   }
 
+  // Define role mappings
+  const roleMappings = {
+    'Admin': 1,
+    'HR': 2,
+    'Employee': 3
+  };
+
+  // Validate and map role
+  const roleId = roleMappings[roleName];
+  if (!roleId) {
+    return res.status(400).json({ message: 'Invalid role provided. Valid roles are Admin, HR, Employee.' });
+  }
+
   try {
     await promisePool.query('START TRANSACTION');
 
-    // Insert into role table
-    const [roleResult] = await promisePool.query('INSERT INTO role (role) VALUES (?)', [role]);
+    // Check for existing email
+    const [emailCheck] = await promisePool.query('SELECT COUNT(*) AS count FROM users WHERE email = ?', [email]);
+    if (emailCheck[0].count > 0) {
+      await promisePool.query('ROLLBACK');
+      return res.status(400).json({ message: 'Email is already in use. Please use a different email.' });
+    }
 
-    // Generate employee ID
-    const emp_id = `Emp${roleResult.insertId}`;
+    // Check for existing emp_id
+    const [empIdCheck] = await promisePool.query('SELECT COUNT(*) AS count FROM users WHERE emp_id = ?', [email]); // Use email for emp_id check
+    if (empIdCheck[0].count > 0) {
+      await promisePool.query('ROLLBACK');
+      return res.status(400).json({ message: 'emp_id is already in use. Please use a different emp_id.' });
+    }
+
+    // Get the next available emp_id
+    const [result] = await promisePool.query('SELECT MAX(CAST(SUBSTRING(emp_id, 4) AS UNSIGNED)) AS max_id FROM users');
+    const maxId = result[0].max_id || 0;
+    const newEmpId = `Emp${maxId + 1}`;
 
     // Insert into users table
     await promisePool.query(
       `INSERT INTO users (email, emp_id, first_name, last_name, street1, street2, city, state, ip, country, role, status, created_on, updated_on, created_by, password) 
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [email, emp_id, first_name, last_name, street1, street2, city, state, ip, country, roleResult.insertId, status, created_on, updated_on, created_by, password]
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [email, newEmpId, first_name, last_name, street1, street2, city, state, ip, country, roleId, status, created_on, updated_on, created_by, password]
     );
 
     await promisePool.query('COMMIT');
@@ -38,12 +65,13 @@ router.post('/adduser', async (req, res) => {
 
 
 
+// API to show all users with pagination, search, and sorting
 router.get('/showalluser', async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const search = req.query.search || '';
-  const sortColumn = req.query.sort?.column || 'id'; // Default to 'id'
-  const sortOrder = req.query.sort?.order || 'asc'; // Default to 'asc'
+  const sortColumn = req.query.sort?.column || 'id';
+  const sortOrder = req.query.sort?.order || 'asc';
 
   const offset = (page - 1) * limit;
 
@@ -133,10 +161,9 @@ router.get('/showalluser', async (req, res) => {
 
 
 
-//edit delete api
-
+// API to delete a user
 router.delete('/deleteuser/:id', async (req, res) => {
-  const { id } = req.params; // Extract id from URL parameters
+  const { id } = req.params;
 
   if (!id) {
     return res.status(400).json({ message: 'Id is required' });
@@ -151,7 +178,7 @@ router.delete('/deleteuser/:id', async (req, res) => {
   }
 });
 
-
+// API to get a specific user
 router.get('/getuser/:id', async (req, res) => {
   const { id } = req.params;
   try {
@@ -167,71 +194,61 @@ router.get('/getuser/:id', async (req, res) => {
   }
 });
 
-// Update user
-router.put('/updateuser/:id', async (req, res) => {
-  const { id } = req.params;
-  const userData = req.body;
-  try {
-    const [result] = await promisePool.query('UPDATE users SET ? WHERE id = ?', [userData, id]);
-    if (result.affectedRows > 0) {
-      res.json({ message: 'User updated successfully' });
-    } else {
-      res.status(404).json({ message: 'User not found' });
+
+router.put('/updateUser/:id', async (req, res) => {
+  const userId = req.params.id;
+  const { first_name, last_name, email, emp_id, role: roleName, country, state, city,street1 ,street2 } = req.body;
+
+  // Validate input
+  if (!userId || !first_name || !last_name || !email || !emp_id || !roleName || !country || !state || !city || !street1 || !street2) {
+    return res.status(400).json({ message: 'All fields are required.' });
+  }
+
+  // Define role mappings
+  const roleMappings = {
+    'Admin': 1,
+    'HR': 2,
+    'Employee': 3
+  };
+
+  // Map role name to role ID
+  const roleId = roleMappings[roleName];
+  if (roleId === undefined) {
+    return res.status(400).json({ message: 'Invalid role provided. Valid roles are Admin, HR, Employee.' });
+  }
+
+  // Update query
+  const updateQuery = `
+    UPDATE users
+    SET 
+      first_name = ?, 
+      last_name = ?, 
+      email = ?, 
+      emp_id = ?, 
+      role = ?, 
+      country = ?, 
+      state = ?, 
+      city = ?,
+      street1=?,
+      street2=?
+    WHERE id = ?
+  `;
+
+await  promisePool.query(updateQuery, [first_name, last_name, email, emp_id, roleId, country, state, city, street1,street2,userId], (err, results) => {
+    if (err) {
+      console.error('Error updating user:', err);
+      return res.status(500).json({ message: 'Failed to update user.' });
     }
-  } catch (error) {
-    console.error('Error updating user:', error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-});
-
-// Fetch roles
-router.get('/roles', async (req, res) => {
-  try {
-    const [rows] = await promisePool.query('SELECT * FROM role');
-    res.json(rows);
-  } catch (error) {
-    console.error('Error fetching roles:', error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-});
-
-// Fetch countries
-router.get('/countries', async (req, res) => {
-  try {
-    const [rows] = await promisePool.query('SELECT * FROM countries');
-    res.json(rows);
-  } catch (error) {
-    console.error('Error fetching countries:', error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-});
-
-// Fetch states by country
-router.get('/states/:countryId', async (req, res) => {
-  const { countryId } = req.params;
-  try {
-    const [rows] = await promisePool.query('SELECT * FROM states WHERE country_id = ?', [countryId]);
-    res.json(rows);
-  } catch (error) {
-    console.error('Error fetching states:', error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-});
-
-// Fetch cities by state
-router.get('/cities/:stateId', async (req, res) => {
-  const { stateId } = req.params;
-  try {
-    const [rows] = await promisePool.query('SELECT * FROM cities WHERE state_id = ?', [stateId]);
-    res.json(rows);
-  } catch (error) {
-    console.error('Error fetching cities:', error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+    res.status(200).json({ message: 'User updated successfully.' });
+  });
 });
 
 
 
 
 
-module.exports = router
+
+module.exports = router;

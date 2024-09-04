@@ -5,8 +5,6 @@ const jwt = require('jsonwebtoken');
 const { authentication, authorize } = require('../middleware/auth'); // Update path as needed
 const { createTransport } = require("nodemailer");
 const crypto = require('crypto');
-const { Generatetoken } = require('../middleware/token');
-
 const otpStore = {}; 
 
 // Generate OTP function
@@ -27,82 +25,52 @@ var transporter = createTransport({
   });
 
 
-// Get all users
-router.get('/allusershow', async (req, res) => {
-    try {
-        const [rows] = await promisePool.query('SELECT * FROM users');
-        res.status(200).json(rows);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-});
-
-// Submit new user data
+// Submit new user data for the registration page 
 router.post('/submitdata', async (req, res) => {
-    const { email, first_name, last_name, street1, street2, city, state, country, role, status = '0', last_login = new Date(), user_agent, ip, created_on = new Date(), updated_on = new Date(), created_by = 'Admin', password } = req.body;
+  const { email, first_name, last_name, street1, street2, city, state, country, role: roleName, status = '0', last_login = new Date(), user_agent, ip, created_on = new Date(), updated_on = new Date(), created_by = 'Admin', password } = req.body;
 
-    if (!email || !first_name || !last_name || !street1 || !city || !state || !country || !password) {
-        return res.status(400).json({ message: 'Required fields are missing.' });
-    }
+  // Validate required fields
+  if (!email || !first_name || !last_name || !street1 || !city || !state || !country || !password) {
+      return res.status(400).json({ message: 'Required fields are missing.' });
+  }
 
-    try {
-        await promisePool.query('START TRANSACTION');
+  // Define role mappings
+  const roleMappings = {
+      'Admin': 1,
+      'HR': 2,
+      'Employee': 3
+  };
 
-        const [roleResult] = await promisePool.query('INSERT INTO role (role) VALUES (?)', [role]);
+  // Validate and map role
+  const roleId = roleMappings[roleName];
+  if (!roleId) {
+      return res.status(400).json({ message: 'Invalid role provided. Valid roles are Admin, HR, Employee.' });
+  }
 
-        const emp_id = `Emp${roleResult.insertId}`;
+  try {
+      await promisePool.query('START TRANSACTION');
 
-        await promisePool.query(
-            `INSERT INTO users (email, emp_id, first_name, last_name, street1, street2, city, state, country, role, status, last_login, user_agent, ip, created_on, updated_on, created_by, password) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-            [email, emp_id, first_name, last_name, street1, street2, city, state, country, roleResult.insertId, status, last_login, user_agent, ip, created_on, updated_on, created_by, password]
-        );
+      // Get the next available emp_id
+      const [result] = await promisePool.query('SELECT MAX(CAST(SUBSTRING(emp_id, 4) AS UNSIGNED)) AS max_id FROM users');
+      const maxId = result[0].max_id || 0;
+      const newEmpId = `Emp${maxId + 1}`;
 
-        await promisePool.query('COMMIT');
-        res.status(201).json({ message: 'User data submitted successfully' });
-    } catch (error) {
-        await promisePool.query('ROLLBACK');
-        console.error(error);
-        res.status(500).json({ message: 'Error occurred while submitting data', error });
-    }
+      // Insert into users table
+      await promisePool.query(
+          `INSERT INTO users (email, emp_id, first_name, last_name, street1, street2, city, state, country, role, status, last_login, user_agent, ip, created_on, updated_on, created_by, password) 
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          [email, newEmpId, first_name, last_name, street1, street2, city, state, country, roleId, status, last_login, user_agent, ip, created_on, updated_on, created_by, password]
+      );
+
+      await promisePool.query('COMMIT');
+      res.status(201).json({ message: 'User data submitted successfully' });
+  } catch (error) {
+      await promisePool.query('ROLLBACK');
+      console.error(error);
+      res.status(500).json({ message: 'Error occurred while submitting data', error });
+  }
 });
 
-// Update user data
-router.patch('/updatedata', async (req, res) => {
-    const { id, ...update } = req.body;
-
-    if (!id) {
-        return res.status(400).json({ message: 'Id is required' });
-    }
-
-    try {
-        const updateFields = Object.keys(update).map(key => `${key} = ?`).join(', ');
-        const values = [...Object.values(update), id];
-
-        const query = `UPDATE users SET ${updateFields} WHERE id = ?`;
-        const [result] = await promisePool.query(query, values);
-
-        res.status(200).json({ message: 'Data updated successfully', result });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error occurred while updating data', error });
-    }
-});
-
-// Delete a user
-
-
-// Show roles from the database
-router.get('/showroledatabase', async (req, res) => {
-    try {
-        const [rows] = await promisePool.query('SELECT * FROM role');
-        res.status(200).json(rows);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-});
 
 // Login user
 router.post('/login', async (req, res) => {
@@ -159,8 +127,6 @@ router.post('/login', async (req, res) => {
     }
 });
 
-
-
 // Authentication routes
 router.get('/user/admin', authentication, authorize(['Admin', 'Hr', 'Employee']), (req, res) => {
     res.json('Welcome admin');
@@ -176,7 +142,7 @@ router.get('/user/hr', authentication, authorize(['Hr', 'Employee']), (req, res)
 
 
 
-
+//admin dashboard count total user
 router.get("/totaluser", async (req, res) => {
     querys = "SELECT COUNT(*) AS count FROM users WHERE id <> 1"
     try {
@@ -188,7 +154,7 @@ router.get("/totaluser", async (req, res) => {
 })
 
 
-//get all active user 
+// admin dashboard count total  active user 
 router.get("/allactiveuser", async (req, res) => {
     // Query to count active users, excluding user with id = 1
     const query = "SELECT COUNT(*) AS user_active FROM users WHERE status = '1' AND id <> 1";
@@ -200,6 +166,8 @@ router.get("/allactiveuser", async (req, res) => {
     }
 });
 
+
+//admin dashboard count total inactive user
 router.get("/allinactiveuser", async (req, res) => {
    
     // Query to count inactive users, excluding user with id = 1
@@ -212,6 +180,8 @@ router.get("/allinactiveuser", async (req, res) => {
     }
 });
 
+
+//login page forget password
 router.post("/forgetpassword", async (req, res) => {
     const { email } = req.body;
   
@@ -249,6 +219,7 @@ router.post("/forgetpassword", async (req, res) => {
     }
   });
   
+//forget password for otp verification
   router.post("/verifyotp", async (req, res) => {
     const { email, otp } = req.body;
   
@@ -279,7 +250,8 @@ router.post("/forgetpassword", async (req, res) => {
       return res.status(500).json({ success: false, message: 'Internal server error.' });
     }
   });
-  
+
+ // forget passwrod verfication token 
   router.get('/verifyforgetpasswordtoken', async (req, res) => {
     const token = req.headers['authorization']?.split(' ')[1];
   
@@ -296,6 +268,7 @@ router.post("/forgetpassword", async (req, res) => {
     }
   });
   
+//update password the for verifcation
   router.post('/updatepassword', async (req, res) => {
     const { email, newPassword } = req.body;
   
@@ -318,9 +291,6 @@ router.post("/forgetpassword", async (req, res) => {
     }
   });
   
-
-
-
 
 
 module.exports = router;

@@ -44,36 +44,38 @@ CREATE TABLE IF NOT EXISTS cities (
 `;
 
 const createRoleTable = `
-CREATE TABLE IF NOT EXISTS role (
-  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  role VARCHAR(255) NOT NULL
-);
-`;
+    CREATE TABLE IF NOT EXISTS role (
+      id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+      role VARCHAR(255) NOT NULL
+    );
+  `;
 
-const createUserTable = `
-CREATE TABLE IF NOT EXISTS users (
-  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  email VARCHAR(255) NOT NULL UNIQUE,
-  emp_id VARCHAR(255) UNIQUE NOT NULL,
-  first_name VARCHAR(255) NOT NULL,
-  last_name VARCHAR(255) NOT NULL,
-  street1 VARCHAR(255) NOT NULL,
-  street2 VARCHAR(255),
-  city INT NOT NULL,
-  state INT NOT NULL,
-  country INT NOT NULL,
-  role INT,
-  status ENUM('0', '1') DEFAULT '0',
-  last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  user_agent VARCHAR(255),
-  ip VARCHAR(255) NOT NULL,
-  created_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  created_by VARCHAR(255),
-  password VARCHAR(255) NOT NULL,
-  FOREIGN KEY (role) REFERENCES role(id)
-);
-`;
+ 
+
+  const createUserTable = `
+    CREATE TABLE IF NOT EXISTS users (
+      id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+      email VARCHAR(255) NOT NULL UNIQUE,
+      emp_id VARCHAR(255) UNIQUE NOT NULL,
+      first_name VARCHAR(255) NOT NULL,
+      last_name VARCHAR(255) NOT NULL,
+      street1 VARCHAR(255) NOT NULL,
+      street2 VARCHAR(255),
+      city INT NOT NULL,
+      state INT NOT NULL,
+      country INT NOT NULL,
+      role INT NOT NULL CHECK (role IN (1, 2, 3)),
+      status ENUM('0', '1') DEFAULT '0',
+      last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      user_agent VARCHAR(255),
+      ip VARCHAR(255) NOT NULL,
+      created_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      created_by VARCHAR(255),
+      password VARCHAR(255) NOT NULL,
+      FOREIGN KEY (role) REFERENCES role(id) ON DELETE RESTRICT
+    );
+  `;
 
 // Function to execute a query
 const executeQuery = async (query, values = []) => {
@@ -92,6 +94,7 @@ const createTables = async () => {
         await executeQuery(createStateTable);
         await executeQuery(createCityTable);
         await executeQuery(createRoleTable);
+        
         await executeQuery(createUserTable);
         console.log("Tables checked/created successfully.");
     } catch (error) {

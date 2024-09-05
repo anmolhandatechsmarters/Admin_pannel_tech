@@ -263,10 +263,10 @@ router.put('/updateUser/:id', async (req, res) => {
 
 router.get("/getattendance", async (req, res) => {
   try {
-    // Fetch attendance records with user details
+    // Fetch attendance records with user details, excluding those with user_id = 1
     const [attendanceRecords] = await promisePool.query(`
       SELECT 
-        a.id AS attendance_id,
+        a.id AS id,
         a.user_id,
         a.in_time,
         a.out_time,
@@ -276,9 +276,10 @@ router.get("/getattendance", async (req, res) => {
         CONCAT(u.first_name, ' ', u.last_name) AS fullname
       FROM attendance a
       JOIN users u ON a.user_id = u.id
+      WHERE u.id <> 1
     `);
 
-    // Response with attendance records including user full names
+    // Respond with attendance records including user full names
     res.json({
       success: true,
       attendance: attendanceRecords
@@ -288,6 +289,83 @@ router.get("/getattendance", async (req, res) => {
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
+
+
+
+//============================================================================================
+
+//attendance table apies
+
+//add comment api
+router.put("/savecomment/:id",async(req,res)=>{
+  const id=req.params.id
+  const {comment}=req.body
+  const addcommentquery=("update attendance set comment =? where id =?")
+  try{
+await promisePool.query(addcommentquery,[comment,id])
+res.json("The succefull added")
+  }catch(error){
+res.json("Error are occur",error)
+  }
+})
+
+
+router.delete("/deleteattendance/:id",async(req,res)=>{
+  const id=req.params.id
+  const deletequery="DELETE FROM attendance where id =?"
+  try{
+    await promisePool.query(deletequery,[id])
+    res.json("Succefull")
+  }catch(error){
+res.json("not delete succefull")
+  }
+})
+
+
+router.put('/saverecord/:id', async (req, res) => {
+  const id = req.params.id;
+  const { in_time, out_time, date, status, comment } = req.body;
+
+  // Build the SQL query dynamically
+  let query = 'UPDATE attendance SET ';
+  const values = [];
+  
+  if (in_time !== undefined) {
+    query += 'in_time = ?, ';
+    values.push(in_time);
+  }
+  if (out_time !== undefined) {
+    query += 'out_time = ?, ';
+    values.push(out_time);
+  }
+  if (date !== undefined) {
+    query += 'date = ?, ';
+    values.push(date);
+  }
+  if (status !== undefined) {
+    query += 'status = ?, ';
+    values.push(status);
+  }
+  if (comment !== undefined) {
+    query += 'comment = ?, ';
+    values.push(comment);
+  }
+  
+  // Remove trailing comma and space
+  query = query.slice(0, -2);
+  query += ' WHERE id = ?';
+  values.push(id);
+
+  try {
+    const [results] = await promisePool.query(query, values);
+    res.json({ success: true, affectedRows: results.affectedRows });
+  } catch (err) {
+    console.error('Error updating record:', err);
+    res.status(500).json({ success: false, message: 'Error updating record.' });
+  }
+});
+
+
 
 
 

@@ -150,7 +150,7 @@ router.put('/logout/:id', async (req, res) => {
 
     // Update user status
     await promisePool.query(
-      `UPDATE users SET status = 0 WHERE id = ?`,
+      `UPDATE users SET status = '0' WHERE id = ?`,
       [userId]
     );
 

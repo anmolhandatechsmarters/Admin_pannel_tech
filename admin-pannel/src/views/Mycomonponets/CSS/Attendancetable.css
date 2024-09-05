@@ -1,58 +1,105 @@
-
-.attendance-table {
+/* General Table Styles */
+.attendance-admin .attendance-table table{
     width: 100%;
-    overflow-x: auto; 
-    margin: 20px 0; 
+    overflow-x: auto; /* Horizontal scrollbar for overflow */
+    overflow-y: auto; /* Vertical scrollbar for overflow */
+    margin: 20px 0;
 }
 
-.attendance-table-container {
-    min-width: 600px; 
+.attendance-admin.attendance-table-container {
+    min-width: 600px; /* Minimum width to maintain table readability */
+    max-height: 500px; /* Adjust this value as needed for your design */
+    overflow: auto; /* Allows for both horizontal and vertical scrollbars */
 }
 
-table {
+.attendance-admin .attendance-table table {
     width: 100%;
     border-collapse: collapse;
-    table-layout: fixed;
+    table-layout: fixed; /* Ensures table cells maintain consistent width */
 }
 
-th, td {
+.attendance-admin .attendance-table th, .attendance-table td {
     padding: 10px;
     text-align: left;
     border: 1px solid #ddd;
+    box-sizing: border-box; /* Ensures padding and border are included in element's total width and height */
 }
 
-thead {
+.attendance-admin .attendance-table th {
     background-color: #f4f4f4;
-}
-
-thead th {
     font-weight: bold;
 }
 
+.attendance-admin .attendance-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.attendance-admin .attendance-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+.attendance-admin .attendance-table button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #007bff;
+    margin: 0 5px;
+}
+
+.attendance-admin .attendance-table button:hover {
+    color: #0056b3;
+}
+
+.attendance-admin .attendance-table input[type="text"], input[type="date"] {
+    width: 100%;
+    box-sizing: border-box; /* Ensures input fields take full width of their parent */
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* Responsive Design */
 @media (max-width: 600px) {
-    table, thead, tbody, th, td, tr {
+   .attendance-admin .attendance-table-container {
+        min-width: 100%; /* Ensure the container expands to fit the screen width */
+    }
+
+   .attendance-admin  .attendance-table {
+        overflow-x: auto; /* Ensure horizontal scrollbar appears when needed */
+    }
+
+   .attendance-admin  .attendance-table table {
+        display: block; /* Make the table block for proper scrolling */
+        width: 100%;
+        overflow-x: auto; /* Horizontal scrollbar for table overflow */
+    }
+
+    .attendance-admin .attendance-table thead, .attendance-table tbody, .attendance-table tr {
         display: block;
     }
 
-    thead tr {
+  .attendance-admin   .attendance-table thead tr {
         position: absolute;
         top: -9999px;
         left: -9999px;
     }
 
-    tr {
+   .attendance-admin  .attendance-table tr {
         border: 1px solid #ccc;
         margin-bottom: 10px;
+        position: relative;
     }
 
-    td {
+   .attendance-admin  .attendance-table td {
         border: none;
         position: relative;
         padding-left: 50%;
         white-space: nowrap;
+        display: flex;
+        align-items: center;
     }
 
-    td::before {
+   .attendance-admin  .attendance-table td::before {
         content: attr(data-label);
         position: absolute;
         left: 0;
@@ -60,5 +107,10 @@ thead th {
         padding-left: 10px;
         font-weight: bold;
         white-space: nowrap;
+    }
+
+   .attendance-admin  .attendance-table input[type="text"], .attendance-table input[type="date"] {
+        width: calc(100% - 20px); /* Adjust width to fit within the cell */
+        margin: 5px 0;
     }
 }

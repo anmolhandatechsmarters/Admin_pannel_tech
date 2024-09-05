@@ -6,28 +6,12 @@ import citiesData from '../../../views/pages/register/cities.json';
 import "../CSS/AddUser.css";
 
 const Register = () => {
-    const [getipa,setgetip]=useState('')
-    useEffect(() => {
-        const fetchIp = async () => {
-            try {
-                const response = await axios.get('https://api.ipify.org?format=json');
-                setgetip(response.data.ip);
-                console.log(response.data.ip)
-               
-            } catch (error) {
-                console.error('Error fetching IP:', error);
-            }
-        };
-
-        fetchIp();
-    }, []); 
-
-    
+    const [getipa, setgetip] = useState('');
     const [formData, setFormData] = useState({
         email: '',
         password: '',
-        first_name: '', // Added
-        last_name: '',  // Added
+        first_name: '',
+        last_name: '',
         role: '',
         country: '',
         state: '',
@@ -35,11 +19,8 @@ const Register = () => {
         street1: '',
         street2: '',
         user_agent: navigator.userAgent,
-        ip:getipa,
+        ip: getipa,
     });
-
-
-
 
     const [options, setOptions] = useState({
         roles: ['HR', 'Employee'],
@@ -49,7 +30,20 @@ const Register = () => {
     });
 
     useEffect(() => {
-        // Ensure data is arrays
+        const fetchIp = async () => {
+            try {
+                const response = await axios.get('https://api.ipify.org?format=json');
+                setgetip(response.data.ip);
+                setFormData(prevFormData => ({ ...prevFormData, ip: response.data.ip }));
+            } catch (error) {
+                console.error('Error fetching IP:', error);
+            }
+        };
+
+        fetchIp();
+    }, []);
+
+    useEffect(() => {
         if (Array.isArray(countriesData.countries)) {
             setOptions(prevOptions => ({
                 ...prevOptions,
@@ -83,7 +77,6 @@ const Register = () => {
         setFormData(prevFormData => ({ ...prevFormData, [name]: value }));
 
         if (name === 'country') {
-            // Filter states based on selected country
             const filteredStates = statesData.states.filter(state => state.country_id === value);
             setOptions(prevOptions => ({
                 ...prevOptions,
@@ -94,7 +87,6 @@ const Register = () => {
         }
 
         if (name === 'state') {
-            // Filter cities based on selected state
             const filteredCities = citiesData.cities.filter(city => city.state_id === value);
             setOptions(prevOptions => ({
                 ...prevOptions,
@@ -123,7 +115,7 @@ const Register = () => {
         <div className="adminadduser-container">
             <h1>Add User</h1>
             <form onSubmit={handleSubmit}>
-            <div className="row">
+                <div className="row">
                     <div className="col">
                         <label>First Name:</label>
                         <input
@@ -169,7 +161,6 @@ const Register = () => {
                     </div>
                 </div>
 
-                
                 <div className="row">
                     <div className="col">
                         <label>Role:</label>
@@ -267,4 +258,3 @@ const Register = () => {
 };
 
 export default Register;
-

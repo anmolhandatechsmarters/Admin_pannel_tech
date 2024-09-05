@@ -6,7 +6,7 @@ const AdminRouter=require("./route/admin.js")
 require("dotenv").config();
 
 const app = express();
-const PORT = process.env.PORT || 7000;
+const PORT = process.env.PORT || 7001
 
 
 app.use(cors())

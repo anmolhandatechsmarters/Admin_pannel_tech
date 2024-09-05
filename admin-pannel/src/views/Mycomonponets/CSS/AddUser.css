@@ -1,66 +1,67 @@
-.adduseradmin-container {
-    max-width: 100vw; /* Ensures the container uses the full viewport width */
-    max-height: 100vh; /* Ensures the container uses the full viewport height */
+.adminadduser-container {
+    max-width: 100vw;
+    max-height: 100vh;
     margin: 0 auto;
     padding: 20px;
     background-color: #f9f9f9;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    overflow: auto; /* Allows scrolling if the content overflows */
+    overflow: auto;
 }
 
-.adduseradmin-container h1 {
+.adminadduser-container h1 {
     text-align: center;
     margin-bottom: 20px;
     font-size: 24px;
     color: #333;
 }
 
-.adduseradmin-container form {
+.adminadduser-container form {
     display: flex;
     flex-direction: column;
 }
 
-.adduseradmin-container .row {
+.adminadduser-container .row {
     display: flex;
     flex-wrap: wrap;
     margin-bottom: 15px;
 }
 
-.adduseradmin-container .col {
+.adminadduser-container .col {
     flex: 1;
     min-width: 250px;
     padding: 10px;
-    box-sizing: border-box; /* Ensures padding is included in width calculations */
+    box-sizing: border-box;
 }
 
-.adduseradmin-container label {
+.adminadduser-container label {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
 }
 
-.adduseradmin-container input, select {
+.adminadduser-container input,
+select {
     width: 100%;
-    padding: 12px; /* Increased padding for better spacing */
+    padding: 12px;
     border: 1px solid #ddd;
     border-radius: 4px;
     box-sizing: border-box;
-    word-break: break-word; /* Ensures long text does not overflow */
+    word-break: break-word;
 }
 
-.adduseradmin-container input[type="text"],
-.adduseradmin-container input[type="email"],
-.adduseradmin-container input[type="password"] {
+.adminadduser-container input[type="text"],
+.adminadduser-container input[type="email"],
+.adminadduser-container input[type="password"] {
     font-size: 16px;
 }
 
-.adduseradmin-container select {
+.adminadduser-container select {
     font-size: 16px;
 }
 
-.adduseradmin-container button {
-    padding: 12px 20px; /* Increased padding for the button */
+.adminadduser-container button {
+    padding: 12px 20px;
     font-size: 16px;
     color: #fff;
     background-color: #007bff;
@@ -70,48 +71,48 @@
     transition: background-color 0.3s;
 }
 
-.adduseradmin-container button:hover {
+.adminadduser-container button:hover {
     background-color: #0056b3;
 }
 
 @media (max-width: 768px) {
-    .adduseradmin-container .row {
+    .adminadduser-container .row {
         flex-direction: column;
     }
-    
-    .adduseradmin-container .col {
+
+    .adminadduser-container .col {
         margin-bottom: 15px;
     }
 
-    .adduseradmin-container button {
+    .adminadduser-container button {
         width: 100%;
     }
 }
 
-/* Additional Styles for Handling Scrollbars */
-.adduseradmin-table-container {
-    overflow-x: auto; /* Adds horizontal scrollbar if content overflows */
+.adminadduser-table-container {
+    overflow-x: auto;
 }
 
-.adduseradmin-table {
+.adminadduser-table {
     width: 100%;
     border-collapse: collapse;
 }
 
-.adduseradmin-table th, .adduseradmin-table td {
+.adminadduser-table th,
+.adminadduser-table td {
     padding: 12px;
     border: 1px solid #ddd;
     text-align: left;
 }
 
-.adduseradmin-table th {
+.adminadduser-table th {
     background-color: #f4f4f4;
 }
 
-.adduseradmin-table tr:nth-child(even) {
+.adminadduser-table tr:nth-child(even) {
     background-color: #f9f9f9;
 }
 
-.adduseradmin-table tr:hover {
+.adminadduser-table tr:hover {
     background-color: #f1f1f1;
 }

@@ -47,13 +47,13 @@ const Attendance = () => {
       in_time: record.in_time,
       out_time: record.out_time,
       date: record.date,
-      status: record.status,
-      comments:record.comment
+      status: record.status
     });
     setComments(prevComments => ({
       ...prevComments,
       [id]: record.comment || ''
     }));
+    setEditCommentId(id);
   };
 
   const handleCommentChange = (id, event) => {
@@ -105,6 +105,7 @@ const Attendance = () => {
         record.id === id ? { ...record, ...recordEdits } : record
       ));
       setEditRecordId(null);
+      setEditCommentId(null);
     } catch (error) {
       setError('An error occurred while saving the record.');
       console.error("Error saving record:", error);
@@ -117,6 +118,7 @@ const Attendance = () => {
 
   const handleCancelRecord = () => {
     setEditRecordId(null);
+    setEditCommentId(null);
   };
 
   const handleDeleteButtonClick = (id) => {
@@ -142,6 +144,12 @@ const Attendance = () => {
 
   return (
     <div className='attendance-admin'>
+      <div>
+
+
+
+      </div>
+
       <div className='attendance-table'>
         <div className='attendance-table-container'>
           <table>
@@ -203,8 +211,8 @@ const Attendance = () => {
                         value={recordEdits.status}
                         onChange={(e) => handleRecordChange('status', e)}
                       >
-                        <option value="absent">Absent</option>
-                        <option value="present">Present</option>
+                        <option value="Absent">Absent</option>
+                        <option value="Present">Present</option>
                         <option value="Halfday">Halfday</option>
                       </select>
                     ) : (
@@ -212,21 +220,31 @@ const Attendance = () => {
                         <span className="badge text-bg-danger rounded-pill">A</span>
                       ) : record.status === "Halfday" ? (
                         <span className="badge text-bg-warning rounded-pill">HD</span>
-                      ) : (
+                      ) : record.status === "present" ? (
                         <span className="badge text-bg-success rounded-pill">P</span>
+                      ) : (
+                        <span className="badge text-bg-secondary rounded-pill">Pending</span>
                       )
                     )}
                   </td>
                   <td>
                     {editCommentId === record.id ? (
                       <div>
-                        <input
-                          type="text"
-                          value=""
-                          onChange={(e) => handleCommentChange(record.id, e)}
-                        />
+                        {record.comment ? (
+                          <textarea
+                            value={comments[record.id] || ''}
+                            onChange={(e) => handleCommentChange(record.id, e)}
+                          />
+                        ) : (
+                          <textarea
+                            type="text"
+                            value={comments[record.id] || ''}
+                            onChange={(e) => handleCommentChange(record.id, e)}
+                          />
+                        )}
+
                         <button onClick={() => handleSaveComment(record.id)}><MdOutlineDone /></button>
-                        <button onClick={handleCancelComment}><MdCancel /></button>
+                        <button onClick={handleCancelRecord}><MdCancel /></button>
                       </div>
                     ) : (
                       <div>
@@ -237,7 +255,7 @@ const Attendance = () => {
                             setEditCommentId(record.id);
                             setComments(prevComments => ({
                               ...prevComments,
-                              [record.id]: record.comment || ''
+                              [record.id]: ''
                             }));
                           }}>
                             <IoIosAdd />
@@ -266,6 +284,7 @@ const Attendance = () => {
           {error && <p className="error">{error}</p>}
         </div>
       </div>
+      
     </div>
   );
 };

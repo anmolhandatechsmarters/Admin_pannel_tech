@@ -1,4 +1,4 @@
-/* Base styles for the table */
+
 
 .showuser-admin .admin-searchoptionfield{
   display: flex;
@@ -10,40 +10,38 @@
 }
 
 
-
-
 .showuser-admin .table-container {
-    overflow-x: auto; /* Enable horizontal scrolling for the container */
-    padding: 20px; /* Add some padding around the table container */
-    border: 1px solid #ddd; /* Optional: Add a border to the container for better visual separation */
-    background-color: #f9f9f9; /* Optional: Set a background color for better contrast */
+    overflow-x: auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9; 
   }
   
   .showuser-admin table {
-    width: 100%; /* Make the table full width of its container */
-    border-collapse: collapse; /* Collapse borders for a cleaner look */
-    margin-bottom: 20px; /* Space below the table */
+    width: 100%; 
+    border-collapse: collapse; 
+    margin-bottom: 20px; 
   }
   
 
 
 
   .showuser-admin th, td {
-    border: 1px solid #ddd; /* Light grey border for table cells */
-    padding: 10px; /* Padding inside table cells */
-    text-align: left; /* Align text to the left */
+    border: 1px solid #ddd; 
+    padding: 10px; 
+    text-align: left; 
   }
   
   .showuser-admin  th {
-    background-color: #f4f4f4; /* Light grey background for table headers */
+    background-color: #f4f4f4; 
   }
   
-  /* Optional: Style the sticky header */
+  
   .showuser-admin thead th {
-    position: -webkit-sticky; /* For Safari */
-    position: sticky; /* Make the table header sticky */
-    top: 0; /* Stick to the top of the table */
-    z-index: 1; /* Ensure header is above other content */
+    position: -webkit-sticky;
+    position: sticky; 
+    top: 0; 
+    z-index: 1; 
   }
   
   .showuser-admin .table-container {
@@ -114,11 +112,11 @@
 
 
 
-  /* Responsive styles */
+
   @media screen and (max-width: 768px) {
-    /* Add any specific styles for smaller screens here if needed */
+  
     .showuser-admin .table-container {
-      padding: 10px; /* Adjust padding for smaller screens */
+      padding: 10px; 
     }
   }
   

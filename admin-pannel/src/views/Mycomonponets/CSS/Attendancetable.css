@@ -1,28 +1,32 @@
-/* General Table Styles */
-.attendance-admin .attendance-table table{
+.attendance-admin .attendance-table {
     width: 100%;
-    overflow-x: auto; /* Horizontal scrollbar for overflow */
-    overflow-y: auto; /* Vertical scrollbar for overflow */
+    overflow-x: auto;
     margin: 20px 0;
 }
 
-.attendance-admin.attendance-table-container {
-    min-width: 600px; /* Minimum width to maintain table readability */
-    max-height: 500px; /* Adjust this value as needed for your design */
-    overflow: auto; /* Allows for both horizontal and vertical scrollbars */
+.attendance-admin .attendance-table-container {
+    min-width: 600px; 
+    max-height: 500px;
+    overflow-x: auto;
 }
-
+.attendance-admin thead th{
+    position: -webkit-sticky;
+    position: sticky; 
+    top: 0; 
+    z-index: 1;
+}
 .attendance-admin .attendance-table table {
     width: 100%;
     border-collapse: collapse;
-    table-layout: fixed; /* Ensures table cells maintain consistent width */
+    table-layout: fixed;
 }
 
 .attendance-admin .attendance-table th, .attendance-table td {
     padding: 10px;
     text-align: left;
     border: 1px solid #ddd;
-    box-sizing: border-box; /* Ensures padding and border are included in element's total width and height */
+    box-sizing: border-box; 
+    overflow: hidden;
 }
 
 .attendance-admin .attendance-table th {
@@ -50,47 +54,50 @@
     color: #0056b3;
 }
 
-.attendance-admin .attendance-table input[type="text"], input[type="date"] {
+.attendance-admin .attendance-table input[type="text"], .attendance-admin .attendance-table input[type="date"], .attendance-admin .attendance-table textarea {
     width: 100%;
-    box-sizing: border-box; /* Ensures input fields take full width of their parent */
-    padding: 5px;
+    box-sizing: border-box;
     border: 1px solid #ddd;
     border-radius: 4px;
+    resize: vertical;
 }
 
-/* Responsive Design */
+.attendance-admin .attendance-table textarea {
+    min-height: 50px;
+}
+
 @media (max-width: 600px) {
-   .attendance-admin .attendance-table-container {
-        min-width: 100%; /* Ensure the container expands to fit the screen width */
+    .attendance-admin .attendance-table-container {
+        min-width: 100%; 
     }
 
-   .attendance-admin  .attendance-table {
-        overflow-x: auto; /* Ensure horizontal scrollbar appears when needed */
+    .attendance-admin .attendance-table {
+        overflow-x: auto; 
     }
 
-   .attendance-admin  .attendance-table table {
-        display: block; /* Make the table block for proper scrolling */
+    .attendance-admin .attendance-table table {
+        display: block; 
         width: 100%;
-        overflow-x: auto; /* Horizontal scrollbar for table overflow */
+        overflow-x: auto;
     }
 
-    .attendance-admin .attendance-table thead, .attendance-table tbody, .attendance-table tr {
+    .attendance-admin .attendance-table thead, .attendance-admin .attendance-table tbody, .attendance-admin .attendance-table tr {
         display: block;
     }
 
-  .attendance-admin   .attendance-table thead tr {
+    .attendance-admin .attendance-table thead tr {
         position: absolute;
         top: -9999px;
         left: -9999px;
     }
 
-   .attendance-admin  .attendance-table tr {
+    .attendance-admin .attendance-table tr {
         border: 1px solid #ccc;
         margin-bottom: 10px;
         position: relative;
     }
 
-   .attendance-admin  .attendance-table td {
+    .attendance-admin .attendance-table td {
         border: none;
         position: relative;
         padding-left: 50%;
@@ -99,7 +106,7 @@
         align-items: center;
     }
 
-   .attendance-admin  .attendance-table td::before {
+    .attendance-admin .attendance-table td::before {
         content: attr(data-label);
         position: absolute;
         left: 0;
@@ -109,8 +116,27 @@
         white-space: nowrap;
     }
 
-   .attendance-admin  .attendance-table input[type="text"], .attendance-table input[type="date"] {
-        width: calc(100% - 20px); /* Adjust width to fit within the cell */
+    .attendance-admin .attendance-table input[type="text"], .attendance-admin .attendance-table input[type="date"], .attendance-admin .attendance-table textarea {
+        width: calc(100% - 20px);
         margin: 5px 0;
     }
 }
+
+
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  .pagination-controls button {
+    margin: 0 10px;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  
+  .pagination-controls button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+  

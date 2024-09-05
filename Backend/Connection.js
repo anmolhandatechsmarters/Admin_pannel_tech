@@ -29,11 +29,11 @@ const createAttendanceTable = `
 CREATE TABLE IF NOT EXISTS attendance (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT,
-  in_time TIME NOT NULL,
-  out_time TIME NOT NULL,
-  Date Date NOT NULL,
-  Comment varchar(200) NOT NULL,
-  Status ENUM("present","Absent","Halfday"),
+  in_time TIME,
+  out_time TIME,
+  Date DATE NOT NULL,
+  Comment VARCHAR(200) NULL,
+  Status ENUM('present', 'Absent', 'Halfday'),
   FOREIGN KEY (user_id) REFERENCES users(id)
 
 )
@@ -106,11 +106,12 @@ const createTables = async () => {
     try {
         await executeQuery(createCountryTable);
         await executeQuery(createStateTable);
-        await executeQuery(createAttendanceTable)
+
         await executeQuery(createCityTable);
         await executeQuery(createRoleTable);
 
         await executeQuery(createUserTable);
+        await executeQuery(createAttendanceTable)
         console.log("Tables checked/created successfully.");
     } catch (error) {
         console.error("Error creating tables:", error);

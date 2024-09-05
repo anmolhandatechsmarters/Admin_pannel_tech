@@ -111,10 +111,12 @@ router.post('/login', async (req, res) => {
 
     // Insert attendance record
     await promisePool.query(
-      `INSERT INTO attendance (user_id, in_time, date) 
-           VALUES (?, NOW(), CURDATE())`,
+      `INSERT INTO attendance (user_id, in_time, out_time, Date, Comment, Status) 
+       VALUES (?, Now(), NULL , CURDATE(), NULL, NULL)`, // Provide default or NULL values
       [user.id]
     );
+
+
 
     // Generate JWT token
     const token = jwt.sign(
@@ -132,7 +134,7 @@ router.post('/login', async (req, res) => {
     console.error('Internal server error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
-});
+})
 
 
 

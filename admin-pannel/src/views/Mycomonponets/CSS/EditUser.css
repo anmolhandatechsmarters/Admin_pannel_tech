@@ -23,14 +23,14 @@
 }
 
 .editsuer-admin .form-group {
-  flex: 1 1 calc(50% - 15px); /* 50% width minus gap */
+  flex: 1 1 calc(50% - 15px); 
   min-width: 200px;
   box-sizing: border-box;
 }
 
 .editsuer-admin label {
   margin-bottom: 5px;
-  font-weight: bold;
+  font-weight: bold;:
 }
 
 .editsuer-admin input,
@@ -127,7 +127,7 @@ select[disabled] {
   }
 
   .editsuer-admin.form-group {
-    flex: 1 1 100%; /* Full width on smaller screens */
+    flex: 1 1 100%;
   }
 }
 

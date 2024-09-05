@@ -297,27 +297,27 @@ router.get("/getattendance", async (req, res) => {
 //attendance table apies
 
 //add comment api
-router.put("/savecomment/:id",async(req,res)=>{
-  const id=req.params.id
-  const {comment}=req.body
-  const addcommentquery=("update attendance set comment =? where id =?")
-  try{
-await promisePool.query(addcommentquery,[comment,id])
-res.json("The succefull added")
-  }catch(error){
-res.json("Error are occur",error)
+router.put("/savecomment/:id", async (req, res) => {
+  const id = req.params.id
+  const { comment } = req.body
+  const addcommentquery = ("update attendance set comment =? where id =?")
+  try {
+    await promisePool.query(addcommentquery, [comment, id])
+    res.json("The succefull added")
+  } catch (error) {
+    res.json("Error are occur", error)
   }
 })
 
 
-router.delete("/deleteattendance/:id",async(req,res)=>{
-  const id=req.params.id
-  const deletequery="DELETE FROM attendance where id =?"
-  try{
-    await promisePool.query(deletequery,[id])
+router.delete("/deleteattendance/:id", async (req, res) => {
+  const id = req.params.id
+  const deletequery = "DELETE FROM attendance where id =?"
+  try {
+    await promisePool.query(deletequery, [id])
     res.json("Succefull")
-  }catch(error){
-res.json("not delete succefull")
+  } catch (error) {
+    res.json("not delete succefull")
   }
 })
 
@@ -329,7 +329,7 @@ router.put('/saverecord/:id', async (req, res) => {
   // Build the SQL query dynamically
   let query = 'UPDATE attendance SET ';
   const values = [];
-  
+
   if (in_time !== undefined) {
     query += 'in_time = ?, ';
     values.push(in_time);
@@ -350,7 +350,7 @@ router.put('/saverecord/:id', async (req, res) => {
     query += 'comment = ?, ';
     values.push(comment);
   }
-  
+
   // Remove trailing comma and space
   query = query.slice(0, -2);
   query += ' WHERE id = ?';

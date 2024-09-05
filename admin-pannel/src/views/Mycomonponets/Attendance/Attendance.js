@@ -3,7 +3,7 @@ import "../CSS/Attendancetable.css";
 import axios from "axios";
 import { MdDelete, MdEdit, MdOutlineDone, MdCancel } from "react-icons/md";
 import { IoIosAdd } from "react-icons/io";
-
+import { FcAlphabeticalSortingAz ,FcAlphabeticalSortingZa } from "react-icons/fc";
 const Attendance = () => {
   const [attendanceData, setAttendanceData] = useState([]);
   const [error, setError] = useState('');
@@ -11,6 +11,7 @@ const Attendance = () => {
   const [editRecordId, setEditRecordId] = useState(null);
   const [comments, setComments] = useState({});
   const [recordEdits, setRecordEdits] = useState({});
+ const [usersort,setusersort]=useState(false)
 
   useEffect(() => {
     async function fetchAttendance() {
@@ -112,9 +113,6 @@ const Attendance = () => {
     }
   };
 
-  const handleCancelComment = () => {
-    setEditCommentId(null);
-  };
 
   const handleCancelRecord = () => {
     setEditRecordId(null);
@@ -155,12 +153,12 @@ const Attendance = () => {
           <table>
             <thead>
               <tr>
-                <th>ID</th>
-                <th>User ID</th>
-                <th>Full Name</th>
-                <th>In Time</th>
-                <th>Out Time</th>
-                <th>Date</th>
+                <th>ID <FcAlphabeticalSortingAz/></th>
+                <th>User ID <FcAlphabeticalSortingAz/></th>
+                <th>Full Name <FcAlphabeticalSortingAz/></th>
+                <th>In Time <FcAlphabeticalSortingAz/></th>
+                <th>Out Time<FcAlphabeticalSortingAz/></th>
+                <th>Date<FcAlphabeticalSortingAz/></th>
                 <th>Status</th>
                 <th>Comment</th>
                 <th>Action</th>

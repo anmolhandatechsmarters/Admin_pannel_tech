@@ -30,7 +30,7 @@
 
 .editsuer-admin label {
   margin-bottom: 5px;
-  font-weight: bold;:
+  font-weight: bold;
 }
 
 .editsuer-admin input,
@@ -154,3 +154,7 @@ select[disabled] {
     font-size: 16px;
   }
 }
+
+
+
+

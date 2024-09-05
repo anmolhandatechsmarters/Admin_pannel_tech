@@ -70,18 +70,19 @@ router.get('/showalluser', async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const search = req.query.search || '';
+  const role = req.query.role || ''; // Added role parameter
   const sortColumn = req.query.sort?.column || 'id';
   const sortOrder = req.query.sort?.order || 'asc';
 
   const offset = (page - 1) * limit;
 
   // Ensure sortColumn is valid to prevent SQL injection
-  const validSortColumns = ['id', 'first_name', 'last_name', 'email', 'emp_id', 'role', 'country', 'state', 'city', 'last_login'];
+  const validSortColumns = ['id', 'first_name', 'last_name', 'email', 'emp_id', 'role', 'country', 'state', 'city', 'last_login', 'status'];
   if (!validSortColumns.includes(sortColumn)) {
     return res.status(400).send('Invalid sort column');
   }
 
-  // SQL query with JOINs and sorting
+  // SQL query with JOINs, sorting, and role filtering
   const query = `
     SELECT 
       u.id, 
@@ -96,7 +97,7 @@ router.get('/showalluser', async (req, res) => {
       u.street1, 
       u.street2, 
       u.last_login, 
-      u.user_agent
+      u.status
     FROM 
       users u
     JOIN 
@@ -113,9 +114,13 @@ router.get('/showalluser', async (req, res) => {
         u.first_name LIKE ? OR
         u.last_name LIKE ? OR
         u.email LIKE ? OR
-        u.emp_id LIKE ?
+        u.emp_id LIKE ? OR
+        u.last_login LIKE ? OR
+        u.status LIKE ?
       )
-    ORDER BY ?? ${sortOrder}
+      AND (r.role LIKE ?)
+    ORDER BY 
+      ${sortColumn === 'last_login' ? 'u.last_login' : sortColumn} ${sortOrder}
     LIMIT ? OFFSET ?
   `;
 
@@ -123,7 +128,7 @@ router.get('/showalluser', async (req, res) => {
 
   try {
     // Fetch paginated, filtered, and sorted data
-    const [rows] = await promisePool.query(query, [searchPattern, searchPattern, searchPattern, searchPattern, sortColumn, limit, offset]);
+    const [rows] = await promisePool.query(query, [searchPattern, searchPattern, searchPattern, searchPattern, searchPattern, searchPattern, `%${role}%`, limit, offset]);
 
     // Fetch total count for pagination information
     const countQuery = `
@@ -145,9 +150,10 @@ router.get('/showalluser', async (req, res) => {
           u.email LIKE ? OR
           u.emp_id LIKE ?
         )
+        AND (r.role LIKE ?)
     `;
 
-    const [[{ total }]] = await promisePool.query(countQuery, [searchPattern, searchPattern, searchPattern, searchPattern]);
+    const [[{ total }]] = await promisePool.query(countQuery, [searchPattern, searchPattern, searchPattern, searchPattern, `%${role}%`]);
 
     res.json({
       users: rows,
@@ -158,6 +164,8 @@ router.get('/showalluser', async (req, res) => {
     res.status(500).send("Error fetching users");
   }
 });
+
+
 
 
 
@@ -197,7 +205,7 @@ router.get('/getuser/:id', async (req, res) => {
 
 router.put('/updateUser/:id', async (req, res) => {
   const userId = req.params.id;
-  const { first_name, last_name, email, emp_id, role: roleName, country, state, city,street1 ,street2 } = req.body;
+  const { first_name, last_name, email, emp_id, role: roleName, country, state, city, street1, street2 } = req.body;
 
   // Validate input
   if (!userId || !first_name || !last_name || !email || !emp_id || !roleName || !country || !state || !city || !street1 || !street2) {
@@ -234,7 +242,7 @@ router.put('/updateUser/:id', async (req, res) => {
     WHERE id = ?
   `;
 
-await  promisePool.query(updateQuery, [first_name, last_name, email, emp_id, roleId, country, state, city, street1,street2,userId], (err, results) => {
+  await promisePool.query(updateQuery, [first_name, last_name, email, emp_id, roleId, country, state, city, street1, street2, userId], (err, results) => {
     if (err) {
       console.error('Error updating user:', err);
       return res.status(500).json({ message: 'Failed to update user.' });
@@ -247,6 +255,39 @@ await  promisePool.query(updateQuery, [first_name, last_name, email, emp_id, rol
 });
 
 
+
+
+
+
+// ==============================================================================================
+
+router.get("/getattendance", async (req, res) => {
+  try {
+    // Fetch attendance records with user details
+    const [attendanceRecords] = await promisePool.query(`
+      SELECT 
+        a.id AS attendance_id,
+        a.user_id,
+        a.in_time,
+        a.out_time,
+        a.date,
+        a.comment,
+        a.status,
+        CONCAT(u.first_name, ' ', u.last_name) AS fullname
+      FROM attendance a
+      JOIN users u ON a.user_id = u.id
+    `);
+
+    // Response with attendance records including user full names
+    res.json({
+      success: true,
+      attendance: attendanceRecords
+    });
+  } catch (error) {
+    console.error('Error fetching attendance and user details:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
 
 
 

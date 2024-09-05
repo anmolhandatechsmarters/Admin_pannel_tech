@@ -1,6 +1,8 @@
 
 import React, { lazy } from 'react'
 import Home from './layout/Home'
+import PrivateRoute from './Mytemppage/Privaterouting'
+import Attendance from './views/Mycomonponets/Attendance/Attendance'
 
 
 
@@ -105,6 +107,11 @@ const routes = [
   { path: '/notifications/modals', name: 'Modals', element: Modals },
   { path: '/notifications/toasts', name: 'Toasts', element: Toasts },
   { path: '/widgets', name: 'Widgets', element: Widgets },
+
+// my routes
+{ path: '/attendance', name: 'Attendance', element:Attendance}
+
+
 ]
 
 

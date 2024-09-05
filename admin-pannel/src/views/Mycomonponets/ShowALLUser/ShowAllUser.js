@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import "../CSS/ShowUser.css"; // Ensure your CSS file is correctly located
@@ -12,24 +12,30 @@ const ShowAllUser = () => {
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [usersort, setUsersort] = useState({ column: 'id', order: 'asc' });
+  const [role, setRole] = useState('');
   const limit = 10;
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await axios.get("http://localhost:7000/admin/showalluser", {
-          params: { page, limit, search, sort: usersort },
-          headers: { "Content-Type": "application/json" },
-        });
-        setUsers(response.data.users);
-        setTotal(response.data.total);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
-    };
+  const fetchUsers = useCallback(async () => {
+    try {
+      const response = await axios.get("http://localhost:7000/admin/showalluser", {
+        params: { page, limit, search, sort: usersort, role },
+        headers: { "Content-Type": "application/json" },
+      });
 
+      // Assuming response.data.users is an array of user objects and response.data.total is the total count
+      setUsers(response.data.users);
+      setTotal(response.data.total);
+      
+    
+
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  }, [page, search, usersort, role]);
+
+  useEffect(() => {
     fetchUsers();
-  }, [page, search, usersort]);
+  }, [fetchUsers]);
 
   const handleSearch = (e) => {
     setSearch(e.target.value);
@@ -57,11 +63,9 @@ const ShowAllUser = () => {
         await axios.delete(`http://localhost:7000/admin/deleteuser/${id}`, {
           headers: { "Content-Type": "application/json" }
         });
-        const response = await axios.get("http://localhost:7000/admin/showalluser", {
-          params: { page, limit, search, sort: usersort }
-        });
-        setUsers(response.data.users);
-        setTotal(response.data.total);
+        // Update the users state directly
+        setUsers(users.filter(user => user.id !== id));
+        setTotal(total - 1);
       } catch (error) {
         console.error("Error deleting user:", error);
       }
@@ -72,15 +76,50 @@ const ShowAllUser = () => {
     navigate(`/edituser/${userid}`);
   };
 
+  const handleRoleChange = (e) => {
+    setRole(e.target.value);
+    setPage(1);
+  };
+
+  const options = {
+    roles: ['HR', 'Employee'],
+  };
+
+
+const handleadduser=()=>{
+  navigate("/adduser")
+}
+
   return (
-    <div className="table-container">
+<div className='showuser-admin'>
+<div style={{width:"100%" , display:"flex",justifyContent:"flex-end"}}>
+  <button type="button" className="btn btn-primary" onClick={handleadduser}>Add User</button>
+</div>
+
+
+
+    <div className="table-container mt-3">
+      
       <div className="search-bar">
-        <input
-          type="text"
-          placeholder="Search..."
-          value={search}
-          onChange={handleSearch}
-        />
+        <div className='admin-searchoptionfield'>
+          <input
+            type="text"
+            placeholder="Search..."
+            value={search}
+            onChange={handleSearch}
+          />
+          <select
+            id="role"
+            name="role"
+            value={role}
+            onChange={handleRoleChange}
+          >
+            <option value="">All</option>
+            {options.roles.map(role => (
+              <option key={role} value={role}>{role}</option>
+            ))}
+          </select>
+        </div>
       </div>
       <table>
         <thead>
@@ -94,17 +133,9 @@ const ShowAllUser = () => {
               </span>
             </th>
             <th>
-              First Name
+              Full Name
               <span onClick={() => handleSorting('first_name')}>
                 {usersort.column === 'first_name' ? (
-                  usersort.order === 'asc' ? <FcAlphabeticalSortingAz /> : <FcAlphabeticalSortingZa />
-                ) : <FcAlphabeticalSortingAz />}
-              </span>
-            </th>
-            <th>
-              Last Name
-              <span onClick={() => handleSorting('last_name')}>
-                {usersort.column === 'last_name' ? (
                   usersort.order === 'asc' ? <FcAlphabeticalSortingAz /> : <FcAlphabeticalSortingZa />
                 ) : <FcAlphabeticalSortingAz />}
               </span>
@@ -125,18 +156,16 @@ const ShowAllUser = () => {
                 ) : <FcAlphabeticalSortingAz />}
               </span>
             </th>
-            <th>
-              Role
-              <span>
-                <FcAlphabeticalSortingAz />
-              </span>
-            </th>
+            <th>Role</th>
             <th>
               Last Login
-              <span>
-                <FcAlphabeticalSortingAz />
+              <span onClick={() => handleSorting('last_login')}>
+                {usersort.column === 'last_login' ? (
+                  usersort.order === 'asc' ? <FcAlphabeticalSortingAz /> : <FcAlphabeticalSortingZa />
+                ) : <FcAlphabeticalSortingAz />}
               </span>
             </th>
+            <th>Status</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -145,12 +174,21 @@ const ShowAllUser = () => {
             users.map((user) => (
               <tr key={user.id}>
                 <td>{user.id}</td>
-                <td>{user.first_name}</td>
-                <td>{user.last_name}</td>
+                <td>{user.first_name} {user.last_name}</td>
                 <td>{user.email}</td>
                 <td>{user.emp_id}</td>
                 <td>{user.role}</td>
                 <td>{new Date(user.last_login).toLocaleString()}</td>
+                <td>
+                  {user.status === '1' ? <div>
+                    <span className="badge text-bg-success text-light">Active</span>
+                  </div>:
+                  <div>
+                    <span className="badge text-bg-danger text-light">InActive</span>
+                  </div>
+                  
+                  }  {/* Check user's status */}
+                </td>
                 <td>
                   <MdDelete onClick={() => deleteUser(user.id)} style={{ cursor: 'pointer', color: 'red' }} />
                   <MdEdit onClick={() => userdataedit(user.id)} style={{ cursor: 'pointer', color: 'blue' }} />
@@ -173,6 +211,7 @@ const ShowAllUser = () => {
           Next
         </button>
       </div>
+    </div>
     </div>
   );
 };

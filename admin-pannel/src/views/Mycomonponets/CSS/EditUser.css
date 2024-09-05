@@ -1,39 +1,39 @@
-.alluseredit-container {
+.editsuer-admin .alluseredit-container {
   padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
 }
 
-.alluseredit-heading {
+.editsuer-admin .alluseredit-heading {
   font-size: 24px;
   margin-bottom: 20px;
   text-align: center;
 }
 
-.alluseredit-form-section {
+.editsuer-admin .alluseredit-form-section {
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
 
-.form-row {
+.editsuer-admin .form-row {
   display: flex;
   flex-wrap: wrap;
   gap: 15px;
 }
 
-.form-group {
+.editsuer-admin .form-group {
   flex: 1 1 calc(50% - 15px); /* 50% width minus gap */
   min-width: 200px;
   box-sizing: border-box;
 }
 
-label {
+.editsuer-admin label {
   margin-bottom: 5px;
   font-weight: bold;
 }
 
-input,
+.editsuer-admin input,
 select {
   padding: 10px;
   border: 1px solid #ccc;
@@ -42,12 +42,12 @@ select {
   width: 100%;
 }
 
-input[disabled],
+.editsuer-admin input[disabled],
 select[disabled] {
   background-color: #f5f5f5;
 }
 
-button {
+.editsuer-admin button {
   padding: 10px 20px;
   border: none;
   border-radius: 4px;
@@ -58,16 +58,16 @@ button {
   margin-top: 10px;
 }
 
-button.cancel-button {
+.editsuer-admin button.cancel-button {
   background-color: #6c757d;
   margin-left: 10px;
 }
 
-button:hover {
+.editsuer-admin button:hover {
   opacity: 0.9;
 }
 
-.icon-button {
+.editsuer-admin .icon-button {
   background: none;
   border: none;
   cursor: pointer;
@@ -75,82 +75,82 @@ button:hover {
   font-size: 20px;
 }
 
-.icon-button:hover {
+.editsuer-admin .icon-button:hover {
   color: #0056b3;
 }
 
-.table-container {
+.editsuer-admin .table-container {
   margin-top: 20px;
 }
 
-.table-container table {
+.editsuer-admin .table-container table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.table-container th,
+.editsuer-admin .table-container th,
 .table-container td {
   padding: 10px;
   border: 1px solid #ddd;
   text-align: left;
 }
 
-.table-container th {
+.editsuer-admin .table-container th {
   background-color: #f8f9fa;
 }
 
 @media (max-width: 768px) {
-  .alluseredit-form-section {
+  .editsuer-admin .alluseredit-form-section {
     padding: 10px;
   }
 
-  .alluseredit-heading {
+  .editsuer-admin .alluseredit-heading {
     font-size: 20px;
   }
 
-  input,
+  .editsuer-admin input,
   select {
     font-size: 14px;
   }
 
-  button {
+  .editsuer-admin button {
     font-size: 14px;
     padding: 8px 16px;
   }
 
-  .icon-button {
+  .editsuer-admin .icon-button {
     font-size: 18px;
   }
 
-  .form-row {
+  .editsuer-admin  .form-row {
     flex-direction: column;
   }
 
-  .form-group {
+  .editsuer-admin.form-group {
     flex: 1 1 100%; /* Full width on smaller screens */
   }
 }
 
 @media (max-width: 480px) {
-  .alluseredit-container {
+  .editsuer-admin .alluseredit-container {
     padding: 10px;
   }
 
-  .alluseredit-heading {
+  .editsuer-admin  .alluseredit-heading {
     font-size: 18px;
   }
 
-  input,
+  .editsuer-admin input,
   select {
     font-size: 12px;
   }
 
-  button {
+  .editsuer-admin button {
     font-size: 12px;
     padding: 6px 12px;
   }
 
-  .icon-button {
+  .editsuer-admin .icon-button {
     font-size: 16px;
   }
 }

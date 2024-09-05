@@ -21,10 +21,25 @@ import {
   cilUser,
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-
 import avatar8 from './../../assets/images/avatars/8.jpg'
+import { useNavigate } from 'react-router-dom' // Import useNavigate
 
 const AppHeaderDropdown = () => {
+  const navigate = useNavigate(); // Initialize useNavigate
+
+  const handleLogout = async() => {
+    // Remove user data from local storage
+    localStorage.removeItem('role');
+    localStorage.removeItem('token');
+    try{
+      axios.post('')
+    }catch{
+      
+    }
+    // Redirect to login page
+    navigate('/login'); // Use navigate to programmatically redirect
+  };
+
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0 pe-0" caret={false}>
@@ -84,9 +99,11 @@ const AppHeaderDropdown = () => {
           </CBadge>
         </CDropdownItem>
         <CDropdownDivider />
-        <CDropdownItem href="#">
+        <CDropdownItem>
           <CIcon icon={cilLockLocked} className="me-2" />
-          Lock Account
+          <span onClick={handleLogout} style={{ cursor: 'pointer' }}>
+            Lock Account
+          </span>
         </CDropdownItem>
       </CDropdownMenu>
     </CDropdown>

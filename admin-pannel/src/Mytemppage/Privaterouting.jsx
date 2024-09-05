@@ -1,14 +1,13 @@
 // Privaterouting.jsx
 
 import React from 'react';
-import { Navigate ,useLocation} from 'react-router-dom';
+import { Navigate} from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 const PrivateRoute = ({ element: Component, allowedRoles, ...rest }) => {
   const userRole = localStorage.getItem("role");
 const token=localStorage.getItem("token")
-const location = useLocation();
-  // If user is not authenticated or does not have the required role
+
   if (!token||!userRole || !allowedRoles.includes(userRole)) {
     return <Navigate to="/unauthorized"  />
   }

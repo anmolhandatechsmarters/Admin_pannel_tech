@@ -25,6 +25,20 @@ CREATE TABLE IF NOT EXISTS countries (
 );
 `;
 
+const createAttendanceTable = `
+CREATE TABLE IF NOT EXISTS attendance (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT,
+  in_time TIME NOT NULL,
+  out_time TIME NOT NULL,
+  Date Date NOT NULL,
+  Comment varchar(200) NOT NULL,
+  Status ENUM("present","Absent","Halfday"),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+
+)
+`;
+
 const createStateTable = `
 CREATE TABLE IF NOT EXISTS states (
   id INT PRIMARY KEY AUTO_INCREMENT,
@@ -50,9 +64,9 @@ const createRoleTable = `
     );
   `;
 
- 
 
-  const createUserTable = `
+
+const createUserTable = `
     CREATE TABLE IF NOT EXISTS users (
       id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
       email VARCHAR(255) NOT NULL UNIQUE,
@@ -92,9 +106,10 @@ const createTables = async () => {
     try {
         await executeQuery(createCountryTable);
         await executeQuery(createStateTable);
+        await executeQuery(createAttendanceTable)
         await executeQuery(createCityTable);
         await executeQuery(createRoleTable);
-        
+
         await executeQuery(createUserTable);
         console.log("Tables checked/created successfully.");
     } catch (error) {

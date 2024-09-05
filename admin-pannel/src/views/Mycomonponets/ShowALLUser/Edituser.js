@@ -113,6 +113,7 @@ const EditUser = () => {
   };
 
   return (
+ <div className='editsuer-admin'>
     <div className="alluseredit-container">
       <h1 className="alluseredit-heading">Edit User</h1>
       {user ? (
@@ -272,6 +273,7 @@ const EditUser = () => {
         <p>Loading user data...</p>
       )}
     </div>
+    </div>   
   );
 };
 

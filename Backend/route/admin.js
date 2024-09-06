@@ -271,6 +271,7 @@ router.get("/getattendance", async (req, res) => {
   const year = parseInt(req.query.year) || null;
   const startDate = req.query.startDate || null;
   const endDate = req.query.endDate || null;
+  const status=req.query.status||null
   const offset = (page - 1) * limit;
 
   // Validate sort column
@@ -303,6 +304,9 @@ router.get("/getattendance", async (req, res) => {
     }
     if (month) {
       filters.push(`MONTH(a.date) = ${month}`);
+    }
+    if(status){
+      filters.push(`status(a.status)=${status}`)
     }
     if (year) {
       filters.push(`YEAR(a.date) = ${year}`);

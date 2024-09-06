@@ -72,3 +72,62 @@
      
     }
 }
+
+.attendance-admin .search-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    gap: 10px;
+}
+
+.attendance-admin .search-bar .admin-searchoptionfield {
+    flex: 1;
+    min-width: 200px; /* Ensure the search field doesn't shrink too much */
+}
+
+.attendance-admin .search-bar input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.attendance-admin .search-bar .filter-options {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.attendance-admin .search-bar select,
+.attendance-admin .search-bar input[type="date"] {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.attendance-admin .search-bar select {
+    min-width: 150px; /* Ensure the dropdowns have a reasonable width */
+}
+
+.attendance-admin .search-bar input[type="date"] {
+    min-width: 150px; /* Ensure the date inputs have a reasonable width */
+}
+
+.attendance-admin .search-bar .filter-options select,
+.attendance-admin .search-bar .filter-options input[type="date"] {
+    flex: 1;
+}
+
+.attendance-admin .search-bar .filter-options select,
+.attendance-admin .search-bar .filter-options input[type="date"] {
+    min-width: 120px; /* Ensure dropdowns and date inputs have a minimum width */
+}
+
+.attendance-admin .search-bar .filter-options select,
+.attendance-admin .search-bar .filter-options input[type="date"] {
+    flex: 1;
+    min-width: 120px; /* Adjust if necessary */
+}
+

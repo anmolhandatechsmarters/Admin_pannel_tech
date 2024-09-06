@@ -62,9 +62,6 @@ router.post('/adduser', async (req, res) => {
   }
 });
 
-
-
-
 // API to show all users with pagination, search, and sorting
 router.get('/showalluser', async (req, res) => {
   const page = parseInt(req.query.page) || 1;
@@ -165,10 +162,6 @@ router.get('/showalluser', async (req, res) => {
   }
 });
 
-
-
-
-
 // API to delete a user
 router.delete('/deleteuser/:id', async (req, res) => {
   const { id } = req.params;
@@ -255,10 +248,6 @@ router.put('/updateUser/:id', async (req, res) => {
 });
 
 
-
-
-
-
 // ==============================================================================================
 
 router.get("/getattendance", async (req, res) => {
@@ -291,7 +280,7 @@ router.get("/getattendance", async (req, res) => {
         a.date,
         a.comment,
         a.status,
-        CONCAT(a.emp_id, '(', u.first_name, ' ', u.last_name, ')') AS fullname
+        CONCAT(u.first_name ,'',u.last_name,'(',a.emp_id ,')') AS fullname
       FROM attendance a
       JOIN users u ON a.emp_id = u.emp_id
       WHERE u.id <> 1
@@ -354,12 +343,6 @@ router.get("/getattendance", async (req, res) => {
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
-
-
-
-
-
-
 
 //============================================================================================
 
@@ -434,8 +417,9 @@ router.put('/saverecord/:id', async (req, res) => {
   }
 });
 
-
-
+//===================================================================================
+//-------------------------------View User Page---------------------------------------
+//===================================================================================
 
 
 

@@ -114,7 +114,7 @@ router.post('/login', async (req, res) => {
     // Insert attendance record with the EMPID
     await promisePool.query(
       `INSERT INTO attendance (user_id, in_time, out_time, Date, Comment, Status,emp_id) 
-       VALUES (?, NOW(), NULL, CURDATE(), NULL, 'present', ?)`, // Using default values for `out_time` and `Comment`
+       VALUES (?, NOW(), NULL, CURDATE(), NULL, NULL, ?)`, // Using default values for `out_time` and `Comment`
       [user.id, user.emp_id]
     );
 

@@ -4,8 +4,10 @@ import axios from "axios";
 import { MdDelete, MdEdit, MdOutlineDone, MdCancel } from "react-icons/md";
 import { IoIosAdd } from "react-icons/io";
 import { FcAlphabeticalSortingAz, FcAlphabeticalSortingZa } from "react-icons/fc";
+import { useNavigate} from 'react-router-dom';
 
 const Attendance = () => {
+const Navigate =useNavigate()
   const [attendanceData, setAttendanceData] = useState([]);
   const [error, setError] = useState('');
   const [editCommentId, setEditCommentId] = useState(null);
@@ -198,6 +200,12 @@ const Attendance = () => {
 
   const years = Array.from(new Set(attendanceData.map(record => new Date(record.date).getFullYear())));
 
+const handleviewuser=(id)=>{
+  Navigate(`/viewuser/${id}`)
+}
+
+
+
   return (
     <div className='attendance-admin'>
       <div className="search-bar">
@@ -253,7 +261,7 @@ const Attendance = () => {
                     userSort.order === 'asc' ? <FcAlphabeticalSortingAz /> : <FcAlphabeticalSortingZa />
                   ) : <FcAlphabeticalSortingAz />}
                 </span></th>
-                <th>User ID (fullname)<span onClick={() => handleSorting('fullname')}>
+                <th>Employee<span onClick={() => handleSorting('fullname')}>
                   {userSort.column === 'fullname' ? (
                     userSort.order === 'asc' ? <FcAlphabeticalSortingAz /> : <FcAlphabeticalSortingZa />
                   ) : <FcAlphabeticalSortingAz />}
@@ -282,7 +290,8 @@ const Attendance = () => {
               {attendanceData.map((record) => (
                 <tr key={record.id}>
                   <td>{record.id}</td>
-                  <td>{record.fullname}</td>
+                  <td onClick={()=>handleviewuser(record.emp_id)}>{record.fullname}</td>
+
                   <td>
                     {editRecordId === record.id ? (
                       <input

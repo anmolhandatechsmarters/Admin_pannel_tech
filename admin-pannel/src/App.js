@@ -55,9 +55,6 @@ const App = () => {
       >
 
 
-
-
-
         <Routes>
           <Route exact path="/" name="Login Page" element={<Login />} />
           <Route exact path="/login" name="Login Page" element={<Login />} />

@@ -3,27 +3,37 @@ import "../CSS/Attendancetable.css";
 import axios from "axios";
 import { MdDelete, MdEdit, MdOutlineDone, MdCancel } from "react-icons/md";
 import { IoIosAdd } from "react-icons/io";
-import { FcAlphabeticalSortingAz ,FcAlphabeticalSortingZa } from "react-icons/fc";
+import { FcAlphabeticalSortingAz, FcAlphabeticalSortingZa } from "react-icons/fc";
+
 const Attendance = () => {
   const [attendanceData, setAttendanceData] = useState([]);
   const [error, setError] = useState('');
   const [editCommentId, setEditCommentId] = useState(null);
   const [editRecordId, setEditRecordId] = useState(null);
   const [comments, setComments] = useState({});
+  const [search, setSearch] = useState('');
   const [recordEdits, setRecordEdits] = useState({});
- const [usersort,setusersort]=useState(false)
+  const [userSort, setUserSort] = useState({ column: 'id', order: 'asc' });
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [monthFilter, setMonthFilter] = useState('');
+  const [yearFilter, setYearFilter] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+
+  const limit = 10;
 
   useEffect(() => {
     async function fetchAttendance() {
       try {
         const response = await axios.get("http://localhost:7000/admin/getattendance", {
-          headers: {
-            "Content-Type": "application/json"
-          }
+          params: { page, limit, search, sort: userSort, month: monthFilter, year: yearFilter, startDate, endDate },
+          headers: { "Content-Type": "application/json" }
         });
 
         if (response.data.success) {
           setAttendanceData(response.data.attendance);
+          setTotal(response.data.total);
         } else {
           setError('Failed to fetch data.');
         }
@@ -34,7 +44,46 @@ const Attendance = () => {
     }
 
     fetchAttendance();
-  }, []);
+  }, [page, userSort, search, monthFilter, yearFilter, startDate, endDate]);
+
+  const handleSearch = (e) => {
+    setSearch(e.target.value);
+    setPage(1);
+  };
+
+  const handlePageChange = (newPage) => {
+    if (newPage > 0 && newPage <= Math.ceil(total / limit)) {
+      setPage(newPage);
+    }
+  };
+
+  const handleSorting = (column) => {
+    setUserSort(prevSort => ({
+      column,
+      order: prevSort.column === column && prevSort.order === 'asc' ? 'desc' : 'asc'
+    }));
+    setPage(1);
+  };
+
+  const handleMonthChange = (e) => {
+    setMonthFilter(e.target.value);
+    setPage(1);
+  };
+
+  const handleYearChange = (e) => {
+    setYearFilter(e.target.value);
+    setPage(1);
+  };
+
+  const handleStartDateChange = (e) => {
+    setStartDate(e.target.value);
+    setPage(1);
+  };
+
+  const handleEndDateChange = (e) => {
+    setEndDate(e.target.value);
+    setPage(1);
+  };
 
   function formatDate(dateString) {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -76,9 +125,7 @@ const Attendance = () => {
       await axios.put(`http://localhost:7000/admin/savecomment/${id}`, {
         comment: comments[id]
       }, {
-        headers: {
-          "Content-Type": "application/json"
-        }
+        headers: { "Content-Type": "application/json" }
       });
 
       setAttendanceData(prevData => prevData.map(record =>
@@ -97,9 +144,7 @@ const Attendance = () => {
         id,
         ...recordEdits
       }, {
-        headers: {
-          "Content-Type": "application/json"
-        }
+        headers: { "Content-Type": "application/json" }
       });
 
       setAttendanceData(prevData => prevData.map(record =>
@@ -112,7 +157,6 @@ const Attendance = () => {
       console.error("Error saving record:", error);
     }
   };
-
 
   const handleCancelRecord = () => {
     setEditRecordId(null);
@@ -128,24 +172,61 @@ const Attendance = () => {
   const deleteAttendance = async (id) => {
     try {
       await axios.delete(`http://localhost:7000/admin/deleteattendance/${id}`, {
-        headers: {
-          "Content-Type": "application/json"
-        }
+        headers: { "Content-Type": "application/json" }
       });
 
       setAttendanceData(prevData => prevData.filter(record => record.id !== id));
+      setTotal(prevTotal => prevTotal - 1);
     } catch (error) {
       setError('An error occurred while deleting the record.');
       console.error("Error deleting record:", error);
     }
   };
 
+  const months = [
+    'January', 'February', 'March', 'April', 'May', 'June', 'July',
+    'August', 'September', 'October', 'November', 'December'
+  ];
+
+  const years = Array.from(new Set(attendanceData.map(record => new Date(record.date).getFullYear())));
+
   return (
     <div className='attendance-admin'>
-      <div>
-
-
-
+      <div className="search-bar">
+        <div className='admin-searchoptionfield'>
+          <input
+            type="text"
+            placeholder="Search..."
+            value={search}
+            onChange={handleSearch}
+          />
+        </div>
+        <div className='filter-options'>
+          <select value={monthFilter} onChange={handleMonthChange}>
+            <option value="">All Months</option>
+            {months.map((item, index) => (
+              <option key={index} value={index + 1}>{item}</option>
+            ))}
+          </select>
+          <select value={yearFilter} onChange={handleYearChange}>
+            <option value="">All Years</option>
+            {years.map((year, index) => (
+              <option key={index} value={year}>{year}</option>
+            ))}
+          </select>
+          <input
+            type="date"
+            value={startDate}
+            onChange={handleStartDateChange}
+            placeholder="Start Date"
+          />
+          <input
+            type="date"
+            value={endDate}
+            onChange={handleEndDateChange}
+            placeholder="End Date"
+          />
+        </div>
       </div>
 
       <div className='attendance-table'>
@@ -153,12 +234,31 @@ const Attendance = () => {
           <table>
             <thead>
               <tr>
-                <th>ID <FcAlphabeticalSortingAz/></th>
-                <th>User ID <FcAlphabeticalSortingAz/></th>
-                <th>Full Name <FcAlphabeticalSortingAz/></th>
-                <th>In Time <FcAlphabeticalSortingAz/></th>
-                <th>Out Time<FcAlphabeticalSortingAz/></th>
-                <th>Date<FcAlphabeticalSortingAz/></th>
+                <th>ID <span onClick={() => handleSorting('id')}>
+                  {userSort.column === 'id' ? (
+                    userSort.order === 'asc' ? <FcAlphabeticalSortingAz /> : <FcAlphabeticalSortingZa />
+                  ) : <FcAlphabeticalSortingAz />}
+                </span></th>
+                <th>User ID (fullname)<span onClick={() => handleSorting('fullname')}>
+                  {userSort.column === 'fullname' ? (
+                    userSort.order === 'asc' ? <FcAlphabeticalSortingAz /> : <FcAlphabeticalSortingZa />
+                  ) : <FcAlphabeticalSortingAz />}
+                </span></th>
+                <th>In Time <span onClick={() => handleSorting('in_time')}>
+                  {userSort.column === 'in_time' ? (
+                    userSort.order === 'asc' ? <FcAlphabeticalSortingAz /> : <FcAlphabeticalSortingZa />
+                  ) : <FcAlphabeticalSortingAz />}
+                </span></th>
+                <th>Out Time <span onClick={() => handleSorting('out_time')}>
+                  {userSort.column === 'out_time' ? (
+                    userSort.order === 'asc' ? <FcAlphabeticalSortingAz /> : <FcAlphabeticalSortingZa />
+                  ) : <FcAlphabeticalSortingAz />}
+                </span></th>
+                <th>Date <span onClick={() => handleSorting('date')}>
+                  {userSort.column === 'date' ? (
+                    userSort.order === 'asc' ? <FcAlphabeticalSortingAz /> : <FcAlphabeticalSortingZa />
+                  ) : <FcAlphabeticalSortingAz />}
+                </span></th>
                 <th>Status</th>
                 <th>Comment</th>
                 <th>Action</th>
@@ -168,7 +268,6 @@ const Attendance = () => {
               {attendanceData.map((record) => (
                 <tr key={record.id}>
                   <td>{record.id}</td>
-                  <td>{record.user_id}</td>
                   <td>{record.fullname}</td>
                   <td>
                     {editRecordId === record.id ? (
@@ -218,7 +317,7 @@ const Attendance = () => {
                         <span className="badge text-bg-danger rounded-pill">A</span>
                       ) : record.status === "Halfday" ? (
                         <span className="badge text-bg-warning rounded-pill">HD</span>
-                      ) : record.status === "present" ? (
+                      ) : record.status === "Present" ? (
                         <span className="badge text-bg-success rounded-pill">P</span>
                       ) : (
                         <span className="badge text-bg-secondary rounded-pill">Pending</span>
@@ -228,21 +327,12 @@ const Attendance = () => {
                   <td>
                     {editCommentId === record.id ? (
                       <div>
-                        {record.comment ? (
-                          <textarea
-                            value={comments[record.id] || ''}
-                            onChange={(e) => handleCommentChange(record.id, e)}
-                          />
-                        ) : (
-                          <textarea
-                            type="text"
-                            value={comments[record.id] || ''}
-                            onChange={(e) => handleCommentChange(record.id, e)}
-                          />
-                        )}
-
-                        <button onClick={() => handleSaveComment(record.id)}><MdOutlineDone /></button>
-                        <button onClick={handleCancelRecord}><MdCancel /></button>
+                        <textarea
+                          value={comments[record.id] || ''}
+                          onChange={(e) => handleCommentChange(record.id, e)}
+                        />
+                        <span onClick={() => handleSaveComment(record.id)}><MdOutlineDone /></span>
+                        <span onClick={handleCancelRecord}><MdCancel /></span>
                       </div>
                     ) : (
                       <div>
@@ -265,8 +355,8 @@ const Attendance = () => {
                   <td>
                     {editRecordId === record.id ? (
                       <div>
-                        <button onClick={() => handleSaveRecord(record.id)}><MdOutlineDone /></button>
-                        <button onClick={handleCancelRecord}><MdCancel /></button>
+                        <span onClick={() => handleSaveRecord(record.id)}><MdOutlineDone /></span>
+                        <span onClick={handleCancelRecord}><MdCancel /></span>
                       </div>
                     ) : (
                       <div>
@@ -279,10 +369,18 @@ const Attendance = () => {
               ))}
             </tbody>
           </table>
+          <div className="pagination">
+            <button onClick={() => handlePageChange(page - 1)} disabled={page === 1}>
+              Previous
+            </button>
+            <span>Page {page} of {Math.ceil(total / limit)}</span>
+            <button onClick={() => handlePageChange(page + 1)} disabled={page === Math.ceil(total / limit)}>
+              Next
+            </button>
+          </div>
           {error && <p className="error">{error}</p>}
         </div>
       </div>
-      
     </div>
   );
 };

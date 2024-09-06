@@ -262,33 +262,97 @@ router.put('/updateUser/:id', async (req, res) => {
 // ==============================================================================================
 
 router.get("/getattendance", async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const search = req.query.search || '';
+  const sortColumn = req.query.sort?.column || 'id'; // Default to 'id'
+  const sortOrder = req.query.sort?.order || 'asc';
+  const month = parseInt(req.query.month) || null;
+  const year = parseInt(req.query.year) || null;
+  const startDate = req.query.startDate || null;
+  const endDate = req.query.endDate || null;
+  const offset = (page - 1) * limit;
+
+  // Validate sort column
+  const validSortColumns = ['id', 'emp_id', 'fullname', 'in_time', 'out_time', 'date'];
+  if (!validSortColumns.includes(sortColumn)) {
+    return res.status(400).send('Invalid sort Column');
+  }
+
   try {
-    // Fetch attendance records with user details, excluding those with user_id = 1
-    const [attendanceRecords] = await promisePool.query(`
+    // Construct base query with concatenated fullname
+    let query = `
       SELECT 
         a.id AS id,
-        a.user_id,
+        a.emp_id,
         a.in_time,
         a.out_time,
         a.date,
         a.comment,
         a.status,
-        CONCAT(u.first_name, ' ', u.last_name) AS fullname
+        CONCAT(a.emp_id, '(', u.first_name, ' ', u.last_name, ')') AS fullname
       FROM attendance a
-      JOIN users u ON a.user_id = u.id
+      JOIN users u ON a.emp_id = u.emp_id
       WHERE u.id <> 1
-    `);
+    `;
 
-    // Respond with attendance records including user full names
+    // Add filters
+    const filters = [];
+    if (search) {
+      filters.push(`(u.first_name LIKE '%${search}%' OR u.last_name LIKE '%${search}%')`);
+    }
+    if (month) {
+      filters.push(`MONTH(a.date) = ${month}`);
+    }
+    if (year) {
+      filters.push(`YEAR(a.date) = ${year}`);
+    }
+    if (startDate) {
+      filters.push(`a.date >= '${startDate}'`);
+    }
+    if (endDate) {
+      filters.push(`a.date <= '${endDate}'`);
+    }
+
+    if (filters.length > 0) {
+      query += ` AND ${filters.join(' AND ')}`;
+    }
+
+    // Add sorting and pagination
+    query += ` ORDER BY `;
+    if (sortColumn === 'fullname') {
+      query += `CONCAT(a.emp_id, '(', u.first_name, ' ', u.last_name, ')') ${sortOrder}`;
+    } else {
+      query += `${sortColumn} ${sortOrder}`;
+    }
+    query += ` LIMIT ${limit} OFFSET ${offset}`;
+
+    // Execute the query
+    const [attendanceRecords] = await promisePool.query(query);
+
+    // Fetch total count for pagination
+    const [totalRecords] = await promisePool.query(`
+      SELECT COUNT(*) AS count
+      FROM attendance a
+      JOIN users u ON a.emp_id = u.emp_id
+      WHERE u.id <> 1
+      ${filters.length > 0 ? ` AND ${filters.join(' AND ')}` : ''}
+    `);
+    const total = totalRecords[0].count;
+
     res.json({
       success: true,
-      attendance: attendanceRecords
+      attendance: attendanceRecords,
+      total
     });
   } catch (error) {
     console.error('Error fetching attendance and user details:', error);
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
+
+
+
 
 
 

@@ -73,6 +73,8 @@ router.post('/submitdata', async (req, res) => {
 
 
 // Login user
+
+
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
@@ -81,12 +83,12 @@ router.post('/login', async (req, res) => {
   }
 
   try {
-    // Fetch user data along with their current status
+    // Fetch user data along with their current status and EMPID
     const [results] = await promisePool.query(
-      `SELECT users.id, users.email, users.password, users.status, role.role 
-           FROM users 
-           JOIN role ON users.role = role.id 
-           WHERE users.email = ?`,
+      `SELECT users.id, users.email, users.password, users.status, users.emp_id, role.role 
+       FROM users 
+       JOIN role ON users.role = role.id 
+       WHERE users.email = ?`,
       [email]
     );
 
@@ -96,7 +98,7 @@ router.post('/login', async (req, res) => {
 
     const user = results[0];
 
-    // Validate password (no hashing involved)
+    // Validate password (consider using bcrypt or another hashing method for production)
     if (password !== user.password) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
@@ -104,19 +106,17 @@ router.post('/login', async (req, res) => {
     // Update user's lastLogin and status
     await promisePool.query(
       `UPDATE users 
-           SET last_login = NOW(), status = '1' 
-           WHERE id = ?`,
+       SET last_login = NOW(), status = '1' 
+       WHERE id = ?`,
       [user.id]
     );
 
-    // Insert attendance record
+    // Insert attendance record with the EMPID
     await promisePool.query(
-      `INSERT INTO attendance (user_id, in_time, out_time, Date, Comment, Status) 
-       VALUES (?, Now(), NULL , CURDATE(), NULL, NULL)`, // Provide default or NULL values
-      [user.id]
+      `INSERT INTO attendance (user_id, in_time, out_time, Date, Comment, Status,emp_id) 
+       VALUES (?, NOW(), NULL, CURDATE(), NULL, 'present', ?)`, // Using default values for `out_time` and `Comment`
+      [user.id, user.emp_id]
     );
-
-
 
     // Generate JWT token
     const token = jwt.sign(
@@ -134,7 +134,10 @@ router.post('/login', async (req, res) => {
     console.error('Internal server error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
-})
+});
+
+
+
 
 
 

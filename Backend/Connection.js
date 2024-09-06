@@ -28,15 +28,19 @@ CREATE TABLE IF NOT EXISTS countries (
 const createAttendanceTable = `
 CREATE TABLE IF NOT EXISTS attendance (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  user_id INT,
+  user_id INT NOT NULL,
   in_time TIME,
   out_time TIME,
-  Date DATE NOT NULL,
-  Comment VARCHAR(200) NULL,
-  Status ENUM('present', 'Absent', 'Halfday'),
-  FOREIGN KEY (user_id) REFERENCES users(id)
-
-)
+  emp_id VARCHAR(255),
+  date DATE NOT NULL,
+  comment VARCHAR(200),
+  status ENUM('Present', 'Absent', 'Halfday'),
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (emp_id) REFERENCES users(emp_id),
+  INDEX (user_id),
+  INDEX (emp_id),
+  INDEX (date)
+);
 `;
 
 const createStateTable = `

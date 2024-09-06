@@ -1,22 +1,22 @@
+// src/components/PrivateRoute.js
 import React from 'react';
-import { Route, Redirect } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
-// ProtectedRoute component to check user role before rendering a route
-const AdminProtectedRoute = ({ component: Component, ...rest }) => {
-  const role = localStorage.getItem('role'); // Get role from localStorage
-  
-  return (
-    <Route
-      {...rest}
-      render={(props) =>
-        role === 'admin' ? (
-          <Component {...props} />
-        ) : (
-          <Redirect to="/login" /> // Redirect to login or any other page
-        )
-      }
-    />
-  );
+const PrivateRoute = ({ allowedRoles }) => {
+  const user = useSelector(state => state.user); // Adjust based on your state structure
+  const isAuthenticated = user && user.isAuthenticated;
+  const hasRole = allowedRoles.includes(user.role);
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" />;
+  }
+
+  if (!hasRole) {
+    return <Navigate to="/unauthorized" />;
+  }
+
+  return <Outlet />;
 };
 
-export default AdminProtectedRoute;
+export default PrivateRoute;

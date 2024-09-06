@@ -300,7 +300,7 @@ router.get("/getattendance", async (req, res) => {
     // Add filters
     const filters = [];
     if (search) {
-      filters.push(`(u.first_name LIKE '%${search}%' OR u.last_name LIKE '%${search}%')`);
+      filters.push(`(u.emp_id LIKE '%${search}%' OR u.first_name LIKE '%${search}%' OR u.last_name LIKE '%${search}%')`);
     }
     if (month) {
       filters.push(`MONTH(a.date) = ${month}`);

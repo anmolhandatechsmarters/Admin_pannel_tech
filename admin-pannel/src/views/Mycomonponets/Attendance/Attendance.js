@@ -20,14 +20,14 @@ const Attendance = () => {
   const [yearFilter, setYearFilter] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [statusfilter,setstatusfilter]=useState('')
+  const [statusFilter, setStatusFilter] = useState('');
   const limit = 10;
 
   useEffect(() => {
     async function fetchAttendance() {
       try {
         const response = await axios.get("http://localhost:7000/admin/getattendance", {
-          params: { page, limit, search, sort: userSort, month: monthFilter, year: yearFilter, startDate, endDate ,status:statusfilter},
+          params: { page, limit, search, sort: userSort, month: monthFilter, year: yearFilter, startDate, endDate, status: statusFilter },
           headers: { "Content-Type": "application/json" }
         });
 
@@ -44,7 +44,7 @@ const Attendance = () => {
     }
 
     fetchAttendance();
-  }, [page, userSort, search, monthFilter, yearFilter, startDate, endDate,statusfilter]);
+  }, [page, userSort, search, monthFilter, yearFilter, startDate, endDate, statusFilter]);
 
   const handleSearch = (e) => {
     setSearch(e.target.value);
@@ -69,8 +69,9 @@ const Attendance = () => {
     setMonthFilter(e.target.value);
     setPage(1);
   };
+
   const handleStatusChange = (e) => {
-    setstatusfilter(e.target.value);
+    setStatusFilter(e.target.value);
     setPage(1);
   };
 
@@ -191,55 +192,54 @@ const Attendance = () => {
     'January', 'February', 'March', 'April', 'May', 'June', 'July',
     'August', 'September', 'October', 'November', 'December'
   ];
-  const status=['Present','Absent','Halfday']
+  const status = ['Present', 'Absent', 'Halfday'];
 
   const years = Array.from(new Set(attendanceData.map(record => new Date(record.date).getFullYear())));
 
   return (
     <div className='attendance-admin'>
       <div className="search-bar">
-    <div className="admin-searchoptionfield">
-        <input
+        <div className="admin-searchoptionfield">
+          <input
             type="text"
             placeholder="Search..."
             value={search}
             onChange={handleSearch}
-        />
-    </div>
-    <div className="filter-options">
-        <select value={monthFilter} onChange={handleMonthChange}>
+          />
+        </div>
+        <div className="filter-options">
+          <select value={monthFilter} onChange={handleMonthChange}>
             <option value="">All Months</option>
             {months.map((item, index) => (
-                <option key={index} value={index + 1}>{item}</option>
+              <option key={index} value={index + 1}>{item}</option>
             ))}
-        </select>
-        <select value={yearFilter} onChange={handleYearChange}>
+          </select>
+          <select value={yearFilter} onChange={handleYearChange}>
             <option value="">All Years</option>
             {years.map((year, index) => (
-                <option key={index} value={year}>{year}</option>
+              <option key={index} value={year}>{year}</option>
             ))}
-        </select>
-        <input
+          </select>
+          <input
             type="date"
             value={startDate}
             onChange={handleStartDateChange}
             placeholder="Start Date"
-        />
-        <input
+          />
+          <input
             type="date"
             value={endDate}
             onChange={handleEndDateChange}
             placeholder="End Date"
-        />
-        <select value={statusfilter} onChange={handleStatusChange}>
+          />
+          <select value={statusFilter} onChange={handleStatusChange}>
             <option value="">Status</option>
             {status.map((item, index) => (
-                <option key={index} value={item}>{item}</option>
+              <option key={index} value={item}>{item}</option>
             ))}
-        </select>
-    </div>
-</div>
-
+          </select>
+        </div>
+      </div>
 
       <div className='attendance-table'>
         <div className='attendance-table-container'>
@@ -320,9 +320,9 @@ const Attendance = () => {
                         value={recordEdits.status}
                         onChange={(e) => handleRecordChange('status', e)}
                       >
-                        <option value="Absent">Absent</option>
-                        <option value="Present">Present</option>
-                        <option value="Halfday">Halfday</option>
+                        {status.map((status, index) => (
+                          <option key={index} value={status}>{status}</option>
+                        ))}
                       </select>
                     ) : (
                       record.status === "Absent" ? (

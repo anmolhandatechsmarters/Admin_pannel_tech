@@ -80,10 +80,12 @@ const Attendance = () => {
     setPage(1);
   };
 
+
   const handleStartDateChange = (e) => {
     setStartDate(e.target.value);
     setPage(1);
   };
+
 
   const handleEndDateChange = (e) => {
     setEndDate(e.target.value);

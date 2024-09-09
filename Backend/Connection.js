@@ -91,6 +91,7 @@ const createUserTable = `
       updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
       created_by VARCHAR(255),
       password VARCHAR(255) NOT NULL,
+      Image VARCHAR(255) Default "userImage.jpg",
       FOREIGN KEY (role) REFERENCES role(id) ON DELETE RESTRICT
     );
   `;
@@ -174,6 +175,5 @@ const initializeDatabase = async () => {
         console.error("Database initialization failed: ", err.message);
     }
 };
-
 initializeDatabase();
 module.exports = promisePool;

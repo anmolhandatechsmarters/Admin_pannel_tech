@@ -1,0 +1,203 @@
+/* src/ViewUser.css */
+
+.main-container-view-user {
+    display: flex;
+    gap: 20px;
+    height: 100vh; /* Full viewport height */
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  }
+  
+  .main-container-view-user .sidebar {
+    width: 250px; /* Fixed width for sidebar */
+    background-color: rgb(228, 228, 13);
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+    padding: 20px;
+    box-sizing: border-box;
+    border-right: 2px solid #ddd; /* Right border for sidebar */
+    position: relative; /* For positioning the profile image upload button */
+  }
+  
+  .main-container-view-user .profile {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .main-container-view-user .profile .img {
+    position: relative;
+  }
+  
+  .main-container-view-user .profile img {
+    width: 100%;
+    height: auto;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  .main-container-view-user .upload-button {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    cursor: pointer;
+  }
+  
+  .main-container-view-user .menu {
+    display: flex;
+    flex-direction: column; /* Stack buttons vertically */
+  }
+  
+  .main-container-view-user .menu button {
+    padding: 15px;
+    cursor: pointer;
+    border: none;
+    background-color: #f0f0f0;
+    color: #333;
+    border-radius: 5px;
+    text-align: center;
+    transition: background-color 0.3s, color 0.3s;
+    font-weight: bold;
+    margin-bottom: 5px; /* Space between buttons */
+  }
+  
+  .main-container-view-user .menu button:hover,
+  .main-container-view-user .menu button.active {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .main-container-view-user .content {
+    flex: 1; /* Fill remaining space */
+    padding: 20px;
+    background-color: aqua;
+    box-sizing: border-box;
+  }
+  
+  .main-container-view-user .text-center {
+    text-align: center;
+  }
+  .main-container-view-user  .camera-icon {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #007bff; /* Change color as needed */
+  }
+  
+
+  .main-container-view-user  .view-user-user-info
+{
+    display: flex;
+    justify-content: space-evenly;
+    margin-top:50px;
+}
+
+.main-container-view-user .view-user-user-info p{
+    font-size: 20px;
+}
+
+  /* Responsive styles */
+  @media (max-width: 768px) {
+    .main-container-view-user   .main-container-view-user {
+      flex-direction: column;
+    }
+  
+    .main-container-view-user .sidebar {
+      width: 100%; /* Full width for smaller screens */
+      border-right: none;
+      border-bottom: 2px solid #ddd; /* Bottom border for sidebar */
+    }
+  }
+  
+/* new code of attendanc */
+/* Attendance.css */
+.attendance-info {
+  padding: 1rem;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.filter-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.filter-select,
+.filter-input {
+  padding: 0.5rem;
+  font-size: 1rem;
+}
+
+.filter-select {
+  flex: 1;
+  max-width: 150px;
+}
+
+.filter-input {
+  flex: 1;
+  max-width: 200px;
+}
+
+.attendance-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.attendance-table th,
+.attendance-table td {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.attendance-table th {
+  background-color: #f4f4f4;
+}
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.pagination-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+}
+
+.pagination-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .filter-options {
+    flex-direction: column;
+  }
+
+  .filter-select,
+  .filter-input {
+    max-width: 100%;
+  }
+
+  .attendance-table th,
+  .attendance-table td {
+    font-size: 0.875rem;
+  }
+
+  .pagination {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .pagination-btn {
+    margin-bottom: 0.5rem;
+  }
+}

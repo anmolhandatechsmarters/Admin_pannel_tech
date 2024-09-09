@@ -18,6 +18,7 @@ exports.seed = async function (knex) {
   // Insert data into the users table
   await knex('users').insert([
     {
+
       email: 'admin@gmail.com',
       emp_id: 'admin',
       first_name: 'Admin',

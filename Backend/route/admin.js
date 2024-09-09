@@ -1,6 +1,59 @@
 const express = require('express');
 const router = express.Router();
 const promisePool = require('../Connection');
+const multer = require("multer")
+const path = require("path")
+//upload image
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ storage });
+
+// Routes
+router.put('/upload/:id', upload.single('image'), (req, res) => {
+  const { id } = req.params;
+  const imagePath = req.file.path;
+
+  // Ensure id is present and valid
+  if (!id) {
+    return res.status(400).json({ message: 'Employee ID is required' });
+  }
+
+  // Update image path for the given emp_id
+  const sql = 'UPDATE users SET Image = ? WHERE emp_id = ?';
+  promisePool.query(sql, [imagePath, id], (err, result) => {
+    if (err) throw err;
+    res.json({ message: 'Image updated successfully', imagePath });
+  });
+});
+
+// Retrieve image for a specific emp_idf
+router.get('/images/:id', (req, res) => {
+  const { id } = req.params;
+  const sql = 'SELECT Image FROM users WHERE emp_id = ?';
+  promisePool.query(sql, [id], (err, results) => {
+    if (err) throw err;
+    res.json(results);
+  });
+});
+
+
+
+
+
+
+
+
+
+
+
+
 
 // API to add a user
 router.post('/adduser', async (req, res) => {
@@ -48,8 +101,8 @@ router.post('/adduser', async (req, res) => {
 
     // Insert into users table
     await promisePool.query(
-      `INSERT INTO users (email, emp_id, first_name, last_name, street1, street2, city, state, ip, country, role, status, created_on, updated_on, created_by, password) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO users (email, emp_id, first_name, last_name, street1, street2, city, state, ip, country, role, status, created_on, updated_on, created_by, password,Image) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,"uploads/1.jpg")`,
       [email, newEmpId, first_name, last_name, street1, street2, city, state, ip, country, roleId, status, created_on, updated_on, created_by, password]
     );
 
@@ -348,7 +401,7 @@ router.get("/getattendance", async (req, res) => {
 
 //attendance table apies
 
-//add comment api
+//add comment apiAS coun 
 router.put("/savecomment/:id", async (req, res) => {
   const id = req.params.id
   const { comment } = req.body
@@ -418,8 +471,70 @@ router.put('/saverecord/:id', async (req, res) => {
 });
 
 //===================================================================================
-//-------------------------------View User Page---------------------------------------
+//-------------------------------User Image Upload Start-------------------------------
 //===================================================================================
+
+
+
+
+//===================================================================================
+//-------------------------------User Image Upload End-------------------------------
+//===================================================================================
+//------------------------------------------------------------------------------------
+//===================================================================================
+//-------------------------------View User Page Start-------------------------------
+//===================================================================================
+
+router.get("/viewuser/:id", async (req, res) => {
+  const { id } = req.params;
+  const query = `
+     SELECT u.*, r.*, a.*, c.name as country ,s.name as states , ci.name as city
+FROM users AS u
+JOIN role AS r ON u.role = r.id
+JOIN attendance AS a ON u.emp_id = a.emp_id
+JOIN countries c ON u.country = c.id
+JOIN states s on u.state =s.id
+JOIN cities ci on u.city =ci.id
+WHERE u.emp_id = ?;
+
+  `;
+
+  try {
+    const [response] = await promisePool.query(query, [id]);
+    if (response.length > 0) {
+      res.json(response[0]);
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Error retrieving user", error });
+  }
+});
+
+
+//===================================================================================
+//-------------------------------View User Page End-------------------------------
+//===================================================================================
+
+
+//===================================================================================
+//-------------------------------View User Attendance Page Start-------------------
+//===================================================================================
+router.get("/viewuserattendence/:id", async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    // Query to fetch attendance records for a specific employee ID
+    const [rows] = await promisePool.query(`SELECT * FROM attendance WHERE emp_id ="${id}"`);
+    res.json(rows);
+  } catch (error) {
+    console.error("Error fetching attendance records:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+
+
 
 
 

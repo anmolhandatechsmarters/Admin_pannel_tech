@@ -187,6 +187,8 @@ fetchAttendanceRecords()
                 <p><span className='fw-bold'>Last Name </span> : {user.last_name}</p>
                 <p><span className='fw-bold'>Email ID </span>  : {user.email}</p>
                 <p><span className='fw-bold'>Role    </span>   : {user.role}</p>
+                <p><span className='fw-bold'>Create by    </span>   : {user.created_by}</p>
+                <p><span className='fw-bold'>Status    </span>   : {user.status}</p>
               </div>
               <div>
                 <p><span className='fw-bold'>Country  </span>  : {user.country}</p>
@@ -194,6 +196,8 @@ fetchAttendanceRecords()
                 <p><span className='fw-bold'>City    </span>   : {user.city}</p>
                 <p><span className='fw-bold'>IP   </span>      : {user.ip}</p>
                 <p><span className='fw-bold'>Last Login</span> : {user.last_login}</p>
+                <p><span className='fw-bold'>Create on</span> : {user.created_on}</p>
+                <p><span className='fw-bold'>Update on</span> : {user.updated_on}</p>
               </div>
             </div>
           </div>

@@ -4,10 +4,12 @@ import axios from "axios";
 import { MdDelete, MdEdit, MdOutlineDone, MdCancel } from "react-icons/md";
 import { IoIosAdd } from "react-icons/io";
 import { FcAlphabeticalSortingAz, FcAlphabeticalSortingZa } from "react-icons/fc";
-import { useNavigate} from 'react-router-dom';
+import { useNavigate, useParams} from 'react-router-dom';
 
 const Attendance = () => {
-const Navigate =useNavigate()
+  const Navigate = useNavigate()
+  const userids = useParams()
+  const userid=userids.id
   const [attendanceData, setAttendanceData] = useState([]);
   const [error, setError] = useState('');
   const [editCommentId, setEditCommentId] = useState(null);
@@ -25,11 +27,13 @@ const Navigate =useNavigate()
   const [statusFilter, setStatusFilter] = useState('');
   const limit = 10;
 
+
+
   useEffect(() => {
     async function fetchAttendance() {
       try {
         const response = await axios.get("http://localhost:7000/admin/getattendance", {
-          params: { page, limit, search, sort: userSort, month: monthFilter, year: yearFilter, startDate, endDate, status: statusFilter },
+          params: { page, limit, search, sort: userSort, month: monthFilter, year: yearFilter, startDate, endDate, status: statusFilter,userid},
           headers: { "Content-Type": "application/json" }
         });
 
@@ -200,9 +204,9 @@ const Navigate =useNavigate()
 
   const years = Array.from(new Set(attendanceData.map(record => new Date(record.date).getFullYear())));
 
-const handleviewuser=(id)=>{
-  Navigate(`/viewuser/${id}`)
-}
+  const handleviewuser = (id) => {
+    Navigate(`/viewuser/${id}`)
+  }
 
 
 
@@ -282,6 +286,7 @@ const handleviewuser=(id)=>{
                   ) : <FcAlphabeticalSortingAz />}
                 </span></th>
                 <th>Status</th>
+
                 <th>Comment</th>
                 <th>Action</th>
               </tr>
@@ -290,7 +295,7 @@ const handleviewuser=(id)=>{
               {attendanceData.map((record) => (
                 <tr key={record.id}>
                   <td>{record.id}</td>
-                  <td onClick={()=>handleviewuser(record.emp_id)}>{record.fullname}</td>
+                  <td onClick={() => handleviewuser(record.emp_id)}>{record.fullname}</td>
 
                   <td>
                     {editRecordId === record.id ? (
@@ -347,6 +352,7 @@ const handleviewuser=(id)=>{
                       )
                     )}
                   </td>
+                 
                   <td>
                     {editCommentId === record.id ? (
                       <div>

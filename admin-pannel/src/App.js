@@ -24,7 +24,7 @@ const Page500 = React.lazy(() => import('./views/pages/page500/Page500'))
 
 
 
-
+const EmployeeLayout =React.lazy(()=>import('./Users/Employeelayout'))
 
 const App = () => {
   const { isColorModeSet, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
@@ -63,7 +63,7 @@ const App = () => {
           <Route exact path="/404" name="Page 404" element={<Page404 />} />
           <Route exact path="/500" name="Page 500" element={<Page500 />} />
           <Route path="*" name="default" element={<DefaultLayout />} />
-<Route path="/user/employee" element={<PrivateRoute element={Employee} allowedRoles={['Employee', 'HR', 'Admin']} />} />
+<Route path="/user/employee" element={<PrivateRoute element={EmployeeLayout} allowedRoles={['Employee', 'HR', 'Admin']} />} />
 
 {/* hr routing */}
 

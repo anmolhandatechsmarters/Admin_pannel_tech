@@ -1,8 +1,7 @@
 
 import React, { lazy } from 'react'
 import Home from './layout/Home'
-import Attendance from './views/Mycomonponets/Attendance/Attendance'
-import ViewUser from './views/Mycomonponets/ViewUser/ViewUser'
+import Detailemployee from './Users/Detailemployee'
 
 
 
@@ -111,9 +110,7 @@ const routes = [
   { path: '/widgets', name: 'Widgets', element: Widgets },
 
 // my routes
-{ path: '/attendance', name: 'Attendance', element:Attendance},
-{ path: '/attendance/:id', name: 'Attendance', element:Attendance},
-{ path: '/viewuser/:id', name: 'ViewUser', element:ViewUser}
+{ path: '/employeedetail', name: 'Detail', element: Detailemployee },
 
 ]
 

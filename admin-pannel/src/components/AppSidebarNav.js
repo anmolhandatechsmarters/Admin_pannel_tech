@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 import SimpleBar from 'simplebar-react'
 import 'simplebar-react/dist/simplebar.min.css'
 
-import { CBadge, CNavLink, CSidebarNav } from '@coreui/react'
+import { CBadge, CNavLink, CSidebarNav, CNavGroup } from '@coreui/react'
 
 export const AppSidebarNav = ({ items }) => {
   const navLink = (name, icon, badge, indent = false) => {
@@ -49,8 +49,8 @@ export const AppSidebarNav = ({ items }) => {
     const Component = component
     return (
       <Component compact as="div" key={index} toggler={navLink(name, icon)} {...rest}>
-        {item.items?.map((item, index) =>
-          item.items ? navGroup(item, index) : navItem(item, index, true),
+        {items?.map((subItem, subIndex) =>
+          subItem.items ? navGroup(subItem, subIndex) : navItem(subItem, subIndex, true),
         )}
       </Component>
     )
@@ -65,5 +65,5 @@ export const AppSidebarNav = ({ items }) => {
 }
 
 AppSidebarNav.propTypes = {
-  items: PropTypes.arrayOf(PropTypes.any).isRequired,
+  items: PropTypes.arrayOf(PropTypes.object).isRequired,
 }

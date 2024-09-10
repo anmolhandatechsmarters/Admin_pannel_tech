@@ -307,6 +307,7 @@ router.get("/getattendance", async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const search = req.query.search || '';
+  const viewuserid = parseInt(req.query.userid) || null; // Ensure it's an integer
   const sortColumn = req.query.sort?.column || 'id'; // Default to 'id'
   const sortOrder = req.query.sort?.order || 'asc';
   const month = parseInt(req.query.month) || null;
@@ -327,37 +328,50 @@ router.get("/getattendance", async (req, res) => {
     let query = `
       SELECT 
         a.id AS id,
+        a.user_id,
         a.emp_id,
         a.in_time,
         a.out_time,
         a.date,
         a.comment,
         a.status,
-        CONCAT(u.first_name ,'',u.last_name,'(',a.emp_id ,')') AS fullname
+        CONCAT(u.first_name, ' ', u.last_name, '(', a.emp_id, ')') AS fullname
       FROM attendance a
       JOIN users u ON a.emp_id = u.emp_id
       WHERE u.id <> 1
-    `;
+    `;console.log(viewuserid)
 
     // Add filters
     const filters = [];
+    const queryValues = [];
+    
     if (search) {
-      filters.push(`(u.emp_id LIKE '%${search}%' OR u.first_name LIKE '%${search}%' OR u.last_name LIKE '%${search}%')`);
+      filters.push(`(u.emp_id LIKE ? OR u.first_name LIKE ? OR u.last_name LIKE ?)`);
+      queryValues.push(`%${search}%`, `%${search}%`, `%${search}%`);
     }
     if (month) {
-      filters.push(`MONTH(a.date) = ${month}`);
+      filters.push(`MONTH(a.date) = ?`);
+      queryValues.push(month);
     }
     if (status) {
-      filters.push(`a.status = '${status}'`);
+      filters.push(`a.status = ?`);
+      queryValues.push(status);
     }
     if (year) {
-      filters.push(`YEAR(a.date) = ${year}`);
+      filters.push(`YEAR(a.date) = ?`);
+      queryValues.push(year);
     }
     if (startDate) {
-      filters.push(`a.date >= '${startDate}'`);
+      filters.push(`a.date >= ?`);
+      queryValues.push(startDate);
     }
     if (endDate) {
-      filters.push(`a.date <= '${endDate}'`);
+      filters.push(`a.date <= ?`);
+      queryValues.push(endDate);
+    }
+    if (viewuserid) {
+      filters.push(`a.user_id = ?`);
+      queryValues.push(`${viewuserid}`);
     }
 
     if (filters.length > 0) {
@@ -371,19 +385,26 @@ router.get("/getattendance", async (req, res) => {
     } else {
       query += `${sortColumn} ${sortOrder}`;
     }
-    query += ` LIMIT ${limit} OFFSET ${offset}`;
+    query += ` LIMIT ? OFFSET ?`;
+    queryValues.push(limit, offset);
 
     // Execute the query
-    const [attendanceRecords] = await promisePool.query(query);
+    const [attendanceRecords] = await promisePool.query(query, queryValues);
 
     // Fetch total count for pagination
-    const [totalRecords] = await promisePool.query(`
+    let countQuery = `
       SELECT COUNT(*) AS count
       FROM attendance a
       JOIN users u ON a.emp_id = u.emp_id
       WHERE u.id <> 1
-      ${filters.length > 0 ? ` AND ${filters.join(' AND ')}` : ''}
-    `);
+    `;
+
+    if (filters.length > 0) {
+      countQuery += ` AND ${filters.join(' AND ')}`;
+    }
+
+    // Execute the count query
+    const [totalRecords] = await promisePool.query(countQuery, queryValues.slice(0, -2)); // Remove LIMIT and OFFSET values
     const total = totalRecords[0].count;
 
     res.json({
@@ -391,11 +412,14 @@ router.get("/getattendance", async (req, res) => {
       attendance: attendanceRecords,
       total
     });
+
   } catch (error) {
     console.error('Error fetching attendance and user details:', error);
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
+
+
 
 //============================================================================================
 

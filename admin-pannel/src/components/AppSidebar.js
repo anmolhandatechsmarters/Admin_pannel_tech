@@ -1,6 +1,5 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-
 import {
   CCloseButton,
   CSidebar,
@@ -10,16 +9,14 @@ import {
   CSidebarToggler,
 } from '@coreui/react'
 import { AppSidebarNav } from './AppSidebarNav'
-
-
-
-// sidebar nav config
-import navigation from '../_nav'
+import getNavigation from '../_nav'
 
 const AppSidebar = () => {
   const dispatch = useDispatch()
   const unfoldable = useSelector((state) => state.sidebarUnfoldable)
   const sidebarShow = useSelector((state) => state.sidebarShow)
+  const role = localStorage.getItem('role')
+  const navItems = getNavigation(role)
 
   return (
     <CSidebar
@@ -33,10 +30,8 @@ const AppSidebar = () => {
       }}
     >
       <CSidebarHeader className="border-bottom">
-        <CSidebarBrand to="/" style={{textDecoration:"none"}}>
-          {/* <CIcon customClassName="sidebar-brand-full" icon={logo} height={32} /> */}
-          {/* <CIcon customClassName="sidebar-brand-narrow" icon={sygnet} height={32} /> */}
-          <h5 >Admin dashboard</h5>
+        <CSidebarBrand to="/" style={{ textDecoration: 'none' }}>
+          <h5>Admin Dashboard</h5>
         </CSidebarBrand>
         <CCloseButton
           className="d-lg-none"
@@ -44,7 +39,7 @@ const AppSidebar = () => {
           onClick={() => dispatch({ type: 'set', sidebarShow: false })}
         />
       </CSidebarHeader>
-      <AppSidebarNav items={navigation} />
+      <AppSidebarNav items={navItems} />
       <CSidebarFooter className="border-top d-none d-lg-flex">
         <CSidebarToggler
           onClick={() => dispatch({ type: 'set', sidebarUnfoldable: !unfoldable })}

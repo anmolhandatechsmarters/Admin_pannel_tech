@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams,useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './ViewUser.css'; // Import CSS for styling
 import { FaCamera } from 'react-icons/fa';
-import { CiEdit } from "react-icons/ci";
-import { MdCancel } from "react-icons/md";
+
 function ViewUser() {
+  const Navigate=useNavigate()
   const [selectedImage, setSelectedImage] = useState(null);
   const [imageList, setImageList] = useState([]);
   const [user, setUser] = useState({});
@@ -13,14 +13,7 @@ function ViewUser() {
   const [activeSection, setActiveSection] = useState('user'); // Track active section
   const { id } = useParams();
   const fileInputRef = useRef(null); // Ref for file input
-  const [monthFilter, setMonthFilter] = useState('');
-  const [yearFilter, setYearFilter] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
-  const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(1);
-  const limit=10
+
   useEffect(() => {
     async function getUser() {
       try {
@@ -109,40 +102,12 @@ fetchAttendanceRecords()
     const years = ["2024","2025"]
     
 
-    const handleMonthChange = (e) => {
-      setMonthFilter(e.target.value);
-    
-    };
-  
-    const handleStatusChange = (e) => {
-      setStatusFilter(e.target.value);
-      
-    };
-  
-    const handleYearChange = (e) => {
-      setYearFilter(e.target.value);
-  
-    };
-  
-  
-    const handleStartDateChange = (e) => {
-      setStartDate(e.target.value);
-     
-    };
-  
-  
-    const handleEndDateChange = (e) => {
-      setEndDate(e.target.value);
-      setPage(1);
-    };
+const handleattendanceuser=(userid)=>{
+  Navigate(`/attendance/${userid}`)
+}
 
 
-
-    const handlePageChange = (newPage) => {
-      if (newPage > 0 && newPage <= Math.ceil(total / limit)) {
-        setPage(newPage);
-      }
-    };
+  
   return (
     <div className="main-container-view-user">
       <div className="sidebar">
@@ -169,8 +134,7 @@ fetchAttendanceRecords()
             User Info
           </button>
           <button
-            onClick={() => setActiveSection('attendance')}
-            className={activeSection === 'attendance' ? 'active' : ''}
+            onClick={()=>handleattendanceuser(user.user_id)}
           >
             Attendance
           </button>
@@ -205,87 +169,7 @@ fetchAttendanceRecords()
 
 
 
-        {activeSection === 'attendance' && (
-          <div className="attendance-info">
-      <h2>Attendance Records</h2>
-
-      <div className="filter-options">
-        <select value={monthFilter} onChange={handleMonthChange} className="filter-select">
-          <option value="">All Months</option>
-          {months.map((item, index) => (
-            <option key={index} value={index + 1}>{item}</option>
-          ))}
-        </select>
-        <select value={yearFilter} onChange={handleYearChange} className="filter-select">
-          <option value="">All Years</option>
-          {years.map((year, index) => (
-            <option key={index} value={year}>{year}</option>
-          ))}
-        </select>
-        <input
-          type="date"
-          value={startDate}
-          onChange={handleStartDateChange}
-          className="filter-input"
-          placeholder="Start Date"
-        />
-        <input
-          type="date"
-          value={endDate}
-          onChange={handleEndDateChange}
-          className="filter-input"
-          placeholder="End Date"
-        />
-        <select value={statusFilter} onChange={handleStatusChange} className="filter-select">
-          <option value="">Status</option>
-          {status.map((item, index) => (
-            <option key={index} value={item}>{item}</option>
-          ))}
-        </select>
-      </div>
-
-      <table className="attendance-table">
-        <thead>
-          <tr>
-            <th>Employee</th>
-            <th>In Time</th>
-            <th>Out Time</th>
-            <th>Date</th>
-            <th>Status</th>
-            <th>Comment</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {attendanceRecords.map((item, index) => (
-            <tr key={index}>
-              <td>{item.emp_id}</td>
-              <td>{item.in_time}</td>
-              <td>{item.out_time}</td>
-              <td>{item.date}</td>
-              <td>{item.status}</td>
-              <td>{item.comment}</td>
-              <td>
-                <button className="edit-btn"><CiEdit /></button>
-                <button className="cancel-btn"><MdCancel /></button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <div className="pagination">
-        <button onClick={() => handlePageChange(page - 1)} disabled={page === 1} className="pagination-btn">
-          Previous
-        </button>
-        <span>Page {page} of {Math.ceil(total / limit)}</span>
-        <button onClick={() => handlePageChange(page + 1)} disabled={page === Math.ceil(total / limit)} className="pagination-btn">
-          Next
-        </button>
-      </div>
-    </div>
-         
-        )}
+        
       </div>
     </div>
 

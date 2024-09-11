@@ -1,4 +1,5 @@
 import React from 'react'
+import axios from 'axios'
 import {
   CAvatar,
   CBadge,
@@ -24,22 +25,32 @@ import CIcon from '@coreui/icons-react'
 import avatar8 from '../../assets/images/avatars/1.jpg'
 import { useNavigate } from 'react-router-dom' // Import useNavigate
 
+
 const AppHeaderDropdown = () => {
   const navigate = useNavigate(); // Initialize useNavigate
 
-  const handleLogout = async() => {
-    // Remove user data from local storage
-    localStorage.removeItem('role');
-    localStorage.removeItem('token');
-    try{
-      axios.post('')
-    }catch{
-      
-    }
-    // Redirect to login page
-    navigate('/login'); // Use navigate to programmatically redirect
-  };
+  const id = localStorage.getItem('id');
 
+  const handleLogout = async () => {
+    try {
+      await axios.put(`http://localhost:7000/user/logout/${id}`, {}, {
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+
+      // Clear localStorage or other cleanup actions
+      localStorage.removeItem('id');
+      localStorage.removeItem('token');
+      localStorage.removeItem('role');
+      
+      // Navigate to login page
+      navigate("/login");
+    } catch (error) {
+      console.error('Logout failed:', error);
+      // You can show an error message to the user here if needed
+    }
+  };
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0 pe-0" caret={false}>

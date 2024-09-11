@@ -1,0 +1,14 @@
+.Employee-main-container{
+    display: flex;
+}
+
+.Employee-main-container img{
+    width: 400px;
+    border-radius: 50%
+}
+
+.first-box-col{
+    width: 50%;
+    padding-left:7em;
+    padding-top:3em;
+}

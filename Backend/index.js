@@ -2,12 +2,14 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
-const UserRouter = require('./route/user.js');
-const AdminRouter = require('./route/admin.js');
-require('dotenv').config();
+const { sequelize } = require('./Connection'); 
+const UserRouter = require('./route/user');
+const AdminRouter = require('./route/admin');
+const EmployeeRouter = require('./route/employee');
+const initializeDatabase = require('./initializeDatabase'); 
 
 const app = express();
-const PORT = process.env.PORT || 7001;
+const PORT = process.env.PORT || 7000;
 
 // Define upload directory
 const uploadDir = path.join(__dirname, 'uploads');
@@ -25,26 +27,44 @@ if (!fs.existsSync(uploadDir)) {
 // Define routes
 app.use('/user', UserRouter);
 app.use('/admin', AdminRouter);
+app.use('/employee', EmployeeRouter);
 
 // Start the server
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+const startServer = async () => {
+  try {
+    // Initialize database
+    await initializeDatabase();
+
+    // Start the server
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  } catch (err) {
+    console.error('Unable to start the server:', err);
+    process.exit(1); 
+  }
+};
+
+startServer();
 
 // Graceful shutdown
-process.on('SIGINT', () => {
-  // Ensure that you have a valid database connection object
-  if (global.connection) {
-    global.connection.end((err) => {
-      if (err) {
-        console.error('Error disconnecting from the database:', err);
-      } else {
-        console.log('Successfully disconnected from the database');
-      }
-      process.exit();
+const gracefulShutdown = async () => {
+  try {
+    // Close server
+    db.close(() => {
+      console.log('HTTP server closed.');
     });
-  } else {
-    console.log('No database connection found, exiting.');
-    process.exit();
+
+    // Close database connection
+    await sequelize.close();
+    console.log('Database connection closed.');
+
+    process.exit(0);
+  } catch (err) {
+    console.error('Error during graceful shutdown:', err);
+    process.exit(1);
   }
-});
+};
+
+process.on('SIGINT', gracefulShutdown);
+process.on('SIGTERM', gracefulShutdown);

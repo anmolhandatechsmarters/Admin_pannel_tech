@@ -10,6 +10,7 @@ const Attendance = () => {
   const Navigate = useNavigate()
   const userids = useParams()
   const userid=userids.id
+  console.log(userid)
   const [attendanceData, setAttendanceData] = useState([]);
   const [error, setError] = useState('');
   const [editCommentId, setEditCommentId] = useState(null);

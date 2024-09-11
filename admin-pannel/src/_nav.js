@@ -329,7 +329,7 @@ const userNav=[
 
     {
       component: CNavItem,
-      name: 'detail',
+      name: 'Detail',
       to: '/employeedetail',
       icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
       badge: {
@@ -342,18 +342,6 @@ const userNav=[
       name: 'Theme',
     },
   
-    {
-      component: CNavItem,
-      name: 'All User',
-      to: '/alluser',
-      icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
-    },
-    {
-      component: CNavItem,
-      name: 'Attendance',
-      to: '/attendance',
-      icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
-    },
     {
       component: CNavItem,
       name: 'Colors',

@@ -3,7 +3,7 @@ import { useParams,useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './ViewUser.css'; // Import CSS for styling
 import { FaCamera } from 'react-icons/fa';
-
+import defaultImage from "../../../assets/images/avatars/1.jpg"
 function ViewUser() {
   const Navigate=useNavigate()
   const [selectedImage, setSelectedImage] = useState(null);
@@ -13,29 +13,28 @@ function ViewUser() {
   const [activeSection, setActiveSection] = useState('user'); // Track active section
   const { id } = useParams();
   const fileInputRef = useRef(null); // Ref for file input
-
   useEffect(() => {
     async function getUser() {
       try {
         const result = await axios.get(`http://localhost:7000/admin/viewuser/${id}`);
-        console.log(result.data);
-        setUser(result.data);
+        console.log(result.data.user);
+        setUser(result.data.user);
     
       } catch (error) {
         console.error('Error fetching user data', error);
       }
     }
-    const fetchAttendanceRecords = async () => {
-      try {
+//     const fetchAttendanceRecords = async () => {
+//       try {
         
-        const response = await axios.get(`http://localhost:7000/admin/viewuserattendence/${id}`);
-        console.log(response.data)
-        setAttendanceRecords(response.data);
-      } catch (error) {
-        console.error('Error fetching attendance records', error);
-      }
-    };
-fetchAttendanceRecords()
+//         const response = await axios.get(`http://localhost:7000/admin/viewuserattendence/${id}`);
+//         console.log(response.data)
+//         setAttendanceRecords(response.data);
+//       } catch (error) {
+//         console.error('Error fetching attendance records', error);
+//       }
+//     };
+// fetchAttendanceRecords()
     getUser();
   }, [id]);
 
@@ -57,7 +56,7 @@ fetchAttendanceRecords()
           'Content-Type': 'multipart/form-data'
         }
       });
-      fetchImages();
+      window.location.reload();
     } catch (error) {
       console.error('Error uploading image', error);
     }
@@ -69,38 +68,16 @@ fetchAttendanceRecords()
     }
   }, [selectedImage]);
 
-  const fetchImages = async () => {
-    try {
-      const response = await axios.get(`http://localhost:7000/admin/images/${id}`);
-      setImageList(response.data);
-    } catch (error) {
-      console.error('Error fetching images', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchImages();
-  }, [id]);
-
   const handleCameraClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click(); // Trigger file input click
     }
   };
 
-  const profileImageUrl = user.Image
-    ? `http://localhost:7000/${user.Image}`
-    : 'http://localhost:7000/uploads/1.jpg'; // Use a default image URL
-
-
-    const months = [
-      'January', 'February', 'March', 'April', 'May', 'June', 'July',
-      'August', 'September', 'October', 'November', 'December'
-    ];
-    const status = ['Present', 'Absent', 'Halfday'];
+  const profileImageUrl = `http://localhost:7000/${user.Image}`
   
-    const years = ["2024","2025"]
-    
+
+  
 
 const handleattendanceuser=(userid)=>{
   Navigate(`/attendance/${userid}`)
@@ -113,7 +90,7 @@ const handleattendanceuser=(userid)=>{
       <div className="sidebar">
         <div className="profile">
           <div className="img">
-            <img src={profileImageUrl} alt="Profile" />
+            <img src={user.Image=== 'NULL'?{defaultImage}:profileImageUrl} alt="Profile" />
             {user.Image && (
               <FaCamera className="camera-icon" onClick={handleCameraClick} />
             )}
@@ -134,7 +111,7 @@ const handleattendanceuser=(userid)=>{
             User Info
           </button>
           <button
-            onClick={()=>handleattendanceuser(user.user_id)}
+            onClick={()=>handleattendanceuser(user.emp_id)}
           >
             Attendance
           </button>

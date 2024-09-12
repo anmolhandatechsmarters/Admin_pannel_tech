@@ -14,27 +14,27 @@ const {
   updatePassword
 } = require('../Controller/userController');
 
-// User registration
+
 router.post('/submitdata', createUser);
 
-// User login
+
 router.post('/login', loginUser);
 
-// User logout
+
 router.put('/logout/:id', logoutUser);
 
-// Admin dashboard
+
 router.get('/totaluser', totalUserCount);
 router.get('/allactiveuser', activeUserCount);
 router.get('/allinactiveuser', inactiveUserCount);
 
-// Password reset
+
 router.post('/forgetpassword', forgotPassword);
 router.post('/verifyotp', verifyOTP);
 router.get('/verifyforgetpasswordtoken', verifyForgetPasswordToken);
 router.post('/updatepassword', updatePassword);
 
-// Authentication routes
+
 router.get('/user/admin', authentication, authorize(['Admin', 'HR', 'Employee']), (req, res) => {
   res.json('Welcome admin');
 });

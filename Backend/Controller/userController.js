@@ -4,7 +4,6 @@ const { sendPasswordResetEmail } = require('../services/emailService');
 const jwt = require('jsonwebtoken');
 let otpStore = {};
 
-// Function to generate and store OTP
 
 
 
@@ -72,27 +71,27 @@ const loginUser = async (req, res) => {
   }
 
   try {
-    // Fetch the user along with the associated Role from the database
+  
     const user = await db.User.findOne({
       where: { email },
       include: [{
-        model: db.Role, // Include the associated Role model
-        attributes: ['id', 'role'] // Fetch the role id and role name
+        model: db.Role, 
+        attributes: ['id', 'role'] 
       }]
     });
 
-    // Check if user exists and password matches
+   
     if (!user || password !== user.password) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
-    // Update user's last login and status
+
     await db.User.update(
       { last_login: new Date(), status: '1' },
       { where: { id: user.id } }
     );
 
-    // Create attendance record
+
     await db.Attendance.create({
       user_id: user.id,
       in_time: new Date(),
@@ -100,21 +99,21 @@ const loginUser = async (req, res) => {
       date: new Date().toISOString().split('T')[0]
     });
 
-    // Generate a JWT token
+   
     const token = jwt.sign(
-      { id: user.id, role: user.Role.role }, // Use role name from the Role model
+      { id: user.id, role: user.Role.role }, 
       process.env.JWT_SECRET || 'defaultsecret',
       { expiresIn: '1h' }
     );
 
-    // Respond with success and token
+   
     res.status(200).json({
       success: true,
       token,
       user: {
         email: user.email,
         id: user.id,
-        role: user.Role.role // Include the role name in the response
+        role: user.Role.role 
       }
     });
   } catch (error) {
@@ -128,7 +127,7 @@ const logoutUser = async (req, res) => {
   const userId = req.params.id;
 
   try {
-      // Find the active attendance record for the user
+      
       const attendanceRecord = await db.Attendance.findOne({
           where: {
               user_id: userId,
@@ -136,28 +135,31 @@ const logoutUser = async (req, res) => {
           }
       });
 
+      
       if (!attendanceRecord) {
           return res.status(404).json({ message: 'Attendance record not found or already logged out.' });
       }
-
-      // Update the `out_time` to the current time
+      await db.User.update(
+        {status:"0"},{where:{id:userId}}
+      )
+     
       const now = new Date();
       await db.Attendance.update(
           { out_time: now },
           { where: { id: attendanceRecord.id } }
       );
 
-      // Calculate the total hours worked
+      
       const { in_time } = await db.Attendance.findOne({
           where: { id: attendanceRecord.id }
       });
 
       const inTime = new Date(in_time);
-      const outTime = now; // `now` is already set to the current time
+      const outTime = now; 
       const diffMs = outTime - inTime;
-      const diffHours = diffMs / (1000 * 60 * 60); // Convert milliseconds to hours
+      const diffHours = diffMs / (1000 * 60 * 60); 
 
-      // Determine the attendance status
+     
       let status = '';
       if (diffHours > 6) {
           status = 'Present';
@@ -167,7 +169,6 @@ const logoutUser = async (req, res) => {
           status = 'Absent';
       }
 
-      // Update the status of the attendance record
       await db.Attendance.update(
           { status },
           { where: { id: attendanceRecord.id } }

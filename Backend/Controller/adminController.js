@@ -1,12 +1,12 @@
 const User = require('../models/User');
-const Role=require('../models/role') // Adjust the path if necessary
+const Role=require('../models/role') 
 const path = require('path');
 const multer = require('multer');
-const Sequelize = require('sequelize'); // Adjust the import to match your setup
-const db = require('../Connection'); // Ensure this points to your database configuration
+const Sequelize = require('sequelize'); 
+const db = require('../Connection'); 
 const Attendance = require('../models/attendance');
 const {Op} =require("sequelize")
-// Configure multer for image uploads
+
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'uploads/');
@@ -17,9 +17,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// Controller methods
 
-// Upload user image
 const uploadImage = async (req, res) => {
     const { id } = req.params;
     const imagePath = req.file?.path;
@@ -38,7 +36,6 @@ const uploadImage = async (req, res) => {
     }
 };
 
-// Get user image
 const getImage = async (req, res) => {
     const { id } = req.params;
 
@@ -52,7 +49,7 @@ const getImage = async (req, res) => {
     }
 };
 
-// Add new user
+
 const addUser = async (req, res) => {
     const { email, first_name, last_name, street1, street2, city, state, country, role, status = '0', created_by = 'Admin', password } = req.body;
 
@@ -68,12 +65,11 @@ const addUser = async (req, res) => {
         const maxId = maxIdResult ? parseInt(maxIdResult.replace('Emp', '')) : 0;
         const newEmpId = `Emp${maxId + 1}`;
 
-        // Process the role field based on the provided role
         let processedRole;
         if (role === 'Employee') {
-            processedRole = '3';  // Assuming '3' is the code for Employee
+            processedRole = '3'; 
         } else if (role === 'HR') {
-            processedRole = '2';  // Assuming '2' is the code for HR
+            processedRole = '2';  
         } else {
             return res.status(400).json({ message: 'Invalid role provided.' });
         }
@@ -88,7 +84,7 @@ const addUser = async (req, res) => {
             city,
             state,
             country,
-            role: processedRole,  // Store the processed role
+            role: processedRole,  
             status,
             created_by,
             password,
@@ -102,7 +98,7 @@ const addUser = async (req, res) => {
 };
 
 
-// Get all users with pagination and search
+
 const getAllUsers = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
@@ -166,7 +162,7 @@ const getAllUsers = async (req, res) => {
 };
 
 
-// Get a single user by ID
+
 const getUser = async (req, res) => {
     const { id } = req.params;
 
@@ -180,7 +176,6 @@ const getUser = async (req, res) => {
     }
 };
 
-// Update user details
 const updateUser = async (req, res) => {
     const { id } = req.params;
     const { first_name, last_name, email, emp_id, role, country, state, city, street1, street2 } = req.body;
@@ -217,7 +212,7 @@ const updateUser = async (req, res) => {
 };
 
 
-// Delete user
+
 const deleteUser = async (req, res) => {
     const { id } = req.params;
 
@@ -389,11 +384,23 @@ const viewUser = async (req, res) => {
 
     try {
         const user = await db.User.findOne({
-            where: { emp_id:id },
+            where: { emp_id: id },
             include: [
                 {
-                    model: db.Role,  
-                    attributes: ['id', 'role']
+                    model: db.Role,
+                    attributes: ['id', 'role'] // Adjust the attribute name to match your Role model
+                },
+                {
+                    model: db.Country,
+                    attributes: ['id', 'name'] // Adjust attribute names if necessary
+                },
+                {
+                    model: db.State,
+                    attributes: ['id', 'name'] // Adjust attribute names if necessary
+                },
+                {
+                    model: db.City,
+                    attributes: ['id', 'name'] // Adjust attribute names if necessary
                 }
             ]
         });
@@ -404,10 +411,11 @@ const viewUser = async (req, res) => {
             res.status(404).json({ success: false, message: 'User not found' });
         }
     } catch (error) {
-        console.error('Error retrieving user:', error);  // Log error details
-        res.status(500).json({ success: false, message: 'Error retrieving user' });  // Respond with error
+        console.error('Error retrieving user:', error);
+        res.status(500).json({ success: false, message: 'Error retrieving user' });
     }
 };
+
   
   const viewUserAttendance = async (req, res) => {
     const { id } = req.params;
@@ -431,7 +439,7 @@ const viewUser = async (req, res) => {
 
 
 //============================================================================
-// Export the controller functions and upload middleware
+
 module.exports = {
     uploadImage,
     getImage,

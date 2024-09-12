@@ -8,7 +8,9 @@
 .showuser-admin .admin-searchoptionfield select{
   width: 20%;
 }
-
+.viewuserbyfield:hover{
+  color: blue;
+}
 
 .showuser-admin .table-container {
     overflow-x: auto;

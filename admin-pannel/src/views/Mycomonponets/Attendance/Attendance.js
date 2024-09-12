@@ -296,7 +296,7 @@ const Attendance = () => {
               {attendanceData.map((record) => (
                 <tr key={record.id}>
                   <td>{record.id}</td>
-                  <td onClick={() => handleviewuser(record.emp_id)}>{record.fullname}</td>
+                  <td className='viewuserbyfield'  onClick={() => handleviewuser(record.emp_id)}>{record.fullname}</td>
 
                   <td>
                     {editRecordId === record.id ? (

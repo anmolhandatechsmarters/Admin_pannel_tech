@@ -81,7 +81,9 @@
     margin-bottom: 20px;
     gap: 10px;
 }
-
+.viewuserbyfield:hover{
+    color: blue;
+  }
 .attendance-admin .search-bar .admin-searchoptionfield {
     flex: 1;
     min-width: 200px; /* Ensure the search field doesn't shrink too much */

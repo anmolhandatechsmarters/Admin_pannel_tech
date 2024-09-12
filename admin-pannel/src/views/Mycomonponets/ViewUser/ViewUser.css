@@ -7,7 +7,7 @@
   flex-wrap: wrap; /* Allow wrapping on smaller screens */
 }
 
-.main-container-view-user .sidebar {
+.main-container-view-user .sidebarss {
   width: 250px; /* Fixed width for sidebar */
   background-color: rgb(228, 228, 13);
   display: flex;

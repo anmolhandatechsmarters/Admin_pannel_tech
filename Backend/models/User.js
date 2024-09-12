@@ -68,7 +68,8 @@ module.exports = (sequelize, DataTypes) => {
     password: DataTypes.STRING,
     Image: {
       type: DataTypes.STRING,
-      defaultValue: 'uploads/defaultImage/default.jpeg',
+      defaultValue: 'uploads/efault.jpeg',
+
     },
   }, {
     tableName: 'User',

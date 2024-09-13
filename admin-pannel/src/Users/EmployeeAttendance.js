@@ -1,42 +1,94 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import './CSS/EmployeeAttendance.css'; // Assuming you have a CSS file for styling
 
 const AttendanceTable = () => {
-  const [month, setMonth] = useState('');
-  const [year, setYear] = useState('');
+  const id = localStorage.getItem("id");
+  const [monthFilter, setMonthFilter] = useState('');
+  const [yearFilter, setYearFilter] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [userattendance, setUserAttendance] = useState([]);
+  const [countattendance, setCountAttendance] = useState(0);
+  const [statusFilter, setStatusFilter] = useState('');
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const limit = 10;
 
-  // Example data for the table
-  const data = [
-    { date: '2024-09-01', intime: '09:00', outtime: '17:00', status: 'Present' },
-    { date: '2024-09-02', intime: '09:15', outtime: '17:05', status: 'Late' },
-    // Add more data as needed
+  useEffect(() => {
+    const fetchAttendance = async () => {
+      try {
+        const result = await axios.get(`http://localhost:7000/api/employee/getattendance/${id}`, {
+          params: {
+            page,
+            limit,
+            month: monthFilter || undefined,
+            year: yearFilter || undefined,
+            startDate: startDate || undefined,
+            endDate: endDate || undefined,
+            status: statusFilter || undefined
+          },
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+       setCountAttendance(result.data.count)
+        setUserAttendance(result.data.data);
+        setTotal(result.data.totalCount);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    
+    
+
+    fetchAttendance();
+ 
+  }, [id, monthFilter, yearFilter, startDate, endDate, statusFilter, page]);
+
+  // Calculate the years from the user attendance data
+  const years = Array.from(new Set(userattendance.map(record => new Date(record.date).getFullYear())));
+  
+  const months = [
+    'January', 'February', 'March', 'April', 'May', 'June', 'July',
+    'August', 'September', 'October', 'November', 'December'
   ];
 
-  const filteredData = data.filter(row => {
-    const rowDate = new Date(row.date);
-    const isWithinDateRange = (!startDate || rowDate >= new Date(startDate)) && (!endDate || rowDate <= new Date(endDate));
-    return isWithinDateRange;
-  });
+  const statusOptions = ['Present', 'Absent', 'Halfday'];
 
-  const count = filteredData.length;
+  const handleMonthChange = (e) => setMonthFilter(e.target.value);
+  const handleYearChange = (e) => setYearFilter(e.target.value);
+  const handleStatusChange = (e) => {
+    setStatusFilter(e.target.value);
+    setPage(1);
+  };
+
+  const handlePageChange = (newPage) => {
+    if (newPage > 0 && newPage <= Math.ceil(total / limit)) {
+      setPage(newPage);
+    }
+  };
 
   return (
     <div className="attendance-container">
       <div className="filters">
-        <select value={month} onChange={(e) => setMonth(e.target.value)}>
-          <option value="">Month</option>
-          <option value="01">January</option>
-          <option value="02">February</option>
-          {/* Add other months */}
+        <select value={monthFilter} onChange={handleMonthChange}>
+          <option value="">All Months</option>
+          {months.map((item, index) => (
+            <option key={index} value={index + 1}>{item}</option>
+          ))}
         </select>
 
-        <select value={year} onChange={(e) => setYear(e.target.value)}>
+        <select value={yearFilter} onChange={handleYearChange}>
           <option value="">Year</option>
-          <option value="2024">2024</option>
-          <option value="2023">2023</option>
-          {/* Add other years */}
+          {years.length > 0 ? (
+            years.map((item, index) => (
+              <option key={index} value={item}>{item}</option>
+            ))
+          ) : (
+            <option value="">No years available</option>
+          )}
         </select>
 
         <input
@@ -49,10 +101,16 @@ const AttendanceTable = () => {
           value={endDate}
           onChange={(e) => setEndDate(e.target.value)}
         />
+        <select value={statusFilter} onChange={handleStatusChange}>
+          <option value="">Status</option>
+          {statusOptions.map((item, index) => (
+            <option key={index} value={item}>{item}</option>
+          ))}
+        </select>
 
-        <div className="count-box">
-          <span>Total Count: {count}</span>
-        </div>
+        {/* <div className="count-box">
+          <span>Total Attendance: {countattendance}</span>
+        </div> */}
       </div>
 
       <table className="attendance-table">
@@ -65,16 +123,26 @@ const AttendanceTable = () => {
           </tr>
         </thead>
         <tbody>
-          {filteredData.map((row, index) => (
+          {userattendance.map((user, index) => (
             <tr key={index}>
-              <td>{row.date}</td>
-              <td>{row.intime}</td>
-              <td>{row.outtime}</td>
-              <td>{row.status}</td>
+              <td>{new Date(user.date).toLocaleDateString()}</td>
+              <td>{user.in_time}</td>
+              <td>{user.out_time}</td>
+              <td>{user.status}</td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      <div className="pagination">
+        <button onClick={() => handlePageChange(page - 1)} disabled={page === 1}>
+          Previous
+        </button>
+        <span>Page {page} of {Math.ceil(total / limit)}</span>
+        <button onClick={() => handlePageChange(page + 1)} disabled={page === Math.ceil(total / limit)}>
+          Next
+        </button>
+      </div>
     </div>
   );
 };

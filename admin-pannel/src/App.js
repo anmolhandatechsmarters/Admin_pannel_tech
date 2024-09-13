@@ -67,7 +67,7 @@ const App = () => {
 
 {/* hr routing */}
 
-           <Route path="/user/hr" element={<PrivateRoute element={Hrmarkattandence} allowedRoles={['HR', 'Admin']} />} />     
+           <Route path="/user/hr" element={<PrivateRoute element={HRLayout} allowedRoles={['HR', 'Admin']} />} />     
            
 {/* hr routing end */}      
            <Route path="/user/admin" element={<PrivateRoute element={Admin} allowedRoles={['Admin']} />} />

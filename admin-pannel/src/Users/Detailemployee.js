@@ -42,19 +42,36 @@ const Detailemployee = () => {
     fetchData();
   }, [id]);
 
-  const handleFileChange = (event) => {
+  const handleFileChange = async (event) => {
     const file = event.target.files[0]; // Get the selected file
     if (file) {
       setSelectedImage(file);
       const reader = new FileReader();
       reader.onloadend = () => setImageSrc(reader.result); // Update image source
       reader.readAsDataURL(file); // Read the file as data URL
+
+      try {
+        const formData = new FormData();
+        formData.append('image', file);
+        
+        await axios.put(`http://localhost:7000/admin/upload/${user.emp_id}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+
+        // Refresh user data after successful upload
+        const result = await axios.get(`http://localhost:7000/api/employee/employeedetail/${id}`);
+        setUser(result.data.user);
+      } catch (error) {
+        console.error('Error uploading image', error);
+      }
     }
   };
 
   const handleMarkAttendance = async () => {
     try {
-      await axios.put(`http://localhost:7000/api/employee/markattendance/${id}`);
+      await axios.post(`http://localhost:7000/api/employee/markattendance/${id}`);
       // Refresh attendance data
       const result = await axios.get(`http://localhost:7000/api/employee/userattendance/${id}`);
       setUserAttendance(result.data);
@@ -72,36 +89,6 @@ const Detailemployee = () => {
     } catch (error) {
       console.error('Failed to unmark attendance', error);
     }
-  };
-
-  const handleImageUpload = async () => {
-    if (!selectedImage || !id) return;
-
-    const formData = new FormData();
-    formData.append('image', selectedImage);
-
-    try {
-      await axios.put(`http://localhost:7000/admin/upload/${id}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-      // Refresh user data
-      const result = await axios.get(`http://localhost:7000/api/employee/employeedetail/${id}`);
-      setUser(result.data.user);
-    } catch (error) {
-      console.error('Error uploading image', error);
-    }
-  };
-
-  useEffect(() => {
-    if (selectedImage) {
-      handleImageUpload();
-    }
-  }, [selectedImage]);
-
-  const handleImageChange = (e) => {
-    setSelectedImage(e.target.files[0]);
   };
 
   const handleCameraClick = () => {

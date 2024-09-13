@@ -97,11 +97,11 @@ const loginUser = async (req, res) => {
     // Check if an attendance record for today already exists for the user
  
       // Create a new attendance record if none exists for today
-      await db.Attendance.create({
-        user_id: user.id,
-        date: today
-      })
-      console.log(`Added new attendance record for user_id ${user.id}`);
+      // await db.Attendance.create({
+      //   user_id: user.id,
+      //   date: today
+      // })
+      // console.log(`Added new attendance record for user_id ${user.id}`);
     
       
 

@@ -52,51 +52,54 @@ const findemployeedetail = async (req, res) => {
 
 
 
-const MarkAttendance = async (req, res) => {
-    const { id } = req.params; // Extract the user ID from request parameters
-
-    try {
-        const intime = new Date();
-        const timeString = intime.toLocaleTimeString()
-        await db.Attendance.create({
-            user_id:id,
-            date:intime
-            
-        })
-        // Find the latest attendance record for the user
-        const latestRecord = await db.Attendance.findOne({
-            where: { user_id: id },
-            order: [['date', 'DESC'], ['id', 'DESC']] // Order by date and ID to get the latest record
-        });
-
-        if (!latestRecord) {
-            return res.status(404).json({ success: false, message: "Attendance record not found" });
-        }
-
-        // Update the latest attendance record's in_time
-        const [updatedRows] = await db.Attendance.update(
-            { in_time: timeString },
-            { where: { id: latestRecord.id } }
-        );
-
-        if (updatedRows === 0) {
-            return res.status(500).json({ success: false, message: "Failed to update attendance record" });
-        }
-
-        // Respond with the updated record
-        const updatedRecord = await db.Attendance.findOne({
-            where: { id: latestRecord.id }
-        });
-
-        return res.json({ success: true, record: updatedRecord });
-    } catch (error) {
-        console.error("Error updating attendance:", error);
-        return res.status(500).json({ success: false, message: "An error occurred while updating attendance" });
-    }
-};
 
 
+const MarkAttendance=async(req,res)=>{
+    const id=req.params.id
 
+try{
+    const intime = new Date();
+    const timeString = intime.toLocaleTimeString()
+    const today = new Date().toISOString().split('T')[0];
+
+
+const user=await db.Attendance.create({
+    user_id:id,
+    date: today,
+    in_time:timeString,
+})
+
+res.json(user)
+const latestRecord = await db.Attendance.findOne({
+    where: { user_id: id },
+    order: [['date', 'DESC'], ['id', 'DESC']] // Order by date and ID to get the latest record
+});
+
+if (!latestRecord) {
+    return res.status(404).json({ success: false, message: "Attendance record not found" });
+}
+
+// Update the latest attendance record's in_time
+const [updatedRows] = await db.Attendance.update(
+    { in_time: timeString },
+    { where: { id: latestRecord.id } }
+);
+
+if (updatedRows === 0) {
+    return res.status(500).json({ success: false, message: "Failed to update attendance record" });
+}
+
+// Respond with the updated record
+const updatedRecord = await db.Attendance.findOne({
+    where: { id: latestRecord.id }
+});
+
+return res.json({ success: true, record: updatedRecord });
+}catch(error){
+
+}
+
+}
 
 const UnmarkAttendance = async (req, res) => {
     const { id } = req.params;
@@ -161,6 +164,72 @@ const UnmarkAttendance = async (req, res) => {
     }
 };
 
+const Getattendance = async (req, res) => {
+    const { id } = req.params;
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const month = parseInt(req.query.month, 10) || null;
+    const year = parseInt(req.query.year, 10) || null;
+    const startDate = req.query.startDate ? new Date(req.query.startDate) : null;
+    const endDate = req.query.endDate ? new Date(req.query.endDate) : null;
+    const status = req.query.status || null;
+    const offset = (page - 1) * limit;
+
+
+
+    try {
+        const where = { user_id: id };
+
+        // Initialize conditions array
+        const conditions = [];
+
+        if (month) {
+            conditions.push(month ? Sequelize.where(Sequelize.fn('MONTH', Sequelize.col('date')), month) : {},);
+        }
+        if (year) {
+            conditions.push(year ? Sequelize.where(Sequelize.fn('YEAR', Sequelize.col('date')), year) : {},);
+        }
+        if (startDate) {
+            conditions.push(startDate ? { date: { [Op.gte]: startDate } } : {},
+            );
+        }
+        if (endDate) {
+            conditions.push({ date: { [Op.lte]: endDate } });
+        }
+        if (status) {
+            conditions.push({ status });
+        }
+
+        if (conditions.length > 0) {
+            where[Op.and] = conditions;
+        }
+
+        // Query for attendance data
+        const user = await db.Attendance.findAndCountAll({
+            where,
+            offset,
+            limit,
+            order: [['date', 'DESC']] // Order by date or any other relevant field
+        });
+        const count=await db.Attendance.count({
+            where:{user_id:id}
+        })
+        res.json({
+            totalCount: user.count,
+            data: user.rows,
+            count:count
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+;
+
+
+
+
+
 
 
 
@@ -172,5 +241,7 @@ module.exports={
     findemployeedetail,
     userattendance,
     MarkAttendance,
-    UnmarkAttendance
+    UnmarkAttendance,
+    Getattendance,
+
 }

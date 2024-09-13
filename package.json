@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "date-fns": "^3.6.0",
     "knew": "^0.0.0",
     "knex": "^3.1.0"
   }

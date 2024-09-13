@@ -7,6 +7,7 @@ const UserRouter = require('./route/auth');
 const AdminRouter = require('./route/admin');
 const EmployeeRouter = require('./route/employeeroute')
 const initializeDatabase = require('./initializeDatabase'); 
+const HrRoute=require("./route/Hrroute.js")
 require('./cron.js');
 const app = express();
 const PORT = process.env.PORT || 7000;
@@ -28,6 +29,7 @@ if (!fs.existsSync(uploadDir)) {
 app.use('/user', UserRouter);
 app.use('/admin', AdminRouter);
 app.use('/api/employee', EmployeeRouter);
+app.use('/api/hr',HrRoute);
 
 // Start the server
 const startServer = async () => {

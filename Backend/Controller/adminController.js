@@ -1,10 +1,8 @@
-const User = require('../models/User');
-const Role=require('../models/role') 
+
 const path = require('path');
 const multer = require('multer');
 const Sequelize = require('sequelize'); 
-const db = require('../Connection'); 
-const Attendance = require('../models/attendance');
+const db = require('../Connection');
 const {Op} =require("sequelize")
 
 const storage = multer.diskStorage({
@@ -230,13 +228,11 @@ const deleteUser = async (req, res) => {
 
 
 // =================================================================================
-
-
 const getAttendance = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const search = req.query.search || '';
-    const viewuserid = req.query.userid || null;
+    const userId = parseInt(req.query.userId) || null; // Extract userId from query parameters
     const sortColumn = req.query.sort?.column || 'id';
     const sortOrder = req.query.sort?.order || 'asc';
     const month = parseInt(req.query.month) || null;
@@ -246,8 +242,7 @@ const getAttendance = async (req, res) => {
     const status = req.query.status || null;
     const offset = (page - 1) * limit;
 
-
-    const validSortColumns = ['id', 'emp_id', 'fullname', 'in_time', 'out_time', 'date'];
+    const validSortColumns = ['id', 'in_time', 'out_time', 'date'];
     if (!validSortColumns.includes(sortColumn)) {
         return res.status(400).json({ message: 'Invalid sort column' });
     }
@@ -256,38 +251,36 @@ const getAttendance = async (req, res) => {
         const attendanceRecords = await db.Attendance.findAll({
             include: {
                 model: db.User,
-                attributes: ['first_name', 'last_name', 'emp_id'],
+                attributes: ['first_name', 'last_name', 'emp_id'], // Include emp_id if needed
                 required: true
             },
             attributes: [
-                'id', 'user_id', 'emp_id', 'in_time', 'out_time', 'date', 'comment', 'status',
-                [Sequelize.literal(`CONCAT(User.first_name, ' ', User.last_name, '(', Attendance.emp_id, ')')`), 'fullname']
+                'id', 'user_id', 'in_time', 'out_time', 'date', 'comment', 'status',
+                [Sequelize.literal(`CONCAT(User.first_name, ' ', User.last_name, '(', User.emp_id, ')')`), 'fullname']
             ],
             where: {
                 [Op.and]: [
-                    { emp_id: { [Op.ne]: 'Admin' } }, // Exclude records where emp_id is 'Admin'
+                    userId ? { user_id: userId } : {}, // Use user_id for filtering
                     search ? {
                         [Op.or]: [
-                            { emp_id: { [Op.like]: `%${search}%` } },
                             { '$User.first_name$': { [Op.like]: `%${search}%` } },
-                            { '$User.last_name$': { [Op.like]: `%${search}%` } }
+                            { '$User.last_name$': { [Op.like]: `%${search}%` } },
+                            { '$User.emp_id$': { [Op.like]: `%${search}%` } } // Search by emp_id if needed
                         ]
                     } : {},
                     month ? Sequelize.where(Sequelize.fn('MONTH', Sequelize.col('date')), month) : {},
                     status ? { status } : {},
                     year ? Sequelize.where(Sequelize.fn('YEAR', Sequelize.col('date')), year) : {},
                     startDate ? { date: { [Op.gte]: startDate } } : {},
-                    endDate ? { date: { [Op.lte]: endDate } } : {},
-                    viewuserid ? { emp_id: viewuserid } : {},
+                    endDate ? { date: { [Op.lte]: endDate } } : {}
                 ]
             },
             order: [
-                [sortColumn === 'fullname' ? Sequelize.literal(`CONCAT(Attendance.emp_id, '(', User.first_name, ' ', User.last_name, ')')`) : sortColumn, sortOrder]
+                [sortColumn, sortOrder]
             ],
             limit,
             offset
         });
-       
 
         const total = await db.Attendance.count({
             include: {
@@ -296,20 +289,19 @@ const getAttendance = async (req, res) => {
             },
             where: {
                 [Op.and]: [
-                    { emp_id: { [Op.ne]: 'Admin' } }, // Exclude records where emp_id is 'Admin'
+                    userId ? { user_id: userId } : {}, // Use user_id for filtering
                     search ? {
                         [Op.or]: [
-                            { emp_id: { [Op.like]: `%${search}%` } },
                             { '$User.first_name$': { [Op.like]: `%${search}%` } },
-                            { '$User.last_name$': { [Op.like]: `%${search}%` } }
+                            { '$User.last_name$': { [Op.like]: `%${search}%` } },
+                            { '$User.emp_id$': { [Op.like]: `%${search}%` } } // Search by emp_id if needed
                         ]
                     } : {},
                     month ? Sequelize.where(Sequelize.fn('MONTH', Sequelize.col('date')), month) : {},
                     status ? { status } : {},
                     year ? Sequelize.where(Sequelize.fn('YEAR', Sequelize.col('date')), year) : {},
                     startDate ? { date: { [Op.gte]: startDate } } : {},
-                    endDate ? { date: { [Op.lte]: endDate } } : {},
-                    viewuserid ? { user_id: viewuserid } : {},
+                    endDate ? { date: { [Op.lte]: endDate } } : {}
                 ]
             }
         });
@@ -320,11 +312,10 @@ const getAttendance = async (req, res) => {
             total
         });
     } catch (error) {
-        console.error('Error fetching attendance and user details:', error);
+        console.error('Error fetching attendance records:', error);
         res.status(500).json({ success: false, message: 'Internal server error' });
     }
 };
-
 
 const saveComment = async (req, res) => {
   const { id } = req.params;
@@ -380,11 +371,12 @@ const saveRecord = async (req, res) => {
 };
 
 const viewUser = async (req, res) => {
-    const { id } = req.params; 
+    const { id } = req.params; // This should be the user_id
 
     try {
+        // Fetch the user based on user_id
         const user = await db.User.findOne({
-            where: { emp_id: id },
+            where: { id }, // Use user_id here
             include: [
                 {
                     model: db.Role,
@@ -415,6 +407,7 @@ const viewUser = async (req, res) => {
         res.status(500).json({ success: false, message: 'Error retrieving user' });
     }
 };
+
 
   
   const viewUserAttendance = async (req, res) => {

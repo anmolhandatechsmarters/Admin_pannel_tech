@@ -71,49 +71,55 @@ const loginUser = async (req, res) => {
   }
 
   try {
-  
+    // Find the user based on the email
     const user = await db.User.findOne({
       where: { email },
       include: [{
-        model: db.Role, 
-        attributes: ['id', 'role'] 
+        model: db.Role,
+        attributes: ['id', 'role']
       }]
     });
 
-   
+    // Validate user credentials
     if (!user || password !== user.password) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
-
+    // Update last login and status
     await db.User.update(
       { last_login: new Date(), status: '1' },
       { where: { id: user.id } }
     );
 
+    // Get today's date in YYYY-MM-DD format
+    const today = new Date().toISOString().split('T')[0];
 
-    await db.Attendance.create({
-      user_id: user.id,
-      in_time: new Date(),
-      emp_id: user.emp_id,
-      date: new Date().toISOString().split('T')[0]
-    });
+    // Check if an attendance record for today already exists for the user
+ 
+      // Create a new attendance record if none exists for today
+      await db.Attendance.create({
+        user_id: user.id,
+        date: today
+      })
+      console.log(`Added new attendance record for user_id ${user.id}`);
+    
+      
 
-   
+    // Generate a JWT token
     const token = jwt.sign(
-      { id: user.id, role: user.Role.role }, 
+      { id: user.id, role: user.Role.role },
       process.env.JWT_SECRET || 'defaultsecret',
       { expiresIn: '1h' }
     );
 
-   
+    // Send response with token and user details
     res.status(200).json({
       success: true,
       token,
       user: {
         email: user.email,
         id: user.id,
-        role: user.Role.role 
+        role: user.Role.role
       }
     });
   } catch (error) {
@@ -122,59 +128,48 @@ const loginUser = async (req, res) => {
   }
 };
 
-
 const logoutUser = async (req, res) => {
   const userId = req.params.id;
 
   try {
       
-      const attendanceRecord = await db.Attendance.findOne({
-          where: {
-              user_id: userId,
-              out_time: null
-          }
-      });
 
-      
-      if (!attendanceRecord) {
-          return res.status(404).json({ message: 'Attendance record not found or already logged out.' });
-      }
       await db.User.update(
         {status:"0"},{where:{id:userId}}
       )
      
-      const now = new Date();
-      await db.Attendance.update(
-          { out_time: now },
-          { where: { id: attendanceRecord.id } }
-      );
+      // const now = new Date();
+      // await db.Attendance.update(
+      //     { out_time: now },
+      //     { where: { id: attendanceRecord.id } }
+      // );
 
       
-      const { in_time } = await db.Attendance.findOne({
-          where: { id: attendanceRecord.id }
-      });
+      // const { in_time } = await db.Attendance.findOne({
+      //     where: { id: attendanceRecord.id }
+      // });
 
-      const inTime = new Date(in_time);
-      const outTime = now; 
-      const diffMs = outTime - inTime;
-      const diffHours = diffMs / (1000 * 60 * 60); 
+      // const inTime = new Date(in_time);
+      // const outTime = now; 
+      // const diffMs = outTime - inTime;
+      // const diffHours = diffMs / (1000 * 60 * 60); 
 
      
-      let status = '';
-      if (diffHours > 6) {
-          status = 'Present';
-      } else if (diffHours <= 6 && diffHours >= 4) {
-          status = 'Halfday';
-      } else {
-          status = 'Absent';
-      }
+      // let status = '';
+      // if (diffHours > 6) {
+      //     status = 'Present';
+      // } else if (diffHours <= 6 && diffHours >= 4) {
+      //     status = 'Halfday';
+      // } else {
+      //     status = 'Absent';
+      // }
 
-      await db.Attendance.update(
-          { status },
-          { where: { id: attendanceRecord.id } }
-      );
+      // await db.Attendance.update(
+      //     { status },
+      //     { where: { id: attendanceRecord.id } }
+      // );
 
-      res.status(200).json({ message: 'Logout successful and attendance updated', status });
+      res.status(200).json({ message: 'Logout successful and attendance updated'});
   } catch (error) {
       console.error('Internal server error:', error);
       res.status(500).json({ message: 'Internal server error' });

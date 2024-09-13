@@ -9,18 +9,12 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       references: {
         model: 'User',
-        key: 'id',
-      }
+        key: 'id',      },
     },
-    in_time: DataTypes.TIME,
-    out_time: DataTypes.TIME,
-    emp_id: {
-      type: DataTypes.STRING,
-      references: {
-        model: 'User',
-        key: 'emp_id',
-      }
-    },
+    in_time: DataTypes.STRING,
+  
+    out_time: DataTypes.STRING,
+    
     date: {
       type: DataTypes.DATEONLY,
       allowNull: false,
@@ -36,7 +30,6 @@ module.exports = (sequelize, DataTypes) => {
 
   Attendance.associate = models => {
     Attendance.belongsTo(models.User, { foreignKey: 'user_id' });
-    Attendance.belongsTo(models.User, { foreignKey: 'emp_id', targetKey: 'emp_id' });
   };
 
   return Attendance;

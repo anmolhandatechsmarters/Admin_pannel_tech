@@ -1,6 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
-    // Define attributes
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -25,28 +24,28 @@ module.exports = (sequelize, DataTypes) => {
       references: {
         model: 'City',
         key: 'id',
-      }
+      },
     },
     state: {
       type: DataTypes.INTEGER,
       references: {
         model: 'State',
         key: 'id',
-      }
+      },
     },
     country: {
       type: DataTypes.INTEGER,
       references: {
         model: 'Country',
         key: 'id',
-      }
+      },
     },
     role: {
       type: DataTypes.INTEGER,
       references: {
         model: 'Role',
         key: 'id',
-      }
+      },
     },
     status: {
       type: DataTypes.ENUM('0', '1'),
@@ -68,19 +67,19 @@ module.exports = (sequelize, DataTypes) => {
     password: DataTypes.STRING,
     Image: {
       type: DataTypes.STRING,
-      defaultValue: 'uploads/efault.jpeg',
-
+      defaultValue: 'uploads/default.jpeg',
     },
   }, {
     tableName: 'User',
     timestamps: false,
   });
 
-  User.associate = (models) => {
-    User.belongsTo(models.Role, { foreignKey: 'role' });
+  User.associate = models => {
     User.belongsTo(models.City, { foreignKey: 'city' });
     User.belongsTo(models.State, { foreignKey: 'state' });
     User.belongsTo(models.Country, { foreignKey: 'country' });
+    User.belongsTo(models.Role, { foreignKey: 'role' });
+    User.hasMany(models.Attendance, { foreignKey: 'user_id' }); // Correct association
   };
 
   return User;

@@ -341,6 +341,12 @@ const userNav=[
       component: CNavTitle,
       name: 'Theme',
     },
+    {
+      component: CNavItem,
+      name: 'Attendance',
+      to: '/employeeAttendance',
+      icon: <CIcon icon={cilDrop} customClassName="nav-icon" />,
+    },
   
     {
       component: CNavItem,

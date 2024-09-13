@@ -5,9 +5,9 @@ const path = require('path');
 const { sequelize } = require('./Connection'); 
 const UserRouter = require('./route/auth');
 const AdminRouter = require('./route/admin');
-const EmployeeRouter = require('./route/employee');
+const EmployeeRouter = require('./route/employeeroute')
 const initializeDatabase = require('./initializeDatabase'); 
-
+require('./cron.js');
 const app = express();
 const PORT = process.env.PORT || 7000;
 
@@ -27,7 +27,7 @@ if (!fs.existsSync(uploadDir)) {
 // Define routes
 app.use('/user', UserRouter);
 app.use('/admin', AdminRouter);
-app.use('/employee', EmployeeRouter);
+app.use('/api/employee', EmployeeRouter);
 
 // Start the server
 const startServer = async () => {

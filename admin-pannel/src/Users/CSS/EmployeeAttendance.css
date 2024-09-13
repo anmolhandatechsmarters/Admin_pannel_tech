@@ -1,0 +1,60 @@
+/* CSS file: AttendanceTable.css */
+
+/* Container for the whole table and filters */
+.attendance-container {
+    padding: 20px;
+  }
+  
+  /* Styling for the filters section */
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .filters select,
+  .filters input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  .count-box {
+    margin-left: auto;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f0f0f0;
+  }
+  
+  /* Styling for the table */
+  .attendance-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .attendance-table th,
+  .attendance-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+  
+  .attendance-table thead {
+    background-color: #f5f5f5;
+  }
+  
+  @media (max-width: 768px) {
+    .filters {
+      flex-direction: column;
+    }
+  
+    .filters select,
+    .filters input {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+  }
+  

@@ -116,7 +116,7 @@ function ViewUser() {
             User Info
           </button>
           <button
-            onClick={() => handleattendanceuser(user.emp_id)}
+            onClick={() => handleattendanceuser(user.user_id)}
           >
             Attendance
           </button>

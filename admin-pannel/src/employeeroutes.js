@@ -1,7 +1,8 @@
 
 import React, { lazy } from 'react'
-import Home from './layout/Home'
+
 import Detailemployee from './Users/Detailemployee'
+
 
 
 
@@ -56,7 +57,7 @@ const Modals = React.lazy(() => import('./views/notifications/modals/Modals'))
 const Toasts = React.lazy(() => import('./views/notifications/toasts/Toasts'))
 const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 
-
+const EmployeeAttendance =React.lazy(()=>import('./Users/EmployeeAttendance'))
 
 const routes = [
   { path: '/',  name: 'Home' ,element:Detailemployee},
@@ -110,7 +111,7 @@ const routes = [
 
 // my routes
 { path: '/employeedetail', name: 'Detail', element: Detailemployee },
-
+{path:'employeeAttendance' ,name:'EmployeeAttendance',element:EmployeeAttendance}
 ]
 
 

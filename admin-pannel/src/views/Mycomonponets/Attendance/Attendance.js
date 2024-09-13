@@ -40,6 +40,7 @@ const Attendance = () => {
 
         if (response.data.success) {
           setAttendanceData(response.data.attendance);
+          console.log(response.data.attendance)
           setTotal(response.data.total);
         } else {
           setError('Failed to fetch data.');
@@ -296,7 +297,7 @@ const Attendance = () => {
               {attendanceData.map((record) => (
                 <tr key={record.id}>
                   <td>{record.id}</td>
-                  <td className='viewuserbyfield'  onClick={() => handleviewuser(record.emp_id)}>{record.fullname}</td>
+                  <td className='viewuserbyfield'  onClick={() => handleviewuser(record.user_id)}>{record.fullname}</td>
 
                   <td>
                     {editRecordId === record.id ? (

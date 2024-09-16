@@ -6,11 +6,11 @@ import Detailemployee from '../Users/Detailemployee'
 
 
 
-const ShowAllUser =React.lazy(()=>import("../views/Mycomonponets/ShowALLUser/ShowAllUser"))
+const ShowAllUser = React.lazy(() => import("../views/Mycomonponets/ShowALLUser/ShowAllUser"))
 const Dashboard = React.lazy(() => import('../views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('../views/theme/colors/Colors'))
 const Typography = React.lazy(() => import('../views/theme/typography/Typography'))
-const AddUser =React.lazy(()=>import('../views/Mycomonponets/Adduser/AddUser'))
+const AddUser = React.lazy(() => import('../views/Mycomonponets/Adduser/AddUser'))
 // Base
 const Accordion = React.lazy(() => import('../views/base/accordion/Accordion'))
 const Breadcrumbs = React.lazy(() => import('../views/base/breadcrumbs/Breadcrumbs'))
@@ -27,7 +27,7 @@ const Spinners = React.lazy(() => import('../views/base/spinners/Spinners'))
 const Tabs = React.lazy(() => import('../views/base/tabs/Tabs'))
 const Tables = React.lazy(() => import('../views/base/tables/Tables'))
 const Tooltips = React.lazy(() => import('../views/base/tooltips/Tooltips'))
-const Edituser=React.lazy(()=>import('../views/Mycomonponets/ShowALLUser/Edituser'))
+const Edituser = React.lazy(() => import('../views/Mycomonponets/ShowALLUser/Edituser'))
 // Buttons
 const Buttons = React.lazy(() => import('../views/buttons/buttons/Buttons'))
 const ButtonGroups = React.lazy(() => import('../views/buttons/button-groups/ButtonGroups'))
@@ -57,20 +57,22 @@ const Modals = React.lazy(() => import('../views/notifications/modals/Modals'))
 const Toasts = React.lazy(() => import('../views/notifications/toasts/Toasts'))
 const Widgets = React.lazy(() => import('../views/widgets/Widgets'))
 
-const EmployeeAttendance =React.lazy(()=>import('../Users/EmployeeAttendance'))
+const EmployeeAttendance = React.lazy(() => import('../Users/EmployeeAttendance'))
 
 //my path
 
-const Hrdetail=React.lazy(()=>import('./view/Hrdetail'))
-
-
+const Hrdetail = React.lazy(() => import('./view/Hrdetail'))
+const Hrattendance = React.lazy(() => import('./view/HrAttendance'))
+const Hremployeedashboard = React.lazy(() => import('./view/Hremployeedashboard'))
+const Hremployeeattendance = React.lazy(() => import('./view/Hremployeeattendance'))
+const Hrshowemployee =React.lazy(()=>import('./view/Hrshowemployee'))
 const routes = [
-  { path: '/',  name: 'Home' ,element:Detailemployee},
+  { path: '/', name: 'Home', element: Detailemployee },
   { path: '/theme', name: 'Theme', element: Colors, exact: true },
   { path: '/edituser/:id', name: 'edituser', element: Edituser, exact: true },
   // { path: '/adduser', name: 'adduser', element:Addser, exact: true },
-  {path:"/adduser" , name:"AddUser" , element:AddUser, exact:true},
-  {path:"/alluser" , name:"AllUser" , element:ShowAllUser, exact:true},
+  { path: "/adduser", name: "AddUser", element: AddUser, exact: true },
+  { path: "/alluser", name: "AllUser", element: ShowAllUser, exact: true },
   { path: '/theme/colors', name: 'Colors', element: Colors },
   { path: '/theme/typography', name: 'Typography', element: Typography },
   { path: '/base', name: 'Base', element: Cards, exact: true },
@@ -114,8 +116,13 @@ const routes = [
   { path: '/notifications/toasts', name: 'Toasts', element: Toasts },
   { path: '/widgets', name: 'Widgets', element: Widgets },
 
-// my routes
-{ path: '/hrDetail', name: 'Widgets', element:Hrdetail  },
+  // my routes
+  { path: '/hrDetail', name: 'Widgets', element: Hrdetail },
+  { path: '/hrattendance', name: 'Widgets', element: Hrattendance },
+  { path: '/hremployeeattendance', name: 'Widgets', element: Hremployeeattendance },
+  { path: '/hrdashboard', name: 'Widgets', element:Hremployeedashboard},
+  { path: '/hremployeeshow', name: 'Widgets', element:Hrshowemployee},
+
 ]
 
 

@@ -1,0 +1,124 @@
+
+
+.showuser-admin .admin-searchoptionfield{
+    display: flex;
+    gap:20px
+  }
+  
+  .showuser-admin .admin-searchoptionfield select{
+    width: 20%;
+  }
+  .viewuserbyfield:hover{
+    color: blue;
+  }
+  
+  .showuser-admin .table-container {
+      overflow-x: auto;
+      padding: 20px;
+      border: 1px solid #ddd;
+      background-color: #f9f9f9; 
+    }
+    
+    .showuser-admin table {
+      width: 100%; 
+      border-collapse: collapse; 
+      margin-bottom: 20px; 
+    }
+    
+  
+  
+  
+    .showuser-admin th, td {
+      border: 1px solid #ddd; 
+      padding: 10px; 
+      text-align: left; 
+    }
+    
+    .showuser-admin  th {
+      background-color: #f4f4f4; 
+    }
+    
+    
+    .showuser-admin thead th {
+      position: -webkit-sticky;
+      position: sticky; 
+      top: 0; 
+      z-index: 1; 
+    }
+    
+    .showuser-admin .table-container {
+      overflow-x: auto;
+      padding: 20px;
+      border: 1px solid #ddd;
+      background-color: #f9f9f9;
+    }
+    
+    .showuser-admin table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    
+    .showuser-admin th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: left;
+    }
+    
+    .showuser-admin th {
+      background-color: #f4f4f4;
+    }
+    
+    .showuser-admin thead th {
+      position: -webkit-sticky;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    
+    .showuser-admin .search-bar {
+      margin-bottom: 20px;
+    }
+    
+    .showuser-admin .search-bar input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    
+    .showuser-admin .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 20px;
+    }
+    
+    .showuser-admin .pagination button {
+      padding: 8px 16px;
+      border: 1px solid #ddd;
+      background-color: #f4f4f4;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    .showuser-admin .pagination button:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+    
+    .showuser-admin .pagination span {
+      margin: 0 10px;
+    }
+    
+  
+  
+  
+  
+    @media screen and (max-width: 768px) {
+    
+      .showuser-admin .table-container {
+        padding: 10px; 
+      }
+    }
+    

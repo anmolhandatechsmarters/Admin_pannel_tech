@@ -25,6 +25,7 @@ router.get('/getuser/:id', userController.getUser);
 
 router.put('/updateUser/:id', userController.updateUser);
 router.get('/getattendance', userController.getAttendance);
+
 router.put('/savecomment/:id', userController.saveComment);
 router.delete('/deleteattendance/:id', userController.deleteAttendance);
 router.put('/saverecord/:id', userController.saveRecord);

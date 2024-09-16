@@ -643,21 +643,27 @@ const hrNav=[
   },
   {
     component: CNavItem,
-    name: 'Attendance',
-    to: '/employeeAttendance',
+    name: 'HR Attendance',
+    to: '/hrAttendance',
     icon: <CIcon icon={cilDrop} customClassName="nav-icon" />,
   },
 
   {
     component: CNavItem,
-    name: 'Colors',
-    to: '/theme/colors',
+    name: 'Employee Dashboard',
+    to: '/hrdashboard',
     icon: <CIcon icon={cilDrop} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
-    name: 'Typography',
-    to: '/theme/typography',
+    name: 'All Employee',
+    to: '/hremployeeshow',
+    icon: <CIcon icon={cilDrop} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Employee Attendance',
+    to: '/hremployeeattendance',
     icon: <CIcon icon={cilPencil} customClassName="nav-icon" />,
   },
   {

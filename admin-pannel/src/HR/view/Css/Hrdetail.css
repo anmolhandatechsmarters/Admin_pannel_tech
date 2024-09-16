@@ -1,104 +1,103 @@
 
-.hr-Main-box {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start; 
-    gap: 20px;
-    padding: 20px;
-    flex-wrap: wrap; 
-  }
-  
-  
-  .HrImage {
-    text-align: center;
-    position: relative; 
-  }
-  
-  .HrImage img {
-    width: 20em; 
-    height: 20em; 
-    border-radius: 50%;
-    object-fit: cover;
-  }
-  
-  .employeeImage p {
-    margin-top: 10px;
-    font-size: 1rem; 
-  }
-  
-/*   
-  .HrImage .camera-icon {
-    position: absolute;
-    bottom: 80px; 
-    right: 20px; 
-    font-size: 1.5rem; 
-    cursor: pointer;
-    color: #007bff; }
-   */
-  .employeedetail {
-    width: 100%;
-    max-width: 350px; 
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-    box-sizing: border-box; 
-    display: flex;
+.employee-Main-box {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; 
+  gap: 20px;
+  padding: 20px;
+  flex-wrap: wrap; 
+}
+
+
+.employeeImage {
+  text-align: center;
+  position: relative; 
+}
+
+.employeeImage img {
+  width: 20em; 
+  height: 20em; 
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.employeeImage p {
+  margin-top: 10px;
+  font-size: 1rem; 
+}
+
+
+.camera-icon {
+  position: absolute;
+  bottom: 80px; 
+  right: 20px; 
+  font-size: 1.5rem; 
+  cursor: pointer;
+  color: #007bff; }
+
+.employeedetail {
+  width: 100%;
+  max-width: 350px; 
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-sizing: border-box; 
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; 
+  margin-left: 20px; 
+  margin-top: 20px; 
+}
+
+
+.employeedetail p {
+  margin: 10px 0;
+}
+
+.employeedetail button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  align-self: center;
+}
+
+.employeedetail button:hover {
+  background-color: #0056b3;
+}
+
+
+@media (max-width: 768px) {
+  .employee-Main-box {
     flex-direction: column;
-    justify-content: space-between; 
-    margin-left: 20px; 
+    align-items: center;
+    gap: 20px; 
+  }
+
+  .employeeImage img {
+    width: 15em;
+    height: 15em;
+  }
+
+  .employeedetail {
+    width: 90%;
+    max-width: none;
     margin-top: 20px; 
+    margin-left: 0; 
   }
-  
+}
 
-  .employeedetail p {
-    margin: 10px 0;
+@media (max-width: 480px) {
+  .employeeImage img {
+    width: 12em;
+    height: 12em;
   }
-  
-  .employeedetail button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    background-color: #007bff;
-    color: white;
-    font-size: 1rem;
-    cursor: pointer;
-    align-self: center;
-  }
-  
-  .employeedetail button:hover {
-    background-color: #0056b3;
-  }
-  
 
-  @media (max-width: 768px) {
-    .employee-Main-box {
-      flex-direction: column;
-      align-items: center;
-      gap: 20px; 
-    }
-  
-    .employeeImage img {
-      width: 15em;
-      height: 15em;
-    }
-  
-    .employeedetail {
-      width: 90%;
-      max-width: none;
-      margin-top: 20px; 
-      margin-left: 0; 
-    }
+  .employeedetail {
+    width: 95%;
   }
-  
-  @media (max-width: 480px) {
-    .employeeImage img {
-      width: 12em;
-      height: 12em;
-    }
-  
-    .employeedetail {
-      width: 95%;
-    }
-  }
-  
+}

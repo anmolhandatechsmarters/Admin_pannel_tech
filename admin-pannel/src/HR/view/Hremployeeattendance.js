@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import "../CSS/Attendancetable.css";
+import "./Css/Hrattendance.css";
 import axios from "axios";
 import { MdDelete, MdEdit, MdOutlineDone, MdCancel } from "react-icons/md";
 import { IoIosAdd } from "react-icons/io";
@@ -10,7 +10,6 @@ const Attendance = () => {
   const Navigate = useNavigate()
   const userids = useParams()
   const userid=userids.id
-  const role=localStorage.getItem("role")
   console.log(userid)
   const [attendanceData, setAttendanceData] = useState([]);
   const [error, setError] = useState('');
@@ -34,8 +33,8 @@ const Attendance = () => {
   useEffect(() => {
     async function fetchAttendance() {
       try {
-        const response = await axios.get("http://localhost:7000/admin/getattendance", {
-          params: { page, limit, search, sort: userSort, month: monthFilter, year: yearFilter, startDate, endDate, status: statusFilter,userid,role},
+        const response = await axios.get("http://localhost:7000/api/hr/showemployeeattendance", {
+          params: { page, limit, search, sort: userSort, month: monthFilter, year: yearFilter, startDate, endDate, status: statusFilter,userid},
           headers: { "Content-Type": "application/json" }
         });
 
@@ -53,7 +52,7 @@ const Attendance = () => {
     }
 
     fetchAttendance();
-  }, [page, userSort, search, monthFilter, yearFilter, startDate, endDate, statusFilter,role]);
+  }, [page, userSort, search, monthFilter, yearFilter, startDate, endDate, statusFilter]);
 
   const handleSearch = (e) => {
     setSearch(e.target.value);

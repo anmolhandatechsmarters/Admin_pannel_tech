@@ -1,0 +1,91 @@
+/* src/Card.css */
+.dashboard-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* Center-aligns the cards horizontally */
+    gap: 20px; /* Adjust the gap between cards */
+  }
+  
+  .dashboard-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 250px; /* Fixed width for cards */
+    height: 200px; /* Fixed height for cards */
+    margin: 10px;
+    padding: 20px;
+    box-sizing: border-box;
+    text-align: center;
+    background-color: #fff;
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Add transition effects */
+  }
+  
+  /* Hover effect */
+  .dashboard-card:hover {
+    transform: scale(1.05); /* Slightly enlarge the card */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* More pronounced shadow */
+  }
+  
+  /* Animation for card content */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .dashboard-card-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.5s ease-out; /* Apply fade-in animation */
+  }
+  
+  .dashboard-user-number {
+    font-size: 2rem; /* Adjust as needed */
+    font-weight: bold;
+    transition: color 0.3s ease; /* Smooth color transition */
+  }
+  
+  /* Change color on hover */
+  .dashboard-card:hover .dashboard-user-number {
+    color: #007bff; /* Change color on hover */
+  }
+  
+  .dashboard-label {
+    font-size: 1rem;
+    color: #555;
+    transition: color 0.3s ease; /* Smooth color transition */
+  }
+  
+  /* Change color on hover */
+  .dashboard-card:hover .dashboard-label {
+    color: #333; /* Change color on hover */
+  }
+  
+  /* Responsive design */
+  @media (max-width: 600px) {
+    .dashboard-container {
+      flex-direction: column; /* Stack cards vertically on smaller screens */
+    }
+  
+    .dashboard-card {
+      width: 100%; /* Full width on small screens */
+      height: auto; /* Adjust height automatically */
+      margin: 10px 0; /* Margin for vertical stacking */
+    }
+  
+    .dashboard-user-number {
+      font-size: 1.5rem; /* Smaller font on small screens */
+    }
+  }
+  

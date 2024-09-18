@@ -6,7 +6,6 @@ import { CSpinner, useColorModes } from '@coreui/react'
 import './scss/style.scss'
 
 
-import Employee from './Mytemppage/Employee';
 
 import Admin from './Mytemppage/Admin';
 import PrivateRoute from './Mytemppage/Privaterouting';
@@ -60,14 +59,14 @@ const App = () => {
           <Route exact path="/login" name="Login Page" element={<Login />} />
           <Route exact path="/forgetpassword" name="Login Page" element={<Forgetpassword/>} />
           <Route exact path="/register" name="Register Page" element={<Register />} />
-          <Route exact path="/404" name="Page 404" element={<Page404 />} />
+          <Route exact path="/" name="Page 404" element={<Page404 />} />
           <Route exact path="/500" name="Page 500" element={<Page500 />} />
           <Route path="*" name="default" element={<DefaultLayout />} />
-<Route path="/user/employee" element={<PrivateRoute element={EmployeeLayout} allowedRoles={['Employee', 'HR', 'Admin']} />} />
+<Route path="/user/employee" element={<PrivateRoute element={EmployeeLayout} allowedRoles={['Employee']} />} />
 
 {/* hr routing */}
 
-           <Route path="/user/hr" element={<PrivateRoute element={HRLayout} allowedRoles={['HR', 'Admin']} />} />     
+           <Route path="/user/hr" element={<PrivateRoute element={HRLayout} allowedRoles={['HR']} />} />     
            
 {/* hr routing end */}      
            <Route path="/user/admin" element={<PrivateRoute element={Admin} allowedRoles={['Admin']} />} />

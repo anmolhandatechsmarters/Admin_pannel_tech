@@ -1,0 +1,63 @@
+[
+    {
+      "designationId": 1,
+      "designationTitle": "HR Manager",
+      "departmentId": 1
+    },
+    {
+      "designationId": 2,
+      "designationTitle": "HR Specialist",
+      "departmentId": 1
+    },
+    {
+      "designationId": 3,
+      "designationTitle": "Recruitment Coordinator",
+      "departmentId": 1
+    },
+    {
+      "designationId": 4,
+      "designationTitle": "Software Engineer",
+      "departmentId": 2
+    },
+    {
+      "designationId": 5,
+      "designationTitle": "Systems Analyst",
+      "departmentId": 2
+    },
+    {
+      "designationId": 6,
+      "designationTitle": "QA Tester",
+      "departmentId": 2
+    },
+    {
+      "designationId": 7,
+      "designationTitle": "Sales Manager",
+      "departmentId": 3
+    },
+    {
+      "designationId": 8,
+      "designationTitle": "Sales Executive",
+      "departmentId": 3
+    },
+    {
+      "designationId": 9,
+      "designationTitle": "Sales Support Specialist",
+      "departmentId": 3
+    },
+    {
+      "designationId": 10,
+      "designationTitle": "Marketing Manager",
+      "departmentId": 4
+    },
+    {
+      "designationId": 11,
+      "designationTitle": "Content Strategist",
+      "departmentId": 4
+    },
+    {
+      "designationId": 12,
+      "designationTitle": "SEO Specialist",
+      "departmentId": 4
+    }
+  ]
+  

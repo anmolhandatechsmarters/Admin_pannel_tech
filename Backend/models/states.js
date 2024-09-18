@@ -1,27 +1,27 @@
 module.exports = (sequelize, DataTypes) => {
-    const State = sequelize.define('State', {
-      id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
+  const State = sequelize.define('states', {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    name: DataTypes.STRING,
+    country_id: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'countries',
+        key: 'id',
       },
-      name: DataTypes.STRING,
-      country_id: {
-        type: DataTypes.INTEGER,
-        references: {
-          model: 'Country',
-          key: 'id',
-        }
-      },
-    }, {
-      tableName: 'State',
-      timestamps: false,
-    });
-  
-    State.associate = models => {
-      State.belongsTo(models.Country, { foreignKey: 'country_id' });
-    };
-  
-    return State;
+    },
+  }, {
+    tableName: 'states',
+    timestamps: false,
+  });
+
+  State.associate = models => {
+    State.belongsTo(models.countries, { foreignKey: 'country_id', as: 'countryDetails' });
+    State.hasMany(models.cities, { foreignKey: 'state_id', as: 'cities' });
   };
-  
+
+  return State;
+};

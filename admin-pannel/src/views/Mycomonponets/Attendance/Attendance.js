@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import "../CSS/Attendancetable.css";
 import axios from "axios";
-import { MdDelete, MdEdit, MdOutlineDone, MdCancel } from "react-icons/md";
+import { MdDelete, MdEdit, MdOutlineDone, MdCancel, MdEmojiEmotions } from "react-icons/md";
 import { IoIosAdd } from "react-icons/io";
 import { FcAlphabeticalSortingAz, FcAlphabeticalSortingZa } from "react-icons/fc";
 import { useNavigate, useParams} from 'react-router-dom';
@@ -9,9 +9,9 @@ import { useNavigate, useParams} from 'react-router-dom';
 const Attendance = () => {
   const Navigate = useNavigate()
   const userids = useParams()
-  const userid=userids.id
+  const empid=userids.id
+ const logid=localStorage.getItem("id")
   const role=localStorage.getItem("role")
-  console.log(userid)
   const [attendanceData, setAttendanceData] = useState([]);
   const [error, setError] = useState('');
   const [editCommentId, setEditCommentId] = useState(null);
@@ -35,7 +35,7 @@ const Attendance = () => {
     async function fetchAttendance() {
       try {
         const response = await axios.get("http://localhost:7000/admin/getattendance", {
-          params: { page, limit, search, sort: userSort, month: monthFilter, year: yearFilter, startDate, endDate, status: statusFilter,userid,role},
+          params: { page, limit, search, sort: userSort, month: monthFilter, year: yearFilter, startDate, endDate, status: statusFilter,empid,role},
           headers: { "Content-Type": "application/json" }
         });
 
@@ -138,9 +138,12 @@ const Attendance = () => {
 
   const handleSaveComment = async (id) => {
     try {
-      await axios.put(`http://localhost:7000/admin/savecomment/${id}`, {
+      await axios.put(`http://localhost:7000/admin/savecomment/${id}`,
+        
+        {
         comment: comments[id]
       }, {
+        params:{logid},
         headers: { "Content-Type": "application/json" }
       });
 
@@ -160,6 +163,7 @@ const Attendance = () => {
         id,
         ...recordEdits
       }, {
+        params:{logid},
         headers: { "Content-Type": "application/json" }
       });
 
@@ -188,6 +192,7 @@ const Attendance = () => {
   const deleteAttendance = async (id) => {
     try {
       await axios.delete(`http://localhost:7000/admin/deleteattendance/${id}`, {
+        params:{logid},
         headers: { "Content-Type": "application/json" }
       });
 

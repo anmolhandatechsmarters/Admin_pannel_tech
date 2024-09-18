@@ -3,7 +3,7 @@ const fs = require('fs');
 
 const createTables = async () => {
   try {
-    await db.sequelize.sync({ force: false }); // Ensures tables are created/updated without dropping existing ones
+    await db.sequelize.sync({ force: false });
     console.log("Tables checked/created successfully.");
   } catch (error) {
     console.error("Error creating tables:", error);
@@ -14,9 +14,9 @@ const createTables = async () => {
 const truncateTables = async () => {
   try {
     await db.sequelize.transaction(async (transaction) => {
-      await db.City.destroy({ where: {}, transaction });
-      await db.State.destroy({ where: {}, transaction });
-      await db.Country.destroy({ where: {}, transaction });
+      await db.cities.destroy({ where: {}, transaction });
+      await db.states.destroy({ where: {}, transaction });
+      await db.countries.destroy({ where: {}, transaction });
     });
     console.log("Tables truncated successfully.");
   } catch (error) {
@@ -26,19 +26,24 @@ const truncateTables = async () => {
 };
 
 const hasData = async () => {
-  // Check if there is any data in the tables
-  const [citiesCount, statesCount, countriesCount] = await Promise.all([
-    db.City.count(),
-    db.State.count(),
-    db.Country.count()
-  ]);
+  try {
+    console.log("Checking if data exists...");
+    const [citiesCount, statesCount, countriesCount] = await Promise.all([
+      db.cities.count(),
+      db.states.count(),
+      db.countries.count()
+    ]);
 
-  return citiesCount > 0 || statesCount > 0 || countriesCount > 0;
+    console.log(`Counts - Cities: ${citiesCount}, States: ${statesCount}, Countries: ${countriesCount}`);
+    return citiesCount > 0 || statesCount > 0 || countriesCount > 0;
+  } catch (error) {
+    console.error('Error checking data:', error);
+    throw error;
+  }
 };
 
 const insertData = async () => {
   try {
-    // Check if there is already data in the tables
     if (await hasData()) {
       console.log('Data already exists. Skipping data insertion.');
       return;
@@ -51,13 +56,13 @@ const insertData = async () => {
     const statesData = JSON.parse(fs.readFileSync('states.json', 'utf8')).states;
 
     for (const country of countriesData) {
-      await db.Country.findOrCreate({ where: country });
+      await db.countries.findOrCreate({ where: country });
     }
     for (const state of statesData) {
-      await db.State.findOrCreate({ where: state });
+      await db.states.findOrCreate({ where: state });
     }
     for (const city of citiesData) {
-      await db.City.findOrCreate({ where: city });
+      await db.cities.findOrCreate({ where: city });
     }
 
     console.log('Data migration completed successfully!');

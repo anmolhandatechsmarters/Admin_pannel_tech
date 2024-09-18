@@ -3,6 +3,8 @@ import React, { lazy } from 'react'
 import Home from './layout/Home'
 import Attendance from './views/Mycomonponets/Attendance/Attendance'
 import ViewUser from './views/Mycomonponets/ViewUser/ViewUser'
+import Department from './views/Mycomonponets/Department/Department'
+import Designation from './views/Mycomonponets/Designation/Designation'
 
 
 
@@ -56,8 +58,8 @@ const Badges = React.lazy(() => import('./views/notifications/badges/Badges'))
 const Modals = React.lazy(() => import('./views/notifications/modals/Modals'))
 const Toasts = React.lazy(() => import('./views/notifications/toasts/Toasts'))
 const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
-
-
+const log=React.lazy(()=>import('./views/Mycomonponets/Log/log'))
+const DepartmentAdd =React.lazy(()=>import('./views/Mycomonponets/Department/Departmentadd'))
 
 const routes = [
   { path: '/',  name: 'Home' ,element:Home},
@@ -113,8 +115,11 @@ const routes = [
 // my routes
 { path: '/attendance', name: 'Attendance', element:Attendance},
 { path: '/attendance/:id', name: 'Attendance', element:Attendance},
-{ path: '/viewuser/:id', name: 'ViewUser', element:ViewUser}
-
+{ path: '/viewuser/:id', name: 'ViewUser', element:ViewUser},
+{ path: '/adminlog', name: 'ViewUser', element:log},
+{path:'/alldepartment',name:"Department",element:Department},
+{path:'/adddepartment',name:"Department",element:DepartmentAdd},
+{path:'/alldesignation',name:"Designation",element:Designation}
 ]
 
 

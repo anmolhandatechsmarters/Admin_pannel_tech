@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { FaCamera } from 'react-icons/fa';
 import axios from 'axios';
 import './CSS/Detailemployee.css';
-
+import EmpImg from "../assets/images/avatars/1.jpg"
 const Detailemployee = () => {
   const [imageSrc, setImageSrc] = useState('');
   const [user, setUser] = useState(null);
@@ -25,12 +25,12 @@ const Detailemployee = () => {
         setUser(userResult.data.user);
 
         // Fetch user attendance details
-        const attendanceResult = await axios.get(`http://localhost:7000/api/employee/userattendance/${id}`, {
-          headers: {
-            "Content-Type": "application/json"
-          }
-        });
-        setUserAttendance(attendanceResult.data);
+        // const attendanceResult = await axios.get(`http://localhost:7000/api/employee/userattendance/${id}`, {
+        //   headers: {
+        //     "Content-Type": "application/json"
+        //   }
+        // });
+        // setUserAttendance(attendanceResult.data);
       } catch (error) {
         setError('Failed to load data');
         console.error(error);

@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const Attendance = sequelize.define('Attendance', {
+  const Attendance = sequelize.define('attendances', {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -8,13 +8,12 @@ module.exports = (sequelize, DataTypes) => {
     user_id: {
       type: DataTypes.INTEGER,
       references: {
-        model: 'User',
-        key: 'id',      },
+        model: 'users',
+        key: 'id',
+      },
     },
     in_time: DataTypes.STRING,
-  
     out_time: DataTypes.STRING,
-    
     date: {
       type: DataTypes.DATEONLY,
       allowNull: false,
@@ -24,12 +23,12 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.ENUM('Present', 'Absent', 'Halfday'),
     },
   }, {
-    tableName: 'attendance',
+    tableName: 'attendances',
     timestamps: false,
   });
 
   Attendance.associate = models => {
-    Attendance.belongsTo(models.User, { foreignKey: 'user_id' });
+    Attendance.belongsTo(models.users, { foreignKey: 'user_id', as: 'userDetails' });
   };
 
   return Attendance;

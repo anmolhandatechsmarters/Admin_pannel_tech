@@ -3,11 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './ViewUser.css'; // Import CSS for styling
 import { FaCamera } from 'react-icons/fa';
-import defaultImage from "../../../assets/images/avatars/1.jpg"
 function ViewUser() {
   const Navigate = useNavigate()
   const [selectedImage, setSelectedImage] = useState(null);
-  const [imageList, setImageList] = useState([]);
+
   const [user, setUser] = useState({});
   const [attendanceRecords, setAttendanceRecords] = useState([]);
   const [activeSection, setActiveSection] = useState('user'); // Track active section
@@ -24,17 +23,17 @@ function ViewUser() {
         console.error('Error fetching user data', error);
       }
     }
-    //     const fetchAttendanceRecords = async () => {
-    //       try {
+    const fetchAttendanceRecords = async () => {
+      try {
 
-    //         const response = await axios.get(`http://localhost:7000/admin/viewuserattendence/${id}`);
-    //         console.log(response.data)
-    //         setAttendanceRecords(response.data);
-    //       } catch (error) {
-    //         console.error('Error fetching attendance records', error);
-    //       }
-    //     };
-    // fetchAttendanceRecords()
+        const response = await axios.get(`http://localhost:7000/admin/viewuserattendence/${id}`);
+        console.log(response.data)
+        setAttendanceRecords(response.data);
+      } catch (error) {
+        console.error('Error fetching attendance records', error);
+      }
+    };
+    fetchAttendanceRecords()
     getUser();
   }, [id]);
 
@@ -85,7 +84,7 @@ function ViewUser() {
 
   const formatDate = (isoDateString) => {
     const date = new Date(isoDateString);
-    return date.toLocaleString(); 
+    return date.toLocaleString();
   };
 
 
@@ -116,7 +115,7 @@ function ViewUser() {
             User Info
           </button>
           <button
-            onClick={() => handleattendanceuser(user.user_id)}
+            onClick={() => handleattendanceuser(user.emp_id)}
           >
             Attendance
           </button>

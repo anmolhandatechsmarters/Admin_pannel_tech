@@ -1,0 +1,19 @@
+[
+    {
+      "departmentId": 1,
+      "departmentName": "Human Resources"
+    },
+    {
+      "departmentId": 2,
+      "departmentName": "Engineering"
+    },
+    {
+      "departmentId": 3,
+      "departmentName": "Sales"
+    },
+    {
+      "departmentId": 4,
+      "departmentName": "Marketing"
+    }
+  ]
+  

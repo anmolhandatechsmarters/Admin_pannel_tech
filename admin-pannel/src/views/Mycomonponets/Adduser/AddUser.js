@@ -3,9 +3,11 @@ import axios from 'axios';
 import countriesData from '../../../views/pages/register/countries.json';
 import statesData from '../../../views/pages/register/states.json';
 import citiesData from '../../../views/pages/register/cities.json';
+
 import "../CSS/AddUser.css";
 
 const Register = () => {
+    const id = localStorage.getItem("id");
     const [getipa, setgetip] = useState('');
     const [formData, setFormData] = useState({
         email: '',
@@ -18,16 +20,24 @@ const Register = () => {
         city: '',
         street1: '',
         street2: '',
+        department: '',
+        designation: '',
         user_agent: navigator.userAgent,
         ip: getipa,
+        id: id
     });
 
     const [options, setOptions] = useState({
         roles: ['HR', 'Employee'],
         countries: [],
         states: [],
-        cities: []
+        cities: [],
+
     });
+
+    const [department, setdepartment] = useState([])
+    const [designation, setdesignation] = useState([])
+
 
     useEffect(() => {
         const fetchIp = async () => {
@@ -40,10 +50,33 @@ const Register = () => {
             }
         };
 
+
+        const fetchdepartment = async () => {
+            try {
+                const result = await axios.get('http://localhost:7000/admin/getadmindepartment')
+                setdepartment(result.data)
+            } catch (error) {
+                console.log(error)
+            }
+
+        }
+        const fetchdesignaiton = async () => {
+            try {
+                const result = await axios.get('http://localhost:7000/admin/getadmindesignation')
+                setdesignation(result.data)
+            } catch (error) {
+                console.log(error)
+            }
+
+        }
+fetchdepartment()
+fetchdesignaiton()
+
         fetchIp();
     }, []);
 
     useEffect(() => {
+        // Initialize options
         if (Array.isArray(countriesData.countries)) {
             setOptions(prevOptions => ({
                 ...prevOptions,
@@ -70,6 +103,24 @@ const Register = () => {
         } else {
             console.error('Cities data is not an array:', citiesData.cities);
         }
+
+        // if (Array.isArray(departmentsData)) {
+        //     setOptions(prevOptions => ({
+        //         ...prevOptions,
+        //         departments: departmentsData
+        //     }));
+        // } else {
+        //     console.error('Departments data is not an array:', departmentsData);
+        // }
+
+        // if (Array.isArray(designationsData)) {
+        //     setOptions(prevOptions => ({
+        //         ...prevOptions,
+        //         designations: designationsData
+        //     }));
+        // } else {
+        //     console.error('Designations data is not an array:', designationsData);
+        // }
     }, []);
 
     const handleChange = (e) => {
@@ -81,7 +132,7 @@ const Register = () => {
             setOptions(prevOptions => ({
                 ...prevOptions,
                 states: filteredStates,
-                cities: []
+                cities: [] // Clear cities when country changes
             }));
             setFormData(prevFormData => ({ ...prevFormData, state: '', city: '' }));
         }
@@ -109,6 +160,10 @@ const Register = () => {
             console.error('Error submitting form', error);
             alert('Registration failed.');
         }
+
+
+
+
     };
 
     return (
@@ -224,6 +279,42 @@ const Register = () => {
                                 .filter(city => city.state_id === formData.state)
                                 .map(city => (
                                     <option key={city.id} value={city.id}>{city.name}</option>
+                                ))}
+                        </select>
+                    </div>
+                </div>
+
+                {/* Department and Designation */}
+                <div className="row">
+                    <div className="col">
+                        <label>Department:</label>
+                        <select
+                            name="department"
+                            value={formData.department}
+                            onChange={handleChange}
+                            required
+                        >
+                            <option value="">Select a department</option>
+                            {department.map(dept => (
+                                <option key={dept.id} value={dept.id}>{dept.department_name}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="col">
+                        <label>Designation:</label>
+                        <select
+                            name="designation"
+                            value={formData.designation}
+                            onChange={handleChange}
+                            required
+                        >
+                            <option value="">Select a designation</option>
+                            {designation
+                                .map(designation => (
+                                    <option key={designation.id} value={designation.id}>
+                                        {designation.designation_name}
+                                    </option>
                                 ))}
                         </select>
                     </div>

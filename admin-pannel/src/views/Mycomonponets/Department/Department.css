@@ -1,0 +1,121 @@
+.department-management {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.department-management h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.department-management .actions,
+.search {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.department-management input[type="text"] {
+    padding: 10px;
+    font-size: 16px;
+    width: calc(100% - 130px); /* Adjust width for spacing */
+    margin-right: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.department-management button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.department-management button:hover {
+    background-color: #0056b3;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.department-management table,
+th,
+td {
+    border: 1px solid #ddd;
+}
+
+.department-management th,
+td {
+    padding: 15px;
+    text-align: left;
+}
+
+.department-management thead {
+    background-color: #f4f4f4;
+}
+
+.department-management tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Pagination Styles */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.pagination button {
+    margin: 0 10px;
+}
+
+.pagination span {
+    font-size: 16px;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .department-management .actions,
+    .search {
+        flex-direction: column;
+    }
+
+    .department-management input[type="text"] {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 10px; /* Add margin for better spacing */
+    }
+
+    .department-management button {
+        margin-top: 10px;
+        width: 100%; /* Full width for buttons on small screens */
+    }
+
+    table,
+    th,
+    td {
+        font-size: 14px; /* Smaller font size for tables */
+    }
+
+    .pagination {
+        flex-direction: column; /* Stack pagination on small screens */
+    }
+
+    .pagination button {
+        width: 100%; /* Full width for pagination buttons */
+        margin: 5px 0; /* Add margin for spacing */
+    }
+
+    .pagination span {
+        margin: 10px 0; /* Add margin for spacing */
+    }
+}

@@ -49,16 +49,16 @@ const Login = () => {
       if (result.data.success) {
         localStorage.setItem('token', result.data.token);  // Store JWT token
         localStorage.setItem('role', result.data.user.role);
-        localStorage.setItem('id',result.data.user.id)
+        localStorage.setItem('id', result.data.user.id)
         switch (result.data.user.role) {
           case 'Admin':
             navigate("/dashboard");
             break;
           case 'Employee':
-            navigate("/user/employee");
+            navigate("/employeedetail");
             break;
           case 'HR':
-            navigate("/user/hr");
+            navigate("/hrDetail");
             break;
           default:
             navigate("/404");
@@ -113,11 +113,21 @@ const Login = () => {
                     </CInputGroup>
                     {error && <div className="alert alert-danger">{error}</div>}
                     <CRow>
+                      <CCol>
+                        <div className='checkbox-container'>
+                          <input type='checkbox' />
+                          <span>Remember me</span>
+                        </div>
+                      </CCol>
+
+                    </CRow>
+                    <CRow>
                       <CCol xs={6}>
                         <CButton color="primary" className="px-4" type="submit" disabled={loading}>
                           {loading ? 'Logging in...' : 'Login'}
                         </CButton>
                       </CCol>
+
                       <CCol xs={6} className="text-right">
                         <Link to="/forgetpassword">
                           <CButton color="link" className="px-0">

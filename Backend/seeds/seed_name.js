@@ -2,18 +2,18 @@
 
 exports.seed = async function(knex) {
   // Clear existing data
-  await knex('User').del(); // or use .truncate() to reset the table
- await knex('Role').del()
+  await knex('users').del(); // or use .truncate() to reset the table
+ await knex('roles').del()
 
 
- await knex('Role').insert([
+ await knex('roles').insert([
   { id: 1, role: 'Admin' },
   { id: 2, role: 'HR' }, // Assuming 'HR' is the role for ID 2
   { id: 3, role: 'Employee' } // 'Employee' for ID 3
 ]);
 
   // Insert seed data
-  await knex('User').insert([
+  await knex('users').insert([
     {
       email: 'admin@gmail.com',
       emp_id: 'admin',

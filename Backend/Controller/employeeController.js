@@ -6,16 +6,19 @@ const findemployeedetail = async (req, res) => {
     const id = req.params.id;
   
     try {
-      const user = await db.User.findOne({
+      const user = await db.users.findOne({
         where: { id: id },
         include: [
-          {
-            model: db.Role,
-            attributes: ['id', 'role'] 
-          },{
-            model:db.Attendance,
-            attributes:['in_time','out_time','date'],
-          }
+           {
+                    model: db.roles,
+                    as: 'roleDetails',  // Use the alias defined in your association
+                    attributes: ['id', 'role'] 
+                },
+                {
+                    model: db.attendances,
+                    as: 'attendances',  // Use the alias defined in your association
+                    attributes: ['in_time', 'out_time', 'date']
+                },
         ]
       });
   
@@ -34,7 +37,7 @@ const findemployeedetail = async (req, res) => {
     const id = req.params.id;
 
     try {
-        const attendance = await db.Attendance.findOne({
+        const attendance = await db.attendances.findOne({
             where: { user_id: id },
             order: [['date', 'DESC'], ['id', 'DESC']], // Order by date and ID to get the latest record
         });
@@ -63,14 +66,14 @@ try{
     const today = new Date().toISOString().split('T')[0];
 
 
-const user=await db.Attendance.create({
+const user=await db.attendances.create({
     user_id:id,
     date: today,
     in_time:timeString,
 })
 
 res.json(user)
-const latestRecord = await db.Attendance.findOne({
+const latestRecord = await db.attendances.findOne({
     where: { user_id: id },
     order: [['date', 'DESC'], ['id', 'DESC']] // Order by date and ID to get the latest record
 });
@@ -80,7 +83,7 @@ if (!latestRecord) {
 }
 
 // Update the latest attendance record's in_time
-const [updatedRows] = await db.Attendance.update(
+const [updatedRows] = await db.attendances.update(
     { in_time: timeString },
     { where: { id: latestRecord.id } }
 );
@@ -90,7 +93,7 @@ if (updatedRows === 0) {
 }
 
 // Respond with the updated record
-const updatedRecord = await db.Attendance.findOne({
+const updatedRecord = await db.attendances.findOne({
     where: { id: latestRecord.id }
 });
 
@@ -109,9 +112,9 @@ const UnmarkAttendance = async (req, res) => {
         const timeString = outtime.toLocaleTimeString();
 
         // Find the latest attendance record for the user
-        const latestRecord = await db.Attendance.findOne({
+        const latestRecord = await db.attendances.findOne({
             where: { user_id: id },
-            order: [['date', 'DESC'], ['id', 'DESC']] // Order by date and ID to get the latest record
+            order: [['date', 'DESC'], ['id', 'DESC']]
         });
 
         if (!latestRecord) {
@@ -119,7 +122,7 @@ const UnmarkAttendance = async (req, res) => {
         }
 
         // Update the latest attendance record's out_time
-        const [updatedRows] = await db.Attendance.update(
+        const [updatedRows] = await db.attendances.update(
             { out_time: timeString },
             { where: { id: latestRecord.id } }
         );
@@ -129,7 +132,7 @@ const UnmarkAttendance = async (req, res) => {
         }
 
         // Fetch the updated record to calculate the duration
-        const updatedRecord = await db.Attendance.findOne({
+        const updatedRecord = await db.attendances.findOne({
             where: { id: latestRecord.id }
         });
 
@@ -151,7 +154,7 @@ const UnmarkAttendance = async (req, res) => {
         }
 
         // Update the status field
-        await db.Attendance.update(
+        await db.attendances.update(
             { status },
             { where: { id: latestRecord.id } }
         );
@@ -205,13 +208,13 @@ const Getattendance = async (req, res) => {
         }
 
         // Query for attendance data
-        const user = await db.Attendance.findAndCountAll({
+        const user = await db.attendances.findAndCountAll({
             where,
             offset,
             limit,
             order: [['date', 'DESC']] // Order by date or any other relevant field
         });
-        const count=await db.Attendance.count({
+        const count=await db.attendances.count({
             where:{user_id:id}
         })
         res.json({
@@ -225,13 +228,6 @@ const Getattendance = async (req, res) => {
     }
 };
 ;
-
-
-
-
-
-
-
 
 
 

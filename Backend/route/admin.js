@@ -33,4 +33,31 @@ router.put('/saverecord/:id', userController.saveRecord);
 router.get('/viewuser/:id', userController.viewUser);
 router.get('/viewuserattendence/:id', userController.viewUserAttendance);
 
+router.get("/logs",userController.logs)
+
+
+
+router.delete('/logdelete/:id',userController.deletelog)
+
+
+
+//deparatment
+router.post("/adddepartment",userController.adddepartment);
+router.get("/getdeparmentdetail",userController.getdepartmentdetail)
+router.put("/editdepartment/:id",userController.editdepartment)
+
+router.delete('/deletedepartment/:id',userController.deletedepartment)
+
+//designation
+
+router.post("/adddesignation",userController.adddesignation);
+router.get("/getdesignation",userController.getdesignation)
+router.put("/editdesignation/:id",userController.editdesignation)
+
+router.delete('/deletedesignation/:id',userController.deletedesignation)
+
+router.get("/getadmindepartment",userController.getadmindepartment)
+router.get("/getadmindesignation",userController.getadmindesignation)
+
+
 module.exports = router;

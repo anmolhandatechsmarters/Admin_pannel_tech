@@ -207,7 +207,7 @@ const Attendance = () => {
   const years = Array.from(new Set(attendanceData.map(record => new Date(record.date).getFullYear())));
 
   const handleviewuser = (id) => {
-    Navigate(`/viewuser/${id}`)
+    Navigate(`/viewhruser/${id}`)
   }
 
 

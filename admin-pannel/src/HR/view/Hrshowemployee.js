@@ -87,11 +87,11 @@ const Hrshowemployee = () => {
 
 
 const handleadduser=()=>{
-  navigate("/adduser")
+  navigate("/hraddemployee")
 }
 
 const handleviewuser=(userid)=>{
-  navigate(`/viewuser/${userid}`)
+  navigate(`/viewhruser/${userid}`)
 }
 
   return (
@@ -168,7 +168,7 @@ const handleviewuser=(userid)=>{
             users.map((user) => (
               <tr key={user.id}>
                 <td>{user.id}</td>
-                <td className='viewuserbyfield' onClick={()=>handleviewuser(user.emp_id)}>{user.first_name} {user.last_name}</td>
+                <td className='viewuserbyfield' onClick={()=>handleviewuser(user.id)}>{user.first_name} {user.last_name}</td>
                 <td>{user.email}</td>
                 <td>{user.emp_id}</td>
                 <td>{user.role}</td>

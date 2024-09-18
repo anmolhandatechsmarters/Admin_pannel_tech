@@ -8,7 +8,6 @@ const AdminRouter = require('./route/admin');
 const EmployeeRouter = require('./route/employeeroute')
 const initializeDatabase = require('./initializeDatabase'); 
 const HrRoute=require("./route/Hrroute.js")
-require('./cron.js');
 const app = express();
 const PORT = process.env.PORT || 7000;
 

@@ -100,7 +100,7 @@ const Detailemployee = () => {
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
 
-  const profileImageUrl = user?.Image ? `http://localhost:7000/${user.Image}` : EmpImg; // Default image if none available
+  const profileImageUrl = `http://localhost:7000/${user.Image}` ; // Default image if none available
 
   return (
     <div className='employee-Main-box'>

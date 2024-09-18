@@ -1,0 +1,64 @@
+.departmentadd-admin {
+    display: flex;
+    justify-content: center;
+
+ /* Full viewport height */
+    margin: 0;
+    background-color: #f0f0f0; /* Light background for contrast */
+}
+
+.departmentadd-admin .form-container {
+    background-color: white;
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Soft shadow for 3D effect */
+    padding: 20px;
+    width: 500px; /* Adjusted width */
+    text-align: center; /* Center text */
+    box-sizing: border-box; /* Include padding in width calculation */
+}
+
+.departmentadd-admin .department-form {
+    display: flex;
+    align-items: center; /* Center items vertically */
+}
+
+.departmentadd-admin .form-group {
+    flex-grow: 1; /* Allow input to take available space */
+    margin-right: 10px; /* Space between input and button */
+}
+
+.departmentadd-admin label {
+    margin-bottom: 5px; /* Space between label and input */
+    font-weight: bold;
+    font-size: 2rem; /* Adjust font size */
+}
+
+.departmentadd-admin input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem; /* Adjust font size */
+    transition: box-shadow 0.3s; /* Smooth transition */
+    width: 100%; /* Full width of the container */
+}
+
+.departmentadd-admin input:focus {
+    border-color: #4CAF50; /* Change border color on focus */
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5); /* Light green shadow on focus */
+}
+
+.departmentadd-admin .add-button {
+    margin-top:50px;
+    padding: 10px 15px; /* Added padding for better button size */
+    background-color: #497fe3; /* Green color */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s; /* Smooth transition */
+    font-size: 1rem; /* Adjust font size */
+}
+
+.departmentadd-admin .add-button:hover {
+    background-color: #4979d4; /* Darker green on hover */
+}

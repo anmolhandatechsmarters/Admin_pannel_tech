@@ -8,6 +8,7 @@ module.exports = (sequelize, DataTypes) => {
     department_name: {
       type: DataTypes.STRING,
       allowNull: false,
+      Unique:true
     },
     createdAt: {
       type: DataTypes.DATE,

@@ -9,7 +9,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     designation_name: {
       type: DataTypes.STRING,
-      allowNull: false // You can set it to false if you want to ensure this field is always required
+      allowNull: false,
+      Unique:true
     },
     createdAt: {
       type: DataTypes.DATE,

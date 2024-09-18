@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import "../CSS/ShowUser.css"; // Ensure your CSS file is correctly located
 import { MdDelete, MdEdit } from "react-icons/md";
 import { FcAlphabeticalSortingAz, FcAlphabeticalSortingZa } from "react-icons/fc";
-
+import Swal from 'sweetalert2'
 const ShowAllUser = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
@@ -57,27 +57,40 @@ const ShowAllUser = () => {
   };
 
   const deleteUser = async (id) => {
-    const confirmDeleteUser = window.confirm("Are you sure you want to delete this user?");
-    if (confirmDeleteUser) {
-      try {
-        console.log("Deleting user with id:", id, "Log ID:", logid); // Log to check values
-        const response = await axios.delete(`http://localhost:7000/admin/deleteuser/${id}`, {
-          params: { logid },
-          headers: { "Content-Type": "application/json" }
-        });
-  
-        if (response.status === 200) {
-          setUsers(users.filter(user => user.id !== id));
-          setTotal(total - 1);
-        } else {
-          console.error("Failed to delete user:", response.statusText);
+    const confirmDeleteUser = await Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'No, keep it'
+    });
+
+    if (confirmDeleteUser.isConfirmed) {
+        try {
+            console.log("Deleting user with id:", id, "Log ID:", logid); // Log to check values
+            const response = await axios.delete(`http://localhost:7000/admin/deleteuser/${id}`, {
+                params: { logid },
+                headers: { "Content-Type": "application/json" }
+            });
+
+            if (response.status === 200) {
+                setUsers(users.filter(user => user.id !== id));
+                setTotal(total - 1);
+                Swal.fire('Deleted!', 'User has been deleted.', 'success');
+            } else {
+                console.error("Failed to delete user:", response.statusText);
+                Swal.fire('Error!', 'Failed to delete user.', 'error');
+            }
+        } catch (error) {
+            console.error("Error deleting user:", error);
+            Swal.fire('Error!', 'An error occurred while deleting the user.', 'error');
         }
-      } catch (error) {
-        console.error("Error deleting user:", error);
-        alert("Error occurred while deleting user.");
-      }
+    } else {
+        Swal.fire('Cancelled', 'User is safe :)', 'info');
     }
-  };
+};
+
   
 
   const userdataedit = (userid) => {

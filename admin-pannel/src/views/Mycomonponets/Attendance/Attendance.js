@@ -5,7 +5,7 @@ import { MdDelete, MdEdit, MdOutlineDone, MdCancel, MdEmojiEmotions } from "reac
 import { IoIosAdd } from "react-icons/io";
 import { FcAlphabeticalSortingAz, FcAlphabeticalSortingZa } from "react-icons/fc";
 import { useNavigate, useParams} from 'react-router-dom';
-
+import Swal from 'sweetalert2'
 const Attendance = () => {
   const Navigate = useNavigate()
   const userids = useParams()
@@ -183,11 +183,23 @@ const Attendance = () => {
     setEditCommentId(null);
   };
 
-  const handleDeleteButtonClick = (id) => {
-    if (window.confirm("Are you sure you want to delete this record?")) {
-      deleteAttendance(id);
+  const handleDeleteButtonClick = async (id) => {
+    const confirmDelete = await Swal.fire({
+        title: 'Are you sure?',
+        text: "This action cannot be undone!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'No, cancel'
+    });
+
+    if (confirmDelete.isConfirmed) {
+        deleteAttendance(id);
+    } else {
+        Swal.fire('Cancelled', 'Your record is safe!', 'info');
     }
-  };
+};
+
 
   const deleteAttendance = async (id) => {
     try {

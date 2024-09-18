@@ -3,7 +3,7 @@ import axios from 'axios';
 import "./Designation.css";
 import { MdDelete, MdEdit } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-
+import Swal from 'sweetalert2'
 const DepartmentManagement = () => {
     const navigate = useNavigate();
     const logid = localStorage.getItem("id");
@@ -50,7 +50,7 @@ const DepartmentManagement = () => {
 
     const handleEditDepartment = async (id) => {
         try {
-            await axios.put(`http://localhost:7000/admin/editdesignation/${id}`, { name: editValue, logid:logid }, {
+            await axios.put(`http://localhost:7000/admin/editdesignation/${id}`, { name: editValue, logid: logid }, {
                 headers: { "Content-Type": "application/json" }
             });
             setEditingDepartment(null);
@@ -62,16 +62,36 @@ const DepartmentManagement = () => {
     };
 
     const handleDeleteDepartment = async (id) => {
-        const confirm = window.confirm("Are you sure you want to delete the department?");
-        if (confirm) {
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: 'You won’t be able to revert this!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, keep it',
+        });
+    
+        if (result.isConfirmed) {
             try {
                 await axios.delete(`http://localhost:7000/admin/deletedesignation/${id}`);
-                fetchDepartments();
+                fetchDepartments(); // Refresh the list of departments
+                Swal.fire('Deleted!', 'Your department has been deleted.', 'success');
             } catch (error) {
                 console.error("Error deleting department:", error);
+    
+                // Check if the error response indicates that the department still exists
+                if (error.response && error.response.data) {
+                    Swal.fire('Error!', 'This department cannot be deleted because it still exists in other records.', 'error');
+                } else {
+                    Swal.fire('Error!', 'There was a problem deleting the department.', 'error');
+                }
             }
+        } else {
+            Swal.fire('Cancelled', 'Your department is safe :)', 'error');
         }
     };
+    
+    
 
     const handleCancelEdit = () => {
         setEditingDepartment(null);

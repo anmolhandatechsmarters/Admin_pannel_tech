@@ -689,18 +689,29 @@ const deletelog = async (req, res) => {
 //===================================================================
 
 const adddepartment = async (req, res) => {
-    const departmentname = req.body.name
+    const departmentname = req.body.name;
+
     try {
+        // Check if the department already exists
+        const existingDepartment = await db.departments.findOne({ where: { department_name: departmentname } });
+        
+        if (existingDepartment) {
+            // If it exists, send a 409 Conflict status
+            return res.status(409).json({ message: 'Department already exists' });
+        }
+
+        // Create a new department if it does not exist
         const result = await db.departments.create({
             department_name: departmentname
+        });
 
-        })
-        res.json(result)
+        res.status(201).json(result); // Send success response
     } catch (error) {
-        console.log(error)
+        console.error(error);
+        res.status(500).json({ message: 'Server error' }); // Handle server errors
     }
+};
 
-}
 
 const getdepartmentdetail = async (req, res) => {
     const { page = 1, limit = 10, search = '' } = req.query;
@@ -781,18 +792,27 @@ const deletedepartment = async (req, res) => {
 //designation
 
 const adddesignation = async (req, res) => {
-    const departmentname = req.body.name
+    const designationName = req.body.name;
     try {
+        // Check if the designation already exists
+        const existingDesignation = await db.designations.findOne({ where: { designation_name: designationName } });
+        
+        if (existingDesignation) {
+            return res.status(409).json({ message: 'Designation already exists' });
+        }
+
+        // Create a new designation if it does not exist
         const result = await db.designations.create({
-            designation_name: departmentname
+            designation_name: designationName
+        });
 
-        })
-        res.json(result)
+        res.status(201).json(result); // Send success response
     } catch (error) {
-        console.log(error)
+        console.error(error);
+        res.status(500).json({ message: 'Server error' }); // Handle server errors
     }
+};
 
-}
 
 
 const getdesignation = async (req, res) => {

@@ -5,8 +5,6 @@ import countriesData from "../../pages/register/countries.json";
 import statesData from "../../pages/register/states.json";
 import citiesData from "../../pages/register/cities.json";
 import '../CSS/EditUser.css';
-import departmentsData from '../../../views/pages/register/Department.json';
-import designationsData from '../../../views/pages/register/Desigination.json';
 
 const EditUser = () => {
   const { id } = useParams();
@@ -28,13 +26,16 @@ const EditUser = () => {
     designation: '',
   });
 
+
+  const [department, setdepartment] = useState([])
+  const [designation, setdesignation] = useState([])
+
   const [options, setOptions] = useState({
     roles: ['HR', 'Employee'],
     countries: [],
     states: [],
     cities: [],
-    departments: [],
-    designations: []
+
   });
 
   const logid = localStorage.getItem("id");
@@ -45,8 +46,7 @@ const EditUser = () => {
       countries: countriesData.countries,
       states: statesData.states,
       cities: citiesData.cities,
-      departments: departmentsData,
-      designations: designationsData
+   
     }));
   }, []);
 
@@ -75,6 +75,29 @@ const EditUser = () => {
         console.error("Error fetching user:", error);
       }
     };
+
+    const fetchdepartment = async () => {
+      try {
+          const result = await axios.get('http://localhost:7000/admin/getadmindepartment')
+          setdepartment(result.data)
+      } catch (error) {
+          console.log(error)
+      }
+
+  }
+  const fetchdesignaiton = async () => {
+      try {
+          const result = await axios.get('http://localhost:7000/admin/getadmindesignation')
+          setdesignation(result.data)
+      } catch (error) {
+          console.log(error)
+      }
+
+  }
+fetchdepartment()
+fetchdesignaiton()
+
+
 
     fetchUser();
   }, [id]);
@@ -246,10 +269,10 @@ const EditUser = () => {
                   required
                 >
                   <option value="">Select a department</option>
-                  {options.departments
+                  {department
                     .map(department => (
-                      <option key={department.departmentId} value={department.departmentName}>
-                        {department.departmentName}
+                      <option key={department.id} value={department.id}>
+                        {department.department_name}
                       </option>
                     ))}
                 </select>
@@ -264,10 +287,10 @@ const EditUser = () => {
                   required
                 >
                   <option value="">Select a designation</option>
-                  {options.designations
+                  {designation
                     .map(designation => (
-                      <option key={designation.designationId} value={designation.designationTitle}>
-                        {designation.designationTitle}
+                      <option key={designation.id} value={designation.id}>
+                        {designation.designation_name}
                       </option>
                     ))}
                 </select>

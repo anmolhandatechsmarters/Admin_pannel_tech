@@ -830,8 +830,12 @@ const getdesignation = async (req, res) => {
 
 const editdesignation = async (req, res) => {
     const { id } = req.params;
-    const designation = req.body.name;
-    const logid = req.body.logid;
+    const { name: designation, logid } = req.body;
+
+    // Basic validation
+    if (!designation || typeof designation !== 'string') {
+        return res.status(400).json({ success: false, message: 'Invalid designation name' });
+    }
 
     try {
         // Update the department name
@@ -845,21 +849,23 @@ const editdesignation = async (req, res) => {
 
             await db.logs.create({
                 user_id: logid,
-                api: `localhost:3000/editdesignation/${id}`, // Updated to match the action
+                api: `http://localhost:3000/editdesignation/${id}`, // Updated to match the action
                 date: dateString,
-                time: timeString
+                time: timeString,
+                action: 'update_designation', // Additional field for better logging
+                designation_id: id // Log the ID of the designation being updated
             });
 
-            res.json({ success: true, message: 'Department updated successfully' });
+            return res.json({ success: true, message: 'Department updated successfully' });
         } else {
-            res.status(404).json({ success: false, message: 'Department not found' });
+            return res.status(404).json({ success: false, message: 'Department not found' });
         }
-
     } catch (error) {
         console.error('Error updating department:', error);
-        res.status(500).json({ success: false, message: 'Error updating department' });
+        return res.status(500).json({ success: false, message: 'Error updating department' });
     }
 };
+
 
 
 const deletedesignation = async (req, res) => {

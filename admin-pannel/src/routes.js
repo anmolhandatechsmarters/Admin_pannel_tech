@@ -60,7 +60,7 @@ const Toasts = React.lazy(() => import('./views/notifications/toasts/Toasts'))
 const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 const log=React.lazy(()=>import('./views/Mycomonponets/Log/log'))
 const DepartmentAdd =React.lazy(()=>import('./views/Mycomonponets/Department/Departmentadd'))
-
+const DesignationAdd =React.lazy(()=>import('./views/Mycomonponets/Designation/Designationadd'))
 const routes = [
   { path: '/',  name: 'Home' ,element:Home},
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
@@ -119,6 +119,7 @@ const routes = [
 { path: '/adminlog', name: 'ViewUser', element:log},
 {path:'/alldepartment',name:"Department",element:Department},
 {path:'/adddepartment',name:"Department",element:DepartmentAdd},
+{path:'adddesignation', name:"Designation",element:DesignationAdd},
 {path:'/alldesignation',name:"Designation",element:Designation}
 ]
 

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-
+import "./Designation.css";
 import { MdDelete, MdEdit } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 
 const DepartmentManagement = () => {
+    const navigate = useNavigate();
     const logid = localStorage.getItem("id");
     const [departments, setDepartments] = useState([]);
     const [newDepartment, setNewDepartment] = useState('');
@@ -28,7 +30,7 @@ const DepartmentManagement = () => {
                 }
             });
             setDepartments(result.data.designations);
-            setTotal(result.data.total); // Update total count
+            setTotal(result.data.total);
         } catch (error) {
             console.error("Error fetching departments:", error);
         }
@@ -36,11 +38,11 @@ const DepartmentManagement = () => {
 
     const handleAddDepartment = async () => {
         try {
-            await axios.post("http://localhost:7000/admin/adddesignation", { name: newDepartment }, {
+            await axios.post("http://localhost:7000/admin/adddepartment", { name: newDepartment }, {
                 headers: { "Content-Type": "application/json" }
             });
             setNewDepartment('');
-            fetchDepartments(); // Refresh the list of departments
+            fetchDepartments();
         } catch (error) {
             console.error("Error adding department:", error);
         }
@@ -48,27 +50,27 @@ const DepartmentManagement = () => {
 
     const handleEditDepartment = async (id) => {
         try {
-            await axios.put(`http://localhost:7000/admin/editdesignation/${id}`, { name: editValue, logid }, {
+            await axios.put(`http://localhost:7000/admin/editdesignation/${id}`, { name: editValue, logid:logid }, {
                 headers: { "Content-Type": "application/json" }
             });
             setEditingDepartment(null);
             setEditValue('');
-            fetchDepartments(); // Refresh the list of departments
+            fetchDepartments();
         } catch (error) {
             console.error("Error editing department:", error);
         }
     };
 
     const handleDeleteDepartment = async (id) => {
-        const confirm=window.confirm("Are You Sure to delete the Deparatment")
-        if(confirm){
-        try {
-            await axios.delete(`http://localhost:7000/admin/deletedesignation/${id}`);
-            fetchDepartments(); // Refresh the list of departments
-        } catch (error) {
-            console.error("Error deleting department:", error);
+        const confirm = window.confirm("Are you sure you want to delete the department?");
+        if (confirm) {
+            try {
+                await axios.delete(`http://localhost:7000/admin/deletedesignation/${id}`);
+                fetchDepartments();
+            } catch (error) {
+                console.error("Error deleting department:", error);
+            }
         }
-    }
     };
 
     const handleCancelEdit = () => {
@@ -82,18 +84,16 @@ const DepartmentManagement = () => {
         }
     };
 
+    const handlemovedepartment = () => {
+        navigate("/adddesignation");
+    };
+
     return (
         <div className="department-management">
-            <h1>Department Management</h1>
+            <h1>Designation Management</h1>
 
             <div className="actions">
-                <input
-                    type="text"
-                    placeholder="New Department"
-                    value={newDepartment}
-                    onChange={(e) => setNewDepartment(e.target.value)}
-                />
-                <button onClick={handleAddDepartment}>Add Department</button>
+                <button onClick={handlemovedepartment}>Add Designation</button>
             </div>
 
             <div className="search">
@@ -108,6 +108,7 @@ const DepartmentManagement = () => {
             <table>
                 <thead>
                     <tr>
+                        <th>#Id</th>
                         <th>Name</th>
                         <th>Actions</th>
                     </tr>
@@ -116,11 +117,12 @@ const DepartmentManagement = () => {
                     {
                         departments.map(item => (
                             <tr key={item.id}>
+                                <td>{item.id}</td>
                                 <td>
                                     {editingDepartment === item.id ? (
                                         <input
                                             type="text"
-                                            value={editValue}
+                                            value={editValue || ''} // Ensures controlled input
                                             onChange={(e) => setEditValue(e.target.value)}
                                             autoFocus
                                         />
@@ -138,7 +140,7 @@ const DepartmentManagement = () => {
                                         <>
                                             <MdEdit onClick={() => {
                                                 setEditingDepartment(item.id);
-                                                setEditValue(item.department_name);
+                                                setEditValue(item.designation_name); // Updated to use designation_name
                                             }} />
                                             <MdDelete onClick={() => handleDeleteDepartment(item.id)} />
                                         </>

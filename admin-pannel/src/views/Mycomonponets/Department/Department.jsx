@@ -108,6 +108,7 @@ const DepartmentManagement = () => {
             <table>
                 <thead>
                     <tr>
+                        <th>#Id</th>
                         <th>Name</th>
                         <th>Actions</th>
                     </tr>
@@ -115,7 +116,9 @@ const DepartmentManagement = () => {
                 <tbody>
                     {
                         departments.map(item => (
+
                             <tr key={item.id}>
+                                <td>{item.id}</td>
                                 <td>
                                     {editingDepartment === item.id ? (
                                         <input

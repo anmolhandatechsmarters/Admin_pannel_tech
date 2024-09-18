@@ -53,7 +53,6 @@ router.delete('/deletedepartment/:id',userController.deletedepartment)
 router.post("/adddesignation",userController.adddesignation);
 router.get("/getdesignation",userController.getdesignation)
 router.put("/editdesignation/:id",userController.editdesignation)
-
 router.delete('/deletedesignation/:id',userController.deletedesignation)
 
 router.get("/getadmindepartment",userController.getadmindepartment)

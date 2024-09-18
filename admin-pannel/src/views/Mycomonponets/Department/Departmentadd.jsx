@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import './Departmentadd.css'; // Import the CSS file
-
+import {useNavigate} from "react-router-dom"
 const DepartmentAdd = () => {
     const [newDepartment, setNewDepartment] = useState('');
-
+const navigate=useNavigate()
     const handleAddDepartment = async (e) => {
         e.preventDefault(); // Prevent form submission
         try {
@@ -21,6 +21,9 @@ const DepartmentAdd = () => {
                 text: response.data.message || 'Department added successfully!',
                 confirmButtonText: 'OK'
             });
+            setTimeout(()=>{
+                navigate("/alldesignation")
+            },2000)
 
         } catch (error) {
             console.error("Error adding department:", error);
@@ -33,6 +36,7 @@ const DepartmentAdd = () => {
                     text: 'Department already exists.',
                     confirmButtonText: 'OK'
                 });
+
             } else {
                 // Show generic error message
                 Swal.fire({

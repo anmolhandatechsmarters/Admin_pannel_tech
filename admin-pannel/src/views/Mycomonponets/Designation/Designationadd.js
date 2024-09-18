@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import './Designationadd.css'; // Import the CSS file
-
+import {useNavigate} from "react-router-dom"
 const Designation = () => {
     const [newDesignation, setNewDesignation] = useState('');
-
+const navigate=useNavigate()
     const handleAddDesignation = async (e) => {
         e.preventDefault(); // Prevent form submission
         try {
@@ -19,6 +19,12 @@ const Designation = () => {
                 text: 'Designation added successfully!',
                 confirmButtonText: 'OK'
             });
+            
+        setTimeout(()=>{
+            navigate("/alldesignation")
+        },2000)
+      
+       
         } catch (error) {
             console.error("Error adding designation:", error);
             if (error.response && error.response.status === 409) {

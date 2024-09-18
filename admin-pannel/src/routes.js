@@ -119,7 +119,7 @@ const routes = [
 { path: '/adminlog', name: 'ViewUser', element:log},
 {path:'/alldepartment',name:"Department",element:Department},
 {path:'/adddepartment',name:"Department",element:DepartmentAdd},
-{path:'adddesignation', name:"Designation",element:DesignationAdd},
+{path:'/adddesignation', name:"Designation",element:DesignationAdd},
 {path:'/alldesignation',name:"Designation",element:Designation}
 ]
 

@@ -2,7 +2,10 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import "../CSS/ShowUser.css";
 import { MdDelete } from "react-icons/md";
+import Swal from 'sweetalert2';
+import {useNavigate} from "react-router-dom"
 const ShowAllUser = () => {
+  const navigate=useNavigate()
   const [log, setLog] = useState([]);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
@@ -37,25 +40,53 @@ const ShowAllUser = () => {
     }
   };
 
-  const handledeletelog=async(id)=>{
-  const confirm=window.confirm("Are You sure delete this log")
-  if(!confirm.Ok){
-  try{
-const results=await axios.delete(`http://localhost:7000/admin/logdelete/${id}`)
-alert("success deleted")
-const result = await axios.get("http://localhost:7000/admin/logs", {
-  params: { page, limit, search },
-  headers: { "Content-Type": "application/json" },
-});
-setLog(result.data.logs);
-setTotal(result.data.total); 
-  }catch(error){
-console.log(error)
-  }}
-  else{
-    console.log("err")
-  }
-  }
+
+
+  const handledeletelog = async (id) => {
+      const confirm = await Swal.fire({
+          title: 'Are you sure?',
+          text: "You won't be able to revert this!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, delete it!'
+      });
+  
+      if (confirm.isConfirmed) {
+          try {
+              const results = await axios.delete(`http://localhost:7000/admin/logdelete/${id}`);
+              Swal.fire({
+                  icon: 'success',
+                  title: 'Deleted!',
+                  text: 'Your log has been deleted.',
+                  confirmButtonText: 'OK'
+              });
+  
+              // Fetch updated logs
+              const result = await axios.get("http://localhost:7000/admin/logs", {
+                  params: { page, limit, search },
+                  headers: { "Content-Type": "application/json" },
+              });
+              setLog(result.data.logs);
+              setTotal(result.data.total);
+          } catch (error) {
+              console.error(error);
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Error!',
+                  text: 'There was an error deleting the log.',
+                  confirmButtonText: 'OK'
+              });
+          }
+      } else {
+          console.log("Deletion cancelled");
+      }
+  };
+  const handleviewuser = (userid) => {
+    navigate(`/viewuser/${userid}`);
+  };
+  
 
   return (
     <div className='showuser-admin'>
@@ -76,6 +107,8 @@ console.log(error)
               <th>Id</th>
               <th>User Id</th>
               <th>Api</th>
+              <th>Message</th>
+              <th>IP</th>
               <th>Date</th>
               <th>Time</th>
               <th>Action</th>
@@ -85,8 +118,12 @@ console.log(error)
             {log.map((userlog) => (
               <tr key={userlog.id}>
                 <td>{userlog.id}</td>
-                <td>{userlog.user_id}</td>
+                < td className='viewuserbyfield' onClick={() => handleviewuser(userlog.user_id)}>
+                        {userlog.user_id}
+                      </td>
                 <td>{userlog.api}</td>
+                <td>{userlog.message}</td>
+                <td>{userlog.ip}</td>
                 <td>{userlog.date}</td>
                 <td>{userlog.time}</td>
     <td><span onClick={()=>handledeletelog(userlog.id)}><MdDelete /></span></td>

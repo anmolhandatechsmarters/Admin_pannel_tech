@@ -1,5 +1,3 @@
-/* src/ViewUser.css */
-
 .main-container-view-user {
   display: flex;
   gap: 20px;
@@ -9,20 +7,18 @@
 
 .main-container-view-user .sidebarss {
   width: 250px; /* Fixed width for sidebar */
-  background-color: rgb(228, 228, 13);
+  background-color: rgb(233, 233, 224);
   display: flex;
   flex-direction: column; /* Stack items vertically */
   padding: 20px;
   box-sizing: border-box;
   border-right: 2px solid #ddd; /* Right border for sidebar */
-  /* For positioning the profile image upload button */
 }
 
 .main-container-view-user .profile {
   margin-bottom: 20px;
   text-align: center;
 }
-
 
 .main-container-view-user .profile img {
   width: 100%;
@@ -67,8 +63,9 @@
 .main-container-view-user .content {
   flex: 1; /* Fill remaining space */
   padding: 20px;
-  background-color: aqua;
+  background-color: rgb(188, 195, 195);
   box-sizing: border-box;
+  overflow-y: auto; /* Enable scrolling if content overflows */
 }
 
 .main-container-view-user .text-center {
@@ -93,22 +90,33 @@
   margin: 5px 0;
 }
 
+/* Media Queries for Responsiveness */
 @media (max-width: 768px) {
   .main-container-view-user {
-    flex-direction: column;
+    flex-direction: column; /* Stack layout on smaller screens */
   }
 
-  .main-container-view-user .sidebar {
-    width: 100%; /* Full width for smaller screens */
+  .main-container-view-user .sidebarss {
+    width: 100%; /* Full width for sidebar */
     border-right: none;
     border-bottom: 2px solid #ddd; /* Bottom border for sidebar */
   }
 
   .main-container-view-user .view-user-user-info {
-    flex-direction: column;
+    flex-direction: column; /* Stack user info sections vertically */
   }
 
   .main-container-view-user .view-user-user-info div {
     margin: 10px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-container-view-user .menu button {
+    font-size: 14px; /* Smaller font size for buttons */
+  }
+
+  .main-container-view-user .view-user-user-info p {
+    font-size: 16px; /* Adjust font size for user info */
   }
 }

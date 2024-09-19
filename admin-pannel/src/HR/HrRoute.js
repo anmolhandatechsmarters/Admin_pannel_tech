@@ -70,6 +70,13 @@ const Hremployeedashboard = React.lazy(() => import('./view/Hremployeedashboard'
 const Hremployeeattendance = React.lazy(() => import('./view/Hremployeeattendance'))
 const Hrshowemployee =React.lazy(()=>import('./view/Hrshowemployee'))
 const Hrviewuser=React.lazy(()=>import("./ViewUserhr"))
+const Hredituser=React.lazy(()=>import('./view/HRedituser'))
+const HrDepartment=React.lazy(()=>import('./Department/HrDepartment'))
+const HrAddDepartment =React.lazy(()=>import('./Department/HrAddDepartment'))
+const HrDesignation =React.lazy(()=>import('./Designation/HrDesignation'))
+const HrAddDesignation =React.lazy(()=>import('./Designation/HrAddDesignation'))
+
+
 const routes = [
   { path: '/', name: 'Home', element: Detailemployee },
   { path: '/theme', name: 'Theme', element: Colors, exact: true },
@@ -128,7 +135,12 @@ const routes = [
   { path: '/hrdashboard', name: 'Widgets', element:Hremployeedashboard},
   { path: '/hremployeeshow', name: 'Widgets', element:Hrshowemployee},
   { path: '/hraddemployee', name: 'Widgets', element:Hradduser},
+  {path:'hredituser/:id',name:"HrEditUser",element:Hredituser},
   { path: '/viewhruser/:id', name: 'Widgets', element:Hrviewuser},
+  {path:'/hrdepartment' ,name:'HrDepartment',element:HrDepartment},
+  {path:'/hradddepartment',name:'HrAddDepartment',element:HrAddDepartment},
+  {path:'/hrdesignation',name:'HrDesignation',element:HrDesignation},
+  {path:'/hradddesignation',name:'HrAddDesignation',element:HrAddDesignation}
 ]
 
 

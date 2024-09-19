@@ -5,8 +5,29 @@ import countriesData from "../../pages/register/countries.json";
 import statesData from "../../pages/register/states.json";
 import citiesData from "../../pages/register/cities.json";
 import '../CSS/EditUser.css';
-
+import Swal from 'sweetalert2';
 const EditUser = () => {
+  useEffect(() => {
+    const fetchIpAddress = async () => {
+        try {
+            const response = await axios.get('https://api.ipify.org?format=json');
+            setIpAddress(response.data.ip);
+        } catch (error) {
+            console.error('Error fetching IP address:', error);
+        }
+    };
+
+    fetchIpAddress();
+}, []);
+
+
+
+
+const [logip, setIpAddress] = useState('');
+
+
+
+
   const { id } = useParams();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -129,21 +150,68 @@ fetchdesignaiton()
     }
   };
 
+
+
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (window.confirm('Do you want to update the user details?')) {
-      try {
-        await axios.put(`http://localhost:7000/admin/updateUser/${id}`, formData, {
-          params: { logid },
-          headers: { "Content-Type": "application/json" }
-        });
-        alert('User details updated successfully');
-      } catch (error) {
-        console.error('Error updating user:', error);
-        alert('Failed to update user details: ' + error.response?.data?.message || error.message);
+      e.preventDefault();
+  
+      // Confirmation alert
+      const { value: confirm } = await Swal.fire({
+          title: 'Are you sure?',
+          text: 'Do you want to update the user details?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, update it!',
+          cancelButtonText: 'Cancel'
+      });
+  
+      if (confirm) {
+          try {
+              const response = await axios.put(`http://localhost:7000/admin/updateUser/${id}`, formData, {
+                  params: { logid ,logip},
+                  headers: { "Content-Type": "application/json" }
+              });
+              
+              // Success alert
+              Swal.fire({
+                  icon: 'success',
+                  title: 'Updated!',
+                  text: response.data.message || 'User details updated successfully',
+                  confirmButtonText: 'OK'
+              });
+              setTimeout(() => {
+                navigate("/alluser")
+              },2000);
+          } catch (error) {
+              console.error('Error updating user:', error);
+  
+              // Error alert for email already exists
+              if (error.response && error.response.status === 400 && error.response.data.message.includes('Email is already in use.')) {
+                  Swal.fire({
+                      icon: 'error',
+                      title: 'Oops!',
+                      text: error.response.data.message || 'Email already exists.',
+                      confirmButtonText: 'Try Again'
+                  });
+              } else {
+                  // Generic error alert
+                  Swal.fire({
+                      icon: 'error',
+                      title: 'Failed!',
+                      text: 'Failed to update user details: ' + (error.response?.data?.message || error.message),
+                      confirmButtonText: 'Try Again'
+                  });
+              }
+          }
       }
-    }
   };
+  
+
+const handleCancel=()=>{
+  navigate("/alluser")
+}
+
+
 
   return (
     <div className='editsuer-admin'>
@@ -266,7 +334,7 @@ fetchdesignaiton()
                   name="department"
                   value={formData.department}
                   onChange={handleChange}
-                  required
+       
                 >
                   <option value="">Select a department</option>
                   {department
@@ -284,7 +352,6 @@ fetchdesignaiton()
                   name="designation"
                   value={formData.designation}
                   onChange={handleChange}
-                  required
                 >
                   <option value="">Select a designation</option>
                   {designation
@@ -320,7 +387,7 @@ fetchdesignaiton()
             </div>
             <div>
               <button type="submit">Save</button>
-              <button type="button" className="cancel-button" onClick={() => navigate('/showusers')}>Cancel</button>
+              <button type="button" className="cancel-button" onClick={handleCancel}>Cancel</button>
             </div>
           </form>
         ) : (

@@ -60,7 +60,8 @@ const createUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
-
+const ip=req.query.ip
+const userAgent=req.query.userAgent
   if (!email || !password) {
     return res.status(400).json({ message: 'Email and password are required' });
   }
@@ -75,10 +76,31 @@ const loginUser = async (req, res) => {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
+    // Update the last login time and status
     await db.users.update(
-      { last_login: new Date(), status: '1' },
+      { last_login: new Date(), status: '1',ip:ip,user_agent:userAgent },
       { where: { id: user.id } }
     );
+
+    // Check if an attendance record exists for today
+    const today = new Date();
+    const todayString = today.toISOString().split('T')[0]; // Get the current date in YYYY-MM-DD format
+
+    const existingAttendance = await db.attendances.findOne({
+      where: {
+        user_id: user.id,
+        date: todayString
+      }
+    });
+
+    // If no record exists for today, create a new attendance record
+    if (!existingAttendance) {
+      await db.attendances.create({
+        user_id: user.id,
+        date: todayString,
+
+      });
+    }
 
     // Generate a JWT token
     const token = jwt.sign(
@@ -101,6 +123,7 @@ const loginUser = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 const logoutUser = async (req, res) => {
   const userId = req.params.id;

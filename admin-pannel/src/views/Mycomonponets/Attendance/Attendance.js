@@ -7,6 +7,29 @@ import { FcAlphabeticalSortingAz, FcAlphabeticalSortingZa } from "react-icons/fc
 import { useNavigate, useParams} from 'react-router-dom';
 import Swal from 'sweetalert2'
 const Attendance = () => {
+
+  useEffect(() => {
+    const fetchIpAddress = async () => {
+        try {
+            const response = await axios.get('https://api.ipify.org?format=json');
+            setIpAddress(response.data.ip);
+        } catch (error) {
+            console.error('Error fetching IP address:', error);
+        }
+    };
+
+    fetchIpAddress();
+}, []);
+
+
+
+
+const [logip, setIpAddress] = useState('');
+
+
+
+
+
   const Navigate = useNavigate()
   const userids = useParams()
   const empid=userids.id
@@ -136,47 +159,117 @@ const Attendance = () => {
     }));
   };
 
-  const handleSaveComment = async (id) => {
-    try {
-      await axios.put(`http://localhost:7000/admin/savecomment/${id}`,
-        
-        {
-        comment: comments[id]
-      }, {
-        params:{logid},
-        headers: { "Content-Type": "application/json" }
-      });
+  
 
-      setAttendanceData(prevData => prevData.map(record =>
-        record.id === id ? { ...record, comment: comments[id] } : record
-      ));
-      setEditCommentId(null);
-    } catch (error) {
-      setError('An error occurred while saving the comment.');
-      console.error("Error saving comment:", error);
-    }
+  const handleSaveComment = async (id) => {
+      // Show confirmation dialog
+      const result = await Swal.fire({
+          title: 'Are you sure?',
+          text: "Do you want to save this comment?",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, save it!',
+          cancelButtonText: 'No, cancel!'
+      });
+  
+      // If the user confirmed, proceed with saving the comment
+      if (result.isConfirmed) {
+          try {
+              await axios.put(`http://localhost:7000/admin/savecomment/${id}`,
+                  {
+                      comment: comments[id]
+                  },
+                  {
+                      params: { logid, logip },
+                      headers: { "Content-Type": "application/json" }
+                  }
+              );
+  
+              // Update state with the new comment
+              setAttendanceData(prevData => prevData.map(record =>
+                  record.id === id ? { ...record, comment: comments[id] } : record
+              ));
+              setEditCommentId(null);
+  
+              // Show success alert
+              Swal.fire({
+                  icon: 'success',
+                  title: 'Saved!',
+                  text: 'The comment has been saved.',
+                  confirmButtonText: 'OK'
+              });
+          } catch (error) {
+              setError('An error occurred while saving the comment.');
+              console.error("Error saving comment:", error);
+  
+              // Show error alert
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Error!',
+                  text: 'Failed to save the comment. Please try again.',
+                  confirmButtonText: 'OK'
+              });
+          }
+      }
   };
+  
+
 
   const handleSaveRecord = async (id) => {
-    try {
-      await axios.put(`http://localhost:7000/admin/saverecord/${id}`, {
-        id,
-        ...recordEdits
-      }, {
-        params:{logid},
-        headers: { "Content-Type": "application/json" }
+      // Show confirmation dialog
+      const result = await Swal.fire({
+          title: 'Are you sure?',
+          text: "Do you want to save this record?",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, save it!',
+          cancelButtonText: 'No, cancel!'
       });
-
-      setAttendanceData(prevData => prevData.map(record =>
-        record.id === id ? { ...record, ...recordEdits } : record
-      ));
-      setEditRecordId(null);
-      setEditCommentId(null);
-    } catch (error) {
-      setError('An error occurred while saving the record.');
-      console.error("Error saving record:", error);
-    }
+  
+      // If the user confirmed, proceed with saving the record
+      if (result.isConfirmed) {
+          try {
+              await axios.put(`http://localhost:7000/admin/saverecord/${id}`, {
+                  id,
+                  ...recordEdits
+              }, {
+                  params: { logid, logip },
+                  headers: { "Content-Type": "application/json" }
+              });
+  
+              // Update state with the new record
+              setAttendanceData(prevData => prevData.map(record =>
+                  record.id === id ? { ...record, ...recordEdits } : record
+              ));
+              setEditRecordId(null);
+              setEditCommentId(null);
+  
+              // Show success alert
+              Swal.fire({
+                  icon: 'success',
+                  title: 'Saved!',
+                  text: 'The record has been saved.',
+                  confirmButtonText: 'OK'
+              });
+          } catch (error) {
+              setError('An error occurred while saving the record.');
+              console.error("Error saving record:", error);
+  
+              // Show error alert
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Error!',
+                  text: 'Failed to save the record. Please try again.',
+                  confirmButtonText: 'OK'
+              });
+          }
+      }
   };
+  
 
   const handleCancelRecord = () => {
     setEditRecordId(null);
@@ -201,20 +294,55 @@ const Attendance = () => {
 };
 
 
-  const deleteAttendance = async (id) => {
-    try {
-      await axios.delete(`http://localhost:7000/admin/deleteattendance/${id}`, {
-        params:{logid},
-        headers: { "Content-Type": "application/json" }
-      });
 
-      setAttendanceData(prevData => prevData.filter(record => record.id !== id));
-      setTotal(prevTotal => prevTotal - 1);
-    } catch (error) {
-      setError('An error occurred while deleting the record.');
-      console.error("Error deleting record:", error);
+
+const deleteAttendance = async (id) => {
+    // Show confirmation dialog
+    const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'No, cancel!'
+    });
+
+    // If the user confirmed, proceed with deletion
+    if (result.isConfirmed) {
+        try {
+            await axios.delete(`http://localhost:7000/admin/deleteattendance/${id}`, {
+                params: { logid, logip },
+                headers: { "Content-Type": "application/json" }
+            });
+
+            // Update state to remove deleted attendance record
+            setAttendanceData(prevData => prevData.filter(record => record.id !== id));
+            setTotal(prevTotal => prevTotal - 1);
+
+            // Show success alert
+            Swal.fire({
+                icon: 'success',
+                title: 'Deleted!',
+                text: 'The attendance record has been deleted.',
+                confirmButtonText: 'OK'
+            });
+        } catch (error) {
+            setError('An error occurred while deleting the record.');
+            console.error("Error deleting record:", error);
+
+            // Show error alert
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Failed to delete the record. Please try again.',
+                confirmButtonText: 'OK'
+            });
+        }
     }
-  };
+};
+
 
   const months = [
     'January', 'February', 'March', 'April', 'May', 'June', 'July',
@@ -227,7 +355,42 @@ const Attendance = () => {
   const handleviewuser = (id) => {
     Navigate(`/viewuser/${id}`)
   }
-
+  const handledowloadattendance = async () => {
+    try {
+      const response = await axios.get("http://localhost:7000/admin/allattendancedownload", {
+        responseType: 'blob' // Important to handle blob response
+      });
+      
+      // Create a link to trigger download
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'Attendance.csv'); // Set the file name
+      document.body.appendChild(link);
+      link.click(); // Trigger the download
+      link.remove(); // Clean up
+  
+      // SweetAlert success notification
+      Swal.fire({
+        icon: 'success',
+        title: 'Download Successful!',
+        text: 'Your attendance file has been downloaded.',
+        showConfirmButton: false,
+        timer: 2000
+      });
+      
+    } catch (error) {
+      console.error(error);
+      
+      // SweetAlert error notification
+      Swal.fire({
+        icon: 'error',
+        title: 'Download Failed!',
+        text: 'There was an error downloading the file.',
+        confirmButtonText: 'Try Again'
+      });
+    }
+  };
 
 
   return (
@@ -271,7 +434,8 @@ const Attendance = () => {
             {status.map((item, index) => (
               <option key={index} value={item}>{item}</option>
             ))}
-          </select>
+          </select>    // You can show an error message to the user here if needed
+          <span><button onClick={handledowloadattendance}>Download Attendance</button></span>
         </div>
       </div>
 
@@ -314,7 +478,7 @@ const Attendance = () => {
             <tbody>
               {attendanceData.map((record) => (
                 <tr key={record.id}>
-                  <td>{record.id}</td>
+                                    <td className='viewuserbyfield'  onClick={() => handleviewuser(record.user_id)}>{record.id}</td>
                   <td className='viewuserbyfield'  onClick={() => handleviewuser(record.user_id)}>{record.fullname}</td>
 
                   <td>

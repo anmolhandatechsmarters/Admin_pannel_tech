@@ -6,6 +6,24 @@ import { MdDelete, MdEdit } from "react-icons/md";
 import { FcAlphabeticalSortingAz, FcAlphabeticalSortingZa } from "react-icons/fc";
 import Swal from 'sweetalert2'
 const ShowAllUser = () => {
+  useEffect(() => {
+    const fetchIpAddress = async () => {
+        try {
+            const response = await axios.get('https://api.ipify.org?format=json');
+            setIpAddress(response.data.ip);
+        } catch (error) {
+            console.error('Error fetching IP address:', error);
+        }
+    };
+
+    fetchIpAddress();
+}, []);
+
+
+const [logip, setIpAddress] = useState('');
+
+
+
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState('');
@@ -70,7 +88,7 @@ const ShowAllUser = () => {
         try {
             console.log("Deleting user with id:", id, "Log ID:", logid); // Log to check values
             const response = await axios.delete(`http://localhost:7000/admin/deleteuser/${id}`, {
-                params: { logid },
+                params: { logid,logip },
                 headers: { "Content-Type": "application/json" }
             });
 
@@ -195,7 +213,9 @@ const ShowAllUser = () => {
                 {users.length > 0 ? (
                   users.map((user) => (
                     <tr key={user.id}>
-                      <td>{user.id}</td>
+                     <td className='viewuserbyfield' onClick={() => handleviewuser(user.id)}>
+                        {user.id}
+                      </td>
                       <td className='viewuserbyfield' onClick={() => handleviewuser(user.id)}>
                         {user.first_name} {user.last_name}
                       </td>

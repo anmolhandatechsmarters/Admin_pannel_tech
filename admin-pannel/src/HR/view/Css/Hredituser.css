@@ -1,0 +1,161 @@
+.editsuer-admin .alluseredit-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .editsuer-admin .alluseredit-heading {
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .editsuer-admin .alluseredit-form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .editsuer-admin .form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+  
+  .editsuer-admin .form-group {
+    flex: 1 1 calc(50% - 15px); 
+    min-width: 200px;
+    box-sizing: border-box;
+  }
+  
+  .editsuer-admin label {
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  .editsuer-admin input,
+  select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    width: 100%;
+  }
+  
+  .editsuer-admin input[disabled],
+  select[disabled] {
+    background-color: #f5f5f5;
+  }
+  
+  .editsuer-admin button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  .editsuer-admin button.cancel-button {
+    background-color: #6c757d;
+    margin-left: 10px;
+  }
+  
+  .editsuer-admin button:hover {
+    opacity: 0.9;
+  }
+  
+  .editsuer-admin .icon-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #007bff;
+    font-size: 20px;
+  }
+  
+  .editsuer-admin .icon-button:hover {
+    color: #0056b3;
+  }
+  
+  .editsuer-admin .table-container {
+    margin-top: 20px;
+  }
+  
+  .editsuer-admin .table-container table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .editsuer-admin .table-container th,
+  .table-container td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+  
+  .editsuer-admin .table-container th {
+    background-color: #f8f9fa;
+  }
+  
+  @media (max-width: 768px) {
+    .editsuer-admin .alluseredit-form-section {
+      padding: 10px;
+    }
+  
+    .editsuer-admin .alluseredit-heading {
+      font-size: 20px;
+    }
+  
+    .editsuer-admin input,
+    select {
+      font-size: 14px;
+    }
+  
+    .editsuer-admin button {
+      font-size: 14px;
+      padding: 8px 16px;
+    }
+  
+    .editsuer-admin .icon-button {
+      font-size: 18px;
+    }
+  
+    .editsuer-admin  .form-row {
+      flex-direction: column;
+    }
+  
+    .editsuer-admin.form-group {
+      flex: 1 1 100%;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .editsuer-admin .alluseredit-container {
+      padding: 10px;
+    }
+  
+    .editsuer-admin  .alluseredit-heading {
+      font-size: 18px;
+    }
+  
+    .editsuer-admin input,
+    select {
+      font-size: 12px;
+    }
+  
+    .editsuer-admin button {
+      font-size: 12px;
+      padding: 6px 12px;
+    }
+  
+    .editsuer-admin .icon-button {
+      font-size: 16px;
+    }
+  }
+  
+  
+  
+  
+  

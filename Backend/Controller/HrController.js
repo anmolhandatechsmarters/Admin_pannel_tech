@@ -1,6 +1,6 @@
 const { Sequelize, Op } = require("sequelize");
 const db = require("../Connection");
-
+const { Parser } = require('json2csv');
 // Fetch user data by ID
 const hrdata = async (req, res) => {
     const id = req.params.id;
@@ -77,7 +77,7 @@ const gethremployeeattendance = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const search = req.query.search || '';
-    const userId = parseInt(req.query.userId) || null;
+    const userId = req.query.userid;
     const sortColumn = req.query.sort?.column || 'id';
     const sortOrder = req.query.sort?.order || 'asc';
     const month = parseInt(req.query.month) || null;
@@ -235,11 +235,18 @@ const getemployee = async (req, res) => {
 };
 
 
+
+    
+
+
+
+
 module.exports = {
     hrdata,
     hrcountemployee,
     hractiveemployee,
     hrinactiveemployee,
     gethremployeeattendance,
-    getemployee
+    getemployee,
+
 };

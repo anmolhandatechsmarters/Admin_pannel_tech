@@ -1,115 +1,122 @@
-/* src/ViewUser.css */
-
 .main-container-view-user {
-    display: flex;
-    gap: 20px;
-    height: 100vh; /* Full viewport height */
-    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  display: flex;
+  gap: 20px;
+  height: 100vh; /* Full viewport height */
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+}
+
+.main-container-view-user .sidebarss {
+  width: 250px; /* Fixed width for sidebar */
+  background-color: rgb(233, 233, 224);
+  display: flex;
+  flex-direction: column; /* Stack items vertically */
+  padding: 20px;
+  box-sizing: border-box;
+  border-right: 2px solid #ddd; /* Right border for sidebar */
+}
+
+.main-container-view-user .profile {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.main-container-view-user .profile img {
+  width: 100%;
+  height: auto;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.main-container-view-user .camera-icon {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  font-size: 24px;
+  cursor: pointer;
+  color: #007bff; /* Change color as needed */
+}
+
+.main-container-view-user .menu {
+  display: flex;
+  flex-direction: column; /* Stack buttons vertically */
+}
+
+.main-container-view-user .menu button {
+  padding: 15px;
+  cursor: pointer;
+  border: none;
+  background-color: #f0f0f0;
+  color: #333;
+  border-radius: 5px;
+  text-align: center;
+  transition: background-color 0.3s, color 0.3s;
+  font-weight: bold;
+  margin-bottom: 5px; /* Space between buttons */
+}
+
+.main-container-view-user .menu button:hover,
+.main-container-view-user .menu button.active {
+  background-color: #007bff;
+  color: white;
+}
+
+.main-container-view-user .content {
+  flex: 1; /* Fill remaining space */
+  padding: 20px;
+  background-color: rgb(188, 195, 195);
+  box-sizing: border-box;
+  overflow-y: auto; /* Enable scrolling if content overflows */
+}
+
+.main-container-view-user .text-center {
+  text-align: center;
+}
+
+.main-container-view-user .view-user-user-info {
+  display: flex;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.main-container-view-user .view-user-user-info div {
+  flex: 1;
+  min-width: 200px;
+  margin: 10px;
+}
+
+.main-container-view-user .view-user-user-info p {
+  font-size: 18px;
+  margin: 5px 0;
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+  .main-container-view-user {
+    flex-direction: column; /* Stack layout on smaller screens */
   }
-  
+
   .main-container-view-user .sidebarss {
-    width: 250px; /* Fixed width for sidebar */
-    background-color: rgb(228, 228, 13);
-    display: flex;
-    flex-direction: column; /* Stack items vertically */
-    padding: 20px;
-    box-sizing: border-box;
-    border-right: 2px solid #ddd; /* Right border for sidebar */
-    /* For positioning the profile image upload button */
+    width: 100%; /* Full width for sidebar */
+    border-right: none;
+    border-bottom: 2px solid #ddd; /* Bottom border for sidebar */
   }
-  
-  .main-container-view-user .profile {
-    margin-bottom: 20px;
-    text-align: center;
-  }
-  
-  
-  .main-container-view-user .profile img {
-    width: 100%;
-    height: auto;
-    border-radius: 50%;
-    object-fit: cover;
-  }
-  
-  .main-container-view-user .camera-icon {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    font-size: 24px;
-    cursor: pointer;
-    color: #007bff; /* Change color as needed */
-  }
-  
-  .main-container-view-user .menu {
-    display: flex;
-    flex-direction: column; /* Stack buttons vertically */
-  }
-  
-  .main-container-view-user .menu button {
-    padding: 15px;
-    cursor: pointer;
-    border: none;
-    background-color: #f0f0f0;
-    color: #333;
-    border-radius: 5px;
-    text-align: center;
-    transition: background-color 0.3s, color 0.3s;
-    font-weight: bold;
-    margin-bottom: 5px; /* Space between buttons */
-  }
-  
-  .main-container-view-user .menu button:hover,
-  .main-container-view-user .menu button.active {
-    background-color: #007bff;
-    color: white;
-  }
-  
-  .main-container-view-user .content {
-    flex: 1; /* Fill remaining space */
-    padding: 20px;
-    background-color: aqua;
-    box-sizing: border-box;
-  }
-  
-  .main-container-view-user .text-center {
-    text-align: center;
-  }
-  
+
   .main-container-view-user .view-user-user-info {
-    display: flex;
-    flex-wrap: wrap; /* Allow wrapping on smaller screens */
-    justify-content: space-between;
-    margin-top: 20px;
+    flex-direction: column; /* Stack user info sections vertically */
   }
-  
+
   .main-container-view-user .view-user-user-info div {
-    flex: 1;
-    min-width: 200px;
-    margin: 10px;
+    margin: 10px 0;
   }
-  
+}
+
+@media (max-width: 480px) {
+  .main-container-view-user .menu button {
+    font-size: 14px; /* Smaller font size for buttons */
+  }
+
   .main-container-view-user .view-user-user-info p {
-    font-size: 18px;
-    margin: 5px 0;
+    font-size: 16px; /* Adjust font size for user info */
   }
-  
-  @media (max-width: 768px) {
-    .main-container-view-user {
-      flex-direction: column;
-    }
-  
-    .main-container-view-user .sidebar {
-      width: 100%; /* Full width for smaller screens */
-      border-right: none;
-      border-bottom: 2px solid #ddd; /* Bottom border for sidebar */
-    }
-  
-    .main-container-view-user .view-user-user-info {
-      flex-direction: column;
-    }
-  
-    .main-container-view-user .view-user-user-info div {
-      margin: 10px 0;
-    }
-  }
-  
+}

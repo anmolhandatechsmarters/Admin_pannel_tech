@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import './CSS/EmployeeAttendance.css'; // Assuming you have a CSS file for styling
+import './CSS/EmployeeAttendance.css';
 
 const AttendanceTable = () => {
   const id = localStorage.getItem("id");

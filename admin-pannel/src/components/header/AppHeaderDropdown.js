@@ -2,32 +2,22 @@ import React from 'react'
 import axios from 'axios'
 import {
   CAvatar,
-  CBadge,
   CDropdown,
-  CDropdownDivider,
   CDropdownHeader,
   CDropdownItem,
   CDropdownMenu,
   CDropdownToggle,
 } from '@coreui/react'
 import {
-  cilBell,
-  cilCreditCard,
-  cilCommentSquare,
-  cilEnvelopeOpen,
-  cilFile,
   cilLockLocked,
-  cilSettings,
-  cilTask,
-  cilUser,
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import avatar8 from '../../assets/images/avatars/1.jpg'
-import { useNavigate } from 'react-router-dom' // Import useNavigate
+import { useNavigate } from 'react-router-dom'
 
 
 const AppHeaderDropdown = () => {
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
 
   const id = localStorage.getItem('id');
 
@@ -39,16 +29,16 @@ const AppHeaderDropdown = () => {
         }
       });
 
-      // Clear localStorage or other cleanup actions
+
       localStorage.removeItem('id');
       localStorage.removeItem('token');
       localStorage.removeItem('role');
-      
-      // Navigate to login page
+
+
       navigate("/login");
     } catch (error) {
       console.error('Logout failed:', error);
-      // You can show an error message to the user here if needed
+
     }
   };
   return (

@@ -3,9 +3,8 @@ const multer = require('multer');
 const Sequelize = require('sequelize');
 const db = require('../Connection');
 const { Op } = require("sequelize");
-const { isAsyncFunction } = require('util/types');
-
-// Configure Multer for file uploads
+const { Parser } = require('json2csv');
+//multer
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'uploads/');
@@ -19,8 +18,10 @@ const upload = multer({ storage });
 // Upload image for a user
 const uploadImage = async (req, res) => {
     const { id } = req.params;
+    const logid = req.query.logid
+    const logip = req.query.logip
     const imagePath = req.file?.path;
-
+    const currentDate = new Date();
     if (!id || !imagePath) {
         return res.status(400).json({ message: 'User ID and image file are required' });
     }
@@ -29,11 +30,32 @@ const uploadImage = async (req, res) => {
         const [affectedRows] = await db.users.update({ image: imagePath }, { where: { id } });
         if (affectedRows === 0) return res.status(404).json({ message: 'User not found' });
         res.json({ message: 'Image updated successfully', imagePath });
+
+        const currentDate = new Date();
+        await db.logs.create({
+            user_id: logid,  // Ensure req.user.id is correctly set
+            api: "localhost:3000/uploadimage",
+            message: "Success",
+
+            ip: logip,
+            date: currentDate.toISOString().split('T')[0],
+            time: currentDate.toTimeString().split(' ')[0],
+        });
     } catch (error) {
         console.error('Error updating image:', error);
         res.status(500).json({ message: 'Internal server error' });
+        await db.logs.create({
+            user_id: logid,  // Ensure req.user.id is correctly set
+            api: "localhost:3000/uploadimage",
+            message: "Failed",
+
+            ip: logip,
+            date: currentDate.toISOString().split('T')[0],
+            time: currentDate.toTimeString().split(' ')[0],
+        });
     }
 };
+
 
 // Get user image
 const getImage = async (req, res) => {
@@ -51,6 +73,7 @@ const getImage = async (req, res) => {
 
 // Add a new user
 const addUser = async (req, res) => {
+    const logip = req.query.logip
     const {
         email,
         first_name,
@@ -73,6 +96,7 @@ const addUser = async (req, res) => {
     if (!email || !first_name || !last_name || !street1 || !city || !state || !country || !password || !department || !designation) {
         return res.status(400).json({ message: 'Required fields are missing.' });
     }
+
 
     try {
         // Check if the email already exists
@@ -101,13 +125,7 @@ const addUser = async (req, res) => {
         if (!processedRole) return res.status(400).json({ message: 'Invalid role provided.' });
 
         // Log the action
-        const currentDate = new Date();
-        await db.logs.create({
-            user_id: id,  // Ensure req.user.id is correctly set
-            api: "localhost:3000/adduser",
-            date: currentDate.toISOString().split('T')[0],
-            time: currentDate.toTimeString().split(' ')[0],
-        });
+
 
         // Create the new user
         const newUser = await db.users.create({
@@ -124,14 +142,35 @@ const addUser = async (req, res) => {
             status,
             created_by,
             password,
-            department_id:department,
-            designation_id:designation,
+            department_id: department,
+            designation_id: designation,
         });
 
         res.status(201).json({ message: 'User created successfully', user: newUser });
+        const currentDate = new Date();
+        await db.logs.create({
+            user_id: id,  // Ensure req.user.id is correctly set
+            api: "localhost:3000/adduser",
+            message: "Success",
+
+            ip: logip,
+            date: currentDate.toISOString().split('T')[0],
+            time: currentDate.toTimeString().split(' ')[0],
+        });
     } catch (error) {
         console.error('Error creating user:', error);
         res.status(500).json({ message: 'Error occurred while creating user', error: error.message });
+        await db.logs.create({
+            user_id: id,  // Ensure req.user.id is correctly set
+            api: "localhost:3000/adduser",
+            message: "failed",
+
+            ip: logip,
+            date: currentDate.toISOString().split('T')[0],
+            time: currentDate.toTimeString().split(' ')[0],
+        });
+
+
     }
 };
 
@@ -244,6 +283,7 @@ const getUser = async (req, res) => {
 const updateUser = async (req, res) => {
     const { id } = req.params;
     const logid = req.query.logid
+    const logip = req.query.logip
     const {
         first_name,
         last_name,
@@ -309,16 +349,28 @@ const updateUser = async (req, res) => {
 
         // Log the update
         await db.logs.create({
-            user_id: logid,
-            api: `http://localhost:7000/admin/updateUser/${id}`,
-            date: dateString,
-            time: timeString
+            user_id: logid,  // Ensure req.user.id is correctly set
+            api: `localhost:3000/addupdate/${id}`,
+            message: "Success",
+
+            ip: logip,
+            date: currentDate.toISOString().split('T')[0],
+            time: currentDate.toTimeString().split(' ')[0],
         });
 
         res.status(200).json({ message: 'User updated successfully.' });
     } catch (error) {
         console.error('Error updating user:', error);
         res.status(500).json({ message: 'Failed to update user.' });
+        await db.logs.create({
+            user_id: logid,  // Ensure req.user.id is correctly set
+            api: `localhost:3000/addupdate/${id}`,
+            message: "Failed",
+
+            ip: logip,
+            date: currentDate.toISOString().split('T')[0],
+            time: currentDate.toTimeString().split(' ')[0],
+        });
     }
 };
 
@@ -329,7 +381,7 @@ const updateUser = async (req, res) => {
 const deleteUser = async (req, res) => {
     const { id } = req.params;
     const logid = req.query.logid; // Updated to get logid from query parameters
-
+    const logip = req.query.logip
     if (!id) return res.status(400).json({ message: 'Id is required' });
     if (!logid) return res.status(400).json({ message: 'Log ID is required' }); // Ensure logid is provided
 
@@ -347,10 +399,13 @@ const deleteUser = async (req, res) => {
 
         // Log the deletion
         await db.logs.create({
-            user_id: logid,
-            api: `http://localhost:7000/admin/deleteuser/${id}`, // Ensure this URL is correct
-            date: dateString,
-            time: timeString
+            user_id: logid,  // Ensure req.user.id is correctly set
+            api: `localhost:3000/deleteuser/${id}`,
+            message: "Success",
+
+            ip: logip,
+            date: currentDate.toISOString().split('T')[0],
+            time: currentDate.toTimeString().split(' ')[0],
         });
 
         // Respond after logging
@@ -359,6 +414,15 @@ const deleteUser = async (req, res) => {
     } catch (error) {
         console.error('Error occurred while deleting user:', error);
         res.status(500).json({ message: 'Error occurred while deleting user', error });
+        await db.logs.create({
+            user_id: logid,  // Ensure req.user.id is correctly set
+            api: `localhost:3000/deleteuser/${id}`,
+            message: "failed",
+
+            ip: logip,
+            date: currentDate.toISOString().split('T')[0],
+            time: currentDate.toTimeString().split(' ')[0],
+        });
     }
 };
 
@@ -404,7 +468,7 @@ const getAttendance = async (req, res) => {
             include: [
                 {
                     model: db.users,
-                    as: 'userDetails',  // Use the alias defined in your association
+                    as: 'userDetails',
                     attributes: ['first_name', 'last_name', 'emp_id', 'role'],
                     required: true
                 }
@@ -415,7 +479,8 @@ const getAttendance = async (req, res) => {
             ],
             where: {
                 [Op.and]: [
-                    userIds.length > 0 ? { user_id: userIds } : {},  // Filter by user_id from userIds
+                    userIds.length > 0 ? { user_id: userIds } : {},
+                    { user_id: { [Op.ne]: 1 } }, // Exclude user_id 1
                     search ? {
                         [Op.or]: [
                             { '$userDetails.first_name$': { [Op.like]: `%${search}%` } },
@@ -443,7 +508,7 @@ const getAttendance = async (req, res) => {
             const recordUserId = record.user_id;
 
             // Exclude records where role is "Admin" and user_id is 1
-            return !(userRole === 'Admin' && recordUserId === 1);
+            return !(userRole === 'Admin' && recordUserId === "1");
         });
 
         // Count total records for pagination
@@ -457,7 +522,8 @@ const getAttendance = async (req, res) => {
             ],
             where: {
                 [Op.and]: [
-                    userIds.length > 0 ? { user_id: userIds } : {},  // Filter by user_id from userIds
+                    userIds.length > 0 ? { user_id: userIds } : {},
+                    { user_id: { [Op.ne]: 1 } }, // Exclude user_id 1
                     search ? {
                         [Op.or]: [
                             { '$userDetails.first_name$': { [Op.like]: `%${search}%` } },
@@ -490,7 +556,7 @@ const saveComment = async (req, res) => {
     const { id } = req.params;
     const { comment } = req.body;
     const logid = req.query.logid
-
+    const logip = req.query.logip
     try {
         const [updated] = await db.attendances.update({ comment }, { where: { id } });
         if (updated) {
@@ -503,21 +569,35 @@ const saveComment = async (req, res) => {
         const timeString = currentDate.toLocaleTimeString();
 
         await db.logs.create({
-            user_id: logid,
+            user_id: logid,  // Ensure req.user.id is correctly set
             api: `localhost:3000/addcomment/${id}`,
-            date: dateString,
-            time: timeString
+            message: "Success",
+
+            ip: logip,
+            date: currentDate.toISOString().split('T')[0],
+            time: currentDate.toTimeString().split(' ')[0],
         });
 
     } catch (error) {
         console.error('Error updating comment:', error);
         res.status(500).json({ success: false, message: 'Error updating comment' });
+        await db.logs.create({
+            user_id: logid,  // Ensure req.user.id is correctly set
+            api: `localhost:3000/addcomment/${id}`,
+            message: "Failed",
+
+            ip: logip,
+            date: currentDate.toISOString().split('T')[0],
+            time: currentDate.toTimeString().split(' ')[0],
+        });
+
     }
 };
 
 const deleteAttendance = async (req, res) => {
     const { id } = req.params;
     const logid = req.query.logid
+    const logip = req.query.logip
     try {
         const deleted = await db.attendances.destroy({ where: { id } });
         if (deleted) {
@@ -530,14 +610,27 @@ const deleteAttendance = async (req, res) => {
         const timeString = currentDate.toLocaleTimeString();
 
         await db.logs.create({
-            user_id: logid,
+            user_id: logid,  // Ensure req.user.id is correctly set
             api: `localhost:3000/deleteattendance/${id}`,
-            date: dateString,
-            time: timeString
+            message: "Success",
+
+            ip: logip,
+            date: currentDate.toISOString().split('T')[0],
+            time: currentDate.toTimeString().split(' ')[0],
         });
+
     } catch (error) {
         console.error('Error deleting attendance record:', error);
         res.status(500).json({ success: false, message: 'Error deleting attendance record' });
+        await db.logs.create({
+            user_id: logid,  // Ensure req.user.id is correctly set
+            api: `localhost:3000/deleteattendance/${id}`,
+            message: "Failed",
+
+            ip: logip,
+            date: currentDate.toISOString().split('T')[0],
+            time: currentDate.toTimeString().split(' ')[0],
+        });
     }
 };
 
@@ -545,6 +638,7 @@ const saveRecord = async (req, res) => {
     const { id } = req.params;
     const { in_time, out_time, date, status, comment } = req.body;
     const logid = req.query.logid
+    const logip = req.query.logip
     try {
         const [updated] = await db.attendances.update(
             { in_time, out_time, date, status, comment },
@@ -562,10 +656,13 @@ const saveRecord = async (req, res) => {
         const timeString = currentDate.toLocaleTimeString();
 
         await db.logs.create({
-            user_id: logid,
-            api: `localhost:3000/addcomment/${id}`,
-            date: dateString,
-            time: timeString
+            user_id: logid,  // Ensure req.user.id is correctly set
+            api: `localhost:3000/editattendance/${id}`,
+            message: "Success",
+
+            ip: logip,
+            date: currentDate.toISOString().split('T')[0],
+            time: currentDate.toTimeString().split(' ')[0],
         });
 
 
@@ -573,6 +670,15 @@ const saveRecord = async (req, res) => {
     } catch (error) {
         console.error('Error updating attendance record:', error);
         res.status(500).json({ success: false, message: 'Error updating attendance record' });
+        await db.logs.create({
+            user_id: logid,  // Ensure req.user.id is correctly set
+            api: `localhost:3000/editattendance/${id}`,
+            message: "Failed",
+
+            ip: logip,
+            date: currentDate.toISOString().split('T')[0],
+            time: currentDate.toTimeString().split(' ')[0],
+        });
     }
 };
 
@@ -586,27 +692,27 @@ const viewUser = async (req, res) => {
             include: [
                 {
                     model: db.roles,
-                    as: 'roleDetails',  // Use the alias defined in your association
+                    as: 'roleDetails',  // Make sure this alias matches your association
                     attributes: ['id', 'role'] // Adjust the attribute name to match your Role model
                 },
                 {
                     model: db.countries,
-                    as: 'countryDetails',  // Use the alias defined in your association
+                    as: 'countryDetails',  // Make sure this alias matches your association
                     attributes: ['id', 'name'] // Adjust attribute names if necessary
                 },
                 {
                     model: db.states,
-                    as: 'stateDetails',  // Use the alias defined in your association
+                    as: 'stateDetails',  // Make sure this alias matches your association
                     attributes: ['id', 'name'] // Adjust attribute names if necessary
                 },
                 {
                     model: db.cities,
-                    as: 'cityDetails',  // Use the alias defined in your association
+                    as: 'cityDetails',  // Make sure this alias matches your association
                     attributes: ['id', 'name'] // Adjust attribute names if necessary
                 },
                 {
                     model: db.attendances,
-                    as: 'attendances',  // Use the alias defined in your association
+                    as: 'attendances',  // Make sure this alias matches your association
                     attributes: ['id', 'user_id', 'in_time', 'out_time', 'date', 'status'] // Adjust attribute names if necessary
                 }
             ]
@@ -657,7 +763,7 @@ const logs = async (req, res) => {
             },
             limit: parseInt(limit),
             offset: parseInt(offset),
-            order: [['date', 'DESC']] // Optionally add sorting
+            order: [['id', 'DESC']] // Optionally add sorting
         });
 
         res.json({
@@ -690,11 +796,12 @@ const deletelog = async (req, res) => {
 
 const adddepartment = async (req, res) => {
     const departmentname = req.body.name;
-
+    const logid = req.body.logid
+    const logip = req.body.logip
     try {
         // Check if the department already exists
         const existingDepartment = await db.departments.findOne({ where: { department_name: departmentname } });
-        
+
         if (existingDepartment) {
             // If it exists, send a 409 Conflict status
             return res.status(409).json({ message: 'Department already exists' });
@@ -705,10 +812,30 @@ const adddepartment = async (req, res) => {
             department_name: departmentname
         });
 
-        res.status(201).json(result); // Send success response
+
+        res.status(201).json(result);
+        const currentDate = new Date();
+        await db.logs.create({
+            user_id: logid,  // Ensure req.user.id is correctly set
+            api: `localhost:3000/adddepartment`,
+            message: "Success",
+
+            ip: logip,
+            date: currentDate.toISOString().split('T')[0],
+            time: currentDate.toTimeString().split(' ')[0],
+        }); // Send success response
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Server error' }); // Handle server errors
+        res.status(500).json({ message: 'Server error' });
+        await db.logs.create({
+            user_id: logid,  // Ensure req.user.id is correctly set
+            api: `localhost:3000/adddepartment`,
+            message: "Failed",
+
+            ip: logip,
+            date: currentDate.toISOString().split('T')[0],
+            time: currentDate.toTimeString().split(' ')[0],
+        }); // Send su // Handle server errors
     }
 };
 
@@ -748,8 +875,21 @@ const editdepartment = async (req, res) => {
     const { id } = req.params;
     const department_name = req.body.name;
     const logid = req.body.logid;
+    const logip = req.body.logip
 
     try {
+        // Check if the new department name already exists
+        const existingDepartment = await db.departments.findOne({
+            where: {
+                department_name: department_name,
+                id: { [db.Sequelize.Op.ne]: id } // Exclude the current department being updated
+            }
+        });
+
+        if (existingDepartment) {
+            return res.status(400).json({ success: false, message: 'Department name already exists' });
+        }
+
         // Update the department name
         const [updated] = await db.departments.update({ department_name }, { where: { id } });
 
@@ -760,43 +900,104 @@ const editdepartment = async (req, res) => {
             const timeString = currentDate.toLocaleTimeString();
 
             await db.logs.create({
-                user_id: logid,
-                api: `localhost:3000/editdepartment/${id}`, // Updated to match the action
-                date: dateString,
-                time: timeString
-            });
+                user_id: logid,  // Ensure req.user.id is correctly set
+                api: `localhost:3000/editdepartment/${id}`,
+                message: "Success",
 
-            res.json({ success: true, message: 'Department updated successfully' });
+                ip: logip,
+                date: currentDate.toISOString().split('T')[0],
+                time: currentDate.toTimeString().split(' ')[0],
+            }); // Send su
+
+            return res.json({ success: true, message: 'Department updated successfully' });
         } else {
-            res.status(404).json({ success: false, message: 'Department not found' });
+            return res.status(404).json({ success: false, message: 'Department not found' });
         }
 
     } catch (error) {
         console.error('Error updating department:', error);
-        res.status(500).json({ success: false, message: 'Error updating department' });
+        await db.logs.create({
+            user_id: logid,  // Ensure req.user.id is correctly set
+            api: `localhost:3000/editdepartment/${id}`,
+            message: "Failed",
+
+            ip: logip,
+            date: currentDate.toISOString().split('T')[0],
+            time: currentDate.toTimeString().split(' ')[0],
+        }); // Send su
+        return res.status(500).json({ success: false, message: 'Error updating department' });
+
     }
 };
 
+
 const deletedepartment = async (req, res) => {
-    const id = req.params.id
+    const id = req.params.id;
+    const logid = req.query.logid
+    const logip = req.query.logip
     try {
+        // Attempt to delete the department
         const result = await db.departments.destroy({
             where: { id: id }
-        })
-        res.json(result)
+        });
+        const currentDate = new Date();
+        const dateString = currentDate.toISOString();
+        const timeString = currentDate.toLocaleTimeString();
+
+        await db.logs.create({
+            user_id: logid,  // Ensure req.user.id is correctly set
+            api: `localhost:3000/deletedepartment/${id}`,
+            message: "Success",
+
+            ip: logip,
+            date: currentDate.toISOString().split('T')[0],
+            time: currentDate.toTimeString().split(' ')[0],
+        });
+
+        // Check if any rows were affected (i.e., the deletion was successful)
+        if (result === 0) {
+            return res.status(404).json({ message: 'Department not found' });
+        }
+
+        res.status(200).json({ message: 'Department deleted successfully' });
+        // Send sua
+
     } catch (error) {
-        res.json(error)
+        console.error("Error deleting department:", error);
+
+        // Check for foreign key constraint violation
+        if (error.name === 'SequelizeForeignKeyConstraintError') {
+            return res.status(400).json({ message: 'This department cannot be deleted because it is associated with other records.' });
+        }
+        const currentDate = new Date();
+        const dateString = currentDate.toISOString();
+        const timeString = currentDate.toLocaleTimeString();
+
+        await db.logs.create({
+            user_id: logid,  // Ensure req.user.id is correctly set
+            api: `localhost:3000/deletedepartment/${id}`,
+            message: "Failed",
+
+            ip: logip,
+            date: currentDate.toISOString().split('T')[0],
+            time: currentDate.toTimeString().split(' ')[0],
+        }); // Send su
+
+        res.status(500).json({ message: 'Server error' });
     }
-}
+};
+
 
 //designation
 
 const adddesignation = async (req, res) => {
     const designationName = req.body.name;
+    const logid = req.body.logid
+    const logip = req.body.logip
     try {
         // Check if the designation already exists
         const existingDesignation = await db.designations.findOne({ where: { designation_name: designationName } });
-        
+
         if (existingDesignation) {
             return res.status(409).json({ message: 'Designation already exists' });
         }
@@ -807,9 +1008,35 @@ const adddesignation = async (req, res) => {
         });
 
         res.status(201).json(result); // Send success response
+        const currentDate = new Date();
+        const dateString = currentDate.toISOString();
+        const timeString = currentDate.toLocaleTimeString();
+
+        await db.logs.create({
+            user_id: logid,  // Ensure req.user.id is correctly set
+            api: `localhost:3000/adddesignation`,
+            message: "Success",
+
+            ip: logip,
+            date: currentDate.toISOString().split('T')[0],
+            time: currentDate.toTimeString().split(' ')[0],
+        }); // Send su
+
+
+
+
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Server error' }); // Handle server errors
+        res.status(500).json({ message: 'Server error' });
+        await db.logs.create({
+            user_id: logid,  // Ensure req.user.id is correctly set
+            api: `localhost:3000/adddesignation`,
+            message: "Failed",
+
+            ip: logip,
+            date: currentDate.toISOString().split('T')[0],
+            time: currentDate.toTimeString().split(' ')[0],
+        }); // Send su // Handle server errors
     }
 };
 
@@ -846,20 +1073,27 @@ const getdesignation = async (req, res) => {
     }
 };
 
-
-
 const editdesignation = async (req, res) => {
     const { id } = req.params;
-    const { name: designation, logid } = req.body;
-
-    // Basic validation
-    if (!designation || typeof designation !== 'string') {
-        return res.status(400).json({ success: false, message: 'Invalid designation name' });
-    }
+    const designation_name = req.body.name;
+    const logid = req.body.logid;
+    const logip = req.body.logip
 
     try {
+        // Check if the new department name already exists
+        const existingDepartment = await db.designations.findOne({
+            where: {
+                designation_name: designation_name,
+                id: { [db.Sequelize.Op.ne]: id } // Exclude the current department being updated
+            }
+        });
+
+        if (existingDepartment) {
+            return res.status(400).json({ success: false, message: 'Department name already exists' });
+        }
+
         // Update the department name
-        const [updated] = await db.designations.update({ designation }, { where: { id } });
+        const [updated] = await db.designations.update({ designation_name }, { where: { id } });
 
         if (updated) {
             // Log the update action
@@ -868,55 +1102,170 @@ const editdesignation = async (req, res) => {
             const timeString = currentDate.toLocaleTimeString();
 
             await db.logs.create({
-                user_id: logid,
-                api: `http://localhost:3000/editdesignation/${id}`, // Updated to match the action
-                date: dateString,
-                time: timeString,
-                action: 'update_designation', // Additional field for better logging
-                designation_id: id // Log the ID of the designation being updated
-            });
+                user_id: logid,  // Ensure req.user.id is correctly set
+                api: `localhost:3000/editdesignation/${id}`,
+                message: "Success",
+
+                ip: logip,
+                date: currentDate.toISOString().split('T')[0],
+                time: currentDate.toTimeString().split(' ')[0],
+            }); // Send su
 
             return res.json({ success: true, message: 'Department updated successfully' });
         } else {
             return res.status(404).json({ success: false, message: 'Department not found' });
         }
+
     } catch (error) {
         console.error('Error updating department:', error);
+        const currentDate = new Date();
+        const dateString = currentDate.toISOString();
+        const timeString = currentDate.toLocaleTimeString();
+
+        await db.logs.create({
+            user_id: logid,  // Ensure req.user.id is correctly set
+            api: `localhost:3000/editdesignation/${id}`,
+            message: "Failed",
+
+            ip: logip,
+            date: currentDate.toISOString().split('T')[0],
+            time: currentDate.toTimeString().split(' ')[0],
+        }); // Send su
         return res.status(500).json({ success: false, message: 'Error updating department' });
+
+
     }
 };
 
 
 
+
+
 const deletedesignation = async (req, res) => {
-    const id = req.params.id
+    const id = req.params.id;
+    const logid = req.query.logid
+    const logip = req.query.logip
     try {
+        // Attempt to delete the designation
         const result = await db.designations.destroy({
             where: { id: id }
-        })
+        });
+
+        // Check if any rows were affected (i.e., the deletion was successful)
+        if (result === 0) {
+            return res.status(404).json({ message: 'Designation not found' });
+        }
+
+        res.status(200).json({ message: 'Designation deleted successfully' });
+        const currentDate = new Date();
+        const dateString = currentDate.toISOString();
+        const timeString = currentDate.toLocaleTimeString();
+
+        await db.logs.create({
+            user_id: logid,  // Ensure req.user.id is correctly set
+            api: `localhost:3000/deletedesignation/${id}`,
+            message: "Success",
+
+            ip: logip,
+            date: currentDate.toISOString().split('T')[0],
+            time: currentDate.toTimeString().split(' ')[0],
+        }); // Send su
+    } catch (error) {
+        console.error("Error deleting designation:", error);
+
+        // Check for foreign key constraint violation
+        if (error.name === 'SequelizeForeignKeyConstraintError') {
+            return res.status(400).json({ message: 'This designation cannot be deleted because it is associated with other records.' });
+        }
+
+        res.status(500).json({ message: 'Server error' });
+
+        const currentDate = new Date();
+        const dateString = currentDate.toISOString();
+        const timeString = currentDate.toLocaleTimeString();
+
+        await db.logs.create({
+            user_id: logid,  // Ensure req.user.id is correctly set
+            api: `localhost:3000/deletedesignation/${id}`,
+            message: "Failed",
+
+            ip: logip,
+            date: currentDate.toISOString().split('T')[0],
+            time: currentDate.toTimeString().split(' ')[0],
+        }); // Send su
+    }
+};
+
+
+const getadmindepartment = async (req, res) => {
+    try {
+        const result = await db.departments.findAll()
         res.json(result)
     } catch (error) {
         res.json(error)
     }
 }
 
-const getadmindepartment=async(req,res)=>{
-    try{
-        const result=await db.departments.findAll()
+const getadmindesignation = async (req, res) => {
+    try {
+        const result = await db.designations.findAll()
         res.json(result)
-    }catch(error){
+    } catch (error) {
         res.json(error)
     }
 }
 
-const getadmindesignation =async(req,res)=>{
-    try{
-        const result=await db.designations.findAll()
-        res.json(result)
-    }catch(error){
-        res.json(error)
+
+//============================================================================
+//Attendance
+
+
+const allattendancedownload = async (req, res) => {
+    try {
+        // Fetch attendance records with user details, excluding specific roles
+        const results = await db.attendances.findAll({
+            include: [{
+                model: db.users,
+                as: 'userDetails',
+                attributes: ['first_name', 'last_name', 'emp_id', 'email', 'role'], // Include role for filtering
+                required: true // Ensures only records with user details are fetched
+            }],
+            where: {
+                '$userDetails.role$': { [Op.notIn]: [1, 'Admin'] } // Exclude users with role 1 or 'Admin'
+            }
+        });
+
+        // Transform the results to include full name and other fields
+        const transformedResults = results.map(item => {
+            const attendance = item.get({ plain: true });
+            const user = attendance.userDetails;
+            return {
+                attendance_id: attendance.id,
+                in_time: attendance.in_time,
+                out_time: attendance.out_time,
+                date: attendance.date,
+                comment: attendance.comment,
+                status: attendance.status,
+                fullname: `${user.first_name} ${user.last_name}`,
+                emp_id: user.emp_id,
+                email: user.email,
+                role: user.role // Optionally include role if needed
+            };
+        });
+
+        // Convert results to CSV
+        const csv = new Parser().parse(transformedResults);
+
+        // Set headers for download
+        res.header('Content-Type', 'text/csv');
+        res.attachment('Attendance.csv');
+        res.send(csv);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error querying the database');
     }
-}
+};
+
 
 
 
@@ -948,6 +1297,7 @@ module.exports = {
     editdesignation,
     deletedesignation,
     getadmindepartment,
-    getadmindesignation
+    getadmindesignation,
+    allattendancedownload
 
 };

@@ -1,19 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import './Departmentadd.css'; // Import the CSS file
 import {useNavigate} from "react-router-dom"
 const DepartmentAdd = () => {
+
+    useEffect(() => {
+        const fetchIpAddress = async () => {
+            try {
+                const response = await axios.get('https://api.ipify.org?format=json');
+                setIpAddress(response.data.ip);
+            } catch (error) {
+                console.error('Error fetching IP address:', error);
+            }
+        };
+    
+        fetchIpAddress();
+    }, []);
+
+
+
+
+    const [logip, setIpAddress] = useState('');
+const logid=localStorage.getItem("id")
+
     const [newDepartment, setNewDepartment] = useState('');
 const navigate=useNavigate()
     const handleAddDepartment = async (e) => {
         e.preventDefault(); // Prevent form submission
         try {
-            const response = await axios.post("http://localhost:7000/admin/adddepartment", { name: newDepartment }, {
+            const response = await axios.post("http://localhost:7000/admin/adddepartment", { name: newDepartment,logip,logid }, {
                 headers: { "Content-Type": "application/json" }
             });
             setNewDepartment('');
-            
             // Show success message
             Swal.fire({
                 icon: 'success',
@@ -22,7 +41,7 @@ const navigate=useNavigate()
                 confirmButtonText: 'OK'
             });
             setTimeout(()=>{
-                navigate("/alldesignation")
+                navigate("/alldepartment")
             },2000)
 
         } catch (error) {

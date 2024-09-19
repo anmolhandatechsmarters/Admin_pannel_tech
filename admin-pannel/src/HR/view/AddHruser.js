@@ -3,12 +3,27 @@ import axios from 'axios';
 import countriesData from '../../views/pages/register/countries.json';
 import statesData from '../../views/pages/register/states.json';
 import citiesData from '../../views/pages/register/cities.json';
+import Swal from 'sweetalert2';
 import "./Css/Addhruser.css";
-
+import {useNavigate} from "react-router-dom"
 const Register = () => {
+    useEffect(() => {
+        const fetchIpAddress = async () => {
+            try {
+                const response = await axios.get('https://api.ipify.org?format=json');
+                setIpAddress(response.data.ip);
+            } catch (error) {
+                console.error('Error fetching IP address:', error);
+            }
+        };
+    
+        fetchIpAddress();
+    }, []);
 
 
-    const id=localStorage.getItem("id")
+    const [logip, setIpAddress] = useState('');
+    const navigate =useNavigate()
+    const id = localStorage.getItem("id");
     const [getipa, setgetip] = useState('');
     const [formData, setFormData] = useState({
         email: '',
@@ -21,17 +36,24 @@ const Register = () => {
         city: '',
         street1: '',
         street2: '',
+        department: '',
+        designation: '',
         user_agent: navigator.userAgent,
         ip: getipa,
-        id:id
+        id: id
     });
 
     const [options, setOptions] = useState({
         roles: ['HR', 'Employee'],
         countries: [],
         states: [],
-        cities: []
+        cities: [],
+
     });
+
+    const [department, setdepartment] = useState([])
+    const [designation, setdesignation] = useState([])
+
 
     useEffect(() => {
         const fetchIp = async () => {
@@ -44,10 +66,33 @@ const Register = () => {
             }
         };
 
+
+        const fetchdepartment = async () => {
+            try {
+                const result = await axios.get('http://localhost:7000/admin/getadmindepartment')
+                setdepartment(result.data)
+            } catch (error) {
+                console.log(error)
+            }
+
+        }
+        const fetchdesignaiton = async () => {
+            try {
+                const result = await axios.get('http://localhost:7000/admin/getadmindesignation')
+                setdesignation(result.data)
+            } catch (error) {
+                console.log(error)
+            }
+
+        }
+fetchdepartment()
+fetchdesignaiton()
+
         fetchIp();
     }, []);
 
     useEffect(() => {
+        
         if (Array.isArray(countriesData.countries)) {
             setOptions(prevOptions => ({
                 ...prevOptions,
@@ -74,6 +119,8 @@ const Register = () => {
         } else {
             console.error('Cities data is not an array:', citiesData.cities);
         }
+
+       
     }, []);
 
     const handleChange = (e) => {
@@ -85,7 +132,7 @@ const Register = () => {
             setOptions(prevOptions => ({
                 ...prevOptions,
                 states: filteredStates,
-                cities: []
+                cities: [] // Clear cities when country changes
             }));
             setFormData(prevFormData => ({ ...prevFormData, state: '', city: '' }));
         }
@@ -100,20 +147,48 @@ const Register = () => {
         }
     };
 
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             const result = await axios.post('http://localhost:7000/admin/adduser', formData, {
+                params:{logip},
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
-            alert('Registration successful!');
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: result.data.message || 'User added successfully!',
+                confirmButtonText: 'OK'
+            });
+            setTimeout(() => {
+                navigate("/hremployeeshow");
+            }, 2000);
         } catch (error) {
             console.error('Error submitting form', error);
-            alert('Registration failed.');
+    
+            // Check if error response exists and includes a specific message
+            if (error.response && error.response.data) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops!',
+                    text: error.response.data.message || 'Error occurred while adding the user.',
+                    confirmButtonText: 'Try Again'
+                });
+            } else {
+                // Show generic error message
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops!',
+                    text: 'Error occurred while adding the user.',
+                    confirmButtonText: 'Try Again'
+                });
+            }
         }
     };
+    
 
     return (
         <div className="adminadduser-container">
@@ -204,7 +279,7 @@ const Register = () => {
                             name="state"
                             value={formData.state}
                             onChange={handleChange}
-                            required
+                    
                         >
                             <option value="">Select a state</option>
                             {options.states
@@ -221,13 +296,49 @@ const Register = () => {
                             name="city"
                             value={formData.city}
                             onChange={handleChange}
-                            required
+                        
                         >
                             <option value="">Select a city</option>
                             {options.cities
                                 .filter(city => city.state_id === formData.state)
                                 .map(city => (
                                     <option key={city.id} value={city.id}>{city.name}</option>
+                                ))}
+                        </select>
+                    </div>
+                </div>
+
+                {/* Department and Designation */}
+                <div className="row">
+                    <div className="col">
+                        <label>Department:</label>
+                        <select
+                            name="department"
+                            value={formData.department}
+                            onChange={handleChange}
+                            required
+                        >
+                            <option value="">Select a department</option>
+                            {department.map(dept => (
+                                <option key={dept.id} value={dept.id}>{dept.department_name}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="col">
+                        <label>Designation:</label>
+                        <select
+                            name="designation"
+                            value={formData.designation}
+                            onChange={handleChange}
+                            required
+                        >
+                            <option value="">Select a designation</option>
+                            {designation
+                                .map(designation => (
+                                    <option key={designation.id} value={designation.id}>
+                                        {designation.designation_name}
+                                    </option>
                                 ))}
                         </select>
                     </div>

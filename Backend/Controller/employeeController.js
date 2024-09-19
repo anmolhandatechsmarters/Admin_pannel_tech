@@ -4,34 +4,47 @@ const db=require("../Connection")
 
 const findemployeedetail = async (req, res) => {
     const id = req.params.id;
-  
+    const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+
     try {
-      const user = await db.users.findOne({
-        where: { id: id },
-        include: [
-           {
+        const user = await db.users.findOne({
+            where: { id: id },
+            include: [
+                {
                     model: db.roles,
-                    as: 'roleDetails',  // Use the alias defined in your association
-                    attributes: ['id', 'role'] 
+                    as: 'roleDetails', // Use the alias defined in your association
+                    attributes: ['id', 'role'] // Include role attributes
                 },
                 {
                     model: db.attendances,
-                    as: 'attendances',  // Use the alias defined in your association
-                    attributes: ['in_time', 'out_time', 'date']
-                },
-        ]
-      });
-  
-      if (user) {
-        res.json({ success: true, user });
-      } else {
-        res.json({ success: false, message: "No user found" }); // Adjusted message and response structure
-      }
+                    as: 'attendances', // Use the alias defined in your association
+                    where: { date: today }, // Filter for today's date
+                    order: [['date', 'DESC']], // Get the latest attendance
+                    limit: 1, // Limit to only the latest record
+                    attributes: ['in_time', 'out_time', 'date', 'status'] // Include relevant fields
+                }
+            ]
+        });
+
+        if (user) {
+            // Prepare the response
+            const response = {
+                id: user.id,
+                email: user.email,
+                role: user.roleDetails, // Add role details
+                attendance: user.attendances.length > 0 ? user.attendances[0] : null // Get today's attendance or null
+            };
+            res.json({ success: true, user: response });
+        } else {
+            res.json({ success: false, message: "No user found" });
+        }
     } catch (error) {
-      console.error("Error fetching user details:", error); // Log the error for debugging
-      res.status(500).json({ success: false, message: "Internal Server Error", error: error.message }); // Include error message in response
+        console.error("Error fetching user details:", error);
+        res.status(500).json({ success: false, message: "Internal Server Error", error: error.message });
     }
-  };
+};
+
+
   
   const userattendance = async (req, res) => {
     const id = req.params.id;
@@ -64,15 +77,6 @@ try{
     const intime = new Date();
     const timeString = intime.toLocaleTimeString()
     const today = new Date().toISOString().split('T')[0];
-
-
-const user=await db.attendances.create({
-    user_id:id,
-    date: today,
-    in_time:timeString,
-})
-
-res.json(user)
 const latestRecord = await db.attendances.findOne({
     where: { user_id: id },
     order: [['date', 'DESC'], ['id', 'DESC']] // Order by date and ID to get the latest record
@@ -227,7 +231,7 @@ const Getattendance = async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
-;
+
 
 
 

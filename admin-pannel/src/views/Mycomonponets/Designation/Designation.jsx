@@ -5,6 +5,30 @@ import { MdDelete, MdEdit } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2'
 const DepartmentManagement = () => {
+    useEffect(() => {
+        const fetchIpAddress = async () => {
+            try {
+                const response = await axios.get('https://api.ipify.org?format=json');
+                setIpAddress(response.data.ip);
+            } catch (error) {
+                console.error('Error fetching IP address:', error);
+            }
+        };
+    
+        fetchIpAddress();
+    }, []);
+
+
+
+
+    const [logip, setIpAddress] = useState('');
+   
+
+
+
+
+
+
     const navigate = useNavigate();
     const logid = localStorage.getItem("id");
     const [departments, setDepartments] = useState([]);
@@ -50,14 +74,40 @@ const DepartmentManagement = () => {
 
     const handleEditDepartment = async (id) => {
         try {
-            await axios.put(`http://localhost:7000/admin/editdesignation/${id}`, { name: editValue, logid: logid }, {
+            await axios.put(`http://localhost:7000/admin/editdesignation/${id}`, { name: editValue, logid,logip }, {
                 headers: { "Content-Type": "application/json" }
             });
+            
+            // Show success message
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: 'Department updated successfully!',
+                confirmButtonText: 'OK'
+            });
+    
             setEditingDepartment(null);
             setEditValue('');
-            fetchDepartments();
+            fetchDepartments(); // Refresh the list of departments
         } catch (error) {
             console.error("Error editing department:", error);
+    
+            // Show specific error messages based on the response
+            if (error.response && error.response.data && error.response.data.message) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops!',
+                    text: error.response.data.message,
+                    confirmButtonText: 'Try Again'
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops!',
+                    text: 'There was a problem updating the department.',
+                    confirmButtonText: 'Try Again'
+                });
+            }
         }
     };
 
@@ -73,23 +123,26 @@ const DepartmentManagement = () => {
     
         if (result.isConfirmed) {
             try {
-                await axios.delete(`http://localhost:7000/admin/deletedesignation/${id}`);
-                fetchDepartments(); // Refresh the list of departments
-                Swal.fire('Deleted!', 'Your department has been deleted.', 'success');
+                const response = await axios.delete(`http://localhost:7000/admin/deletedesignation/${id}`,{
+                    params:{logid,logip}
+                });
+                fetchDepartments(); // Refresh the list of designations
+                Swal.fire('Deleted!', 'Your designation has been deleted.', 'success');
             } catch (error) {
-                console.error("Error deleting department:", error);
+                console.error("Error deleting designation:", error);
     
-                // Check if the error response indicates that the department still exists
-                if (error.response && error.response.data) {
-                    Swal.fire('Error!', 'This department cannot be deleted because it still exists in other records.', 'error');
+                // Show specific error messages based on the response
+                if (error.response && error.response.data && error.response.data.message) {
+                    Swal.fire('Error!', error.response.data.message, 'error');
                 } else {
-                    Swal.fire('Error!', 'There was a problem deleting the department.', 'error');
+                    Swal.fire('Error!', 'There was a problem deleting the designation.', 'error');
                 }
             }
         } else {
-            Swal.fire('Cancelled', 'Your department is safe :)', 'error');
+            Swal.fire('Cancelled', 'Your designation is safe :)', 'error');
         }
     };
+    
     
     
 
@@ -112,9 +165,9 @@ const DepartmentManagement = () => {
         <div className="department-management">
             <h1>Designation Management</h1>
 
-            <div className="actions">
-                <button onClick={handlemovedepartment}>Add Designation</button>
-            </div>
+            <div className="d-grid gap-2 d-md-flex justify-content-md-end actions">
+                    <button onClick={handlemovedepartment} className='btn btn-primary'>Add Designation</button>
+                </div>
 
             <div className="search">
                 <input

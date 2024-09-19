@@ -113,16 +113,22 @@ const hrNav=[
     to: '/hrAttendance',
     icon: <CIcon icon={cilDrop} customClassName="nav-icon" />,
   },
-
   {
     component: CNavItem,
-    name: 'Employee Dashboard',
-    to: '/hrdashboard',
+    name: 'Department',
+    to: '/hrdepartment',
     icon: <CIcon icon={cilDrop} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
-    name: 'All Employee',
+    name: 'Designation',
+    to: '/hrdesignation',
+    icon: <CIcon icon={cilDrop} customClassName="nav-icon" />,
+  },
+
+  {
+    component: CNavItem,
+    name: 'Employee',
     to: '/hremployeeshow',
     icon: <CIcon icon={cilDrop} customClassName="nav-icon" />,
   },

@@ -58,5 +58,5 @@ router.delete('/deletedesignation/:id',userController.deletedesignation)
 router.get("/getadmindepartment",userController.getadmindepartment)
 router.get("/getadmindesignation",userController.getadmindesignation)
 
-
+router.get("/allattendancedownload",userController.allattendancedownload)
 module.exports = router;

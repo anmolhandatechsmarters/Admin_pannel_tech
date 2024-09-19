@@ -18,6 +18,14 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false,
         },
+        message:{
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        ip:{
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
         date: {
             type: DataTypes.DATEONLY, // For date only (YYYY-MM-DD)
             allowNull: false,

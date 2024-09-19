@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState ,useEffect} from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import "./Login.css"
@@ -19,6 +19,31 @@ import CIcon from '@coreui/icons-react';
 import { cilLockLocked, cilUser } from '@coreui/icons';
 
 const Login = () => {
+
+  const [userAgent, setUserAgent] = useState('');
+
+  useEffect(() => {
+    const ua = navigator.userAgent;
+    setUserAgent(ua);
+  }, []);
+
+
+  useEffect(() => {
+    const fetchIpAddress = async () => {
+        try {
+            const response = await axios.get('https://api.ipify.org?format=json');
+            setIpAddress(response.data.ip);
+        } catch (error) {
+            console.error('Error fetching IP address:', error);
+        }
+    };
+
+    fetchIpAddress();
+}, []);
+
+
+const [ip, setIpAddress] = useState('');
+
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -40,7 +65,10 @@ const Login = () => {
       const result = await axios.post("http://localhost:7000/user/login", {
         email,
         password
-      }, {
+      },
+     
+      {
+        params:{ip,userAgent},
         headers: {
           "Content-Type": "application/json",
         }
@@ -142,14 +170,12 @@ const Login = () => {
               <CCard className="text-white bg-primary py-5 signup-card">
                 <CCardBody className="text-center">
                   <div>
-                    <h2>Sign up</h2>
+                    <h2>Attendance Managment System</h2>
                     <p>
-                      If you don't have an account, please register. Click the button below to create a new account.
+                      Welcome to the Attendance Management System. It Used the handle the Attendance for the Employees
                     </p>
                     <Link to="/register">
-                      <CButton color="primary" className="mt-3" active tabIndex={-1}>
-                        Register Now!
-                      </CButton>
+
                     </Link>
                   </div>
                 </CCardBody>

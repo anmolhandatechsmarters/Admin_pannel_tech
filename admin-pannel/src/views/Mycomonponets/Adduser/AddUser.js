@@ -3,10 +3,28 @@ import axios from 'axios';
 import countriesData from '../../../views/pages/register/countries.json';
 import statesData from '../../../views/pages/register/states.json';
 import citiesData from '../../../views/pages/register/cities.json';
-
+import Swal from 'sweetalert2';
 import "../CSS/AddUser.css";
-
+import {useNavigate} from "react-router-dom"
 const Register = () => {
+    useEffect(() => {
+        const fetchIpAddress = async () => {
+            try {
+                const response = await axios.get('https://api.ipify.org?format=json');
+                setIpAddress(response.data.ip);
+            } catch (error) {
+                console.error('Error fetching IP address:', error);
+            }
+        };
+    
+        fetchIpAddress();
+    }, []);
+
+
+
+
+    const [logip, setIpAddress] = useState('');
+    const navigate =useNavigate()
     const id = localStorage.getItem("id");
     const [getipa, setgetip] = useState('');
     const [formData, setFormData] = useState({
@@ -76,7 +94,7 @@ fetchdesignaiton()
     }, []);
 
     useEffect(() => {
-        // Initialize options
+        
         if (Array.isArray(countriesData.countries)) {
             setOptions(prevOptions => ({
                 ...prevOptions,
@@ -104,23 +122,7 @@ fetchdesignaiton()
             console.error('Cities data is not an array:', citiesData.cities);
         }
 
-        // if (Array.isArray(departmentsData)) {
-        //     setOptions(prevOptions => ({
-        //         ...prevOptions,
-        //         departments: departmentsData
-        //     }));
-        // } else {
-        //     console.error('Departments data is not an array:', departmentsData);
-        // }
-
-        // if (Array.isArray(designationsData)) {
-        //     setOptions(prevOptions => ({
-        //         ...prevOptions,
-        //         designations: designationsData
-        //     }));
-        // } else {
-        //     console.error('Designations data is not an array:', designationsData);
-        // }
+       
     }, []);
 
     const handleChange = (e) => {
@@ -147,24 +149,48 @@ fetchdesignaiton()
         }
     };
 
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             const result = await axios.post('http://localhost:7000/admin/adduser', formData, {
+                params:{logip},
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
-            alert('Registration successful!');
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: result.data.message || 'User added successfully!',
+                confirmButtonText: 'OK'
+            });
+            setTimeout(() => {
+                navigate("/alluser");
+            }, 2000);
         } catch (error) {
             console.error('Error submitting form', error);
-            alert('Registration failed.');
+    
+            // Check if error response exists and includes a specific message
+            if (error.response && error.response.data) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops!',
+                    text: error.response.data.message || 'Error occurred while adding the user.',
+                    confirmButtonText: 'Try Again'
+                });
+            } else {
+                // Show generic error message
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops!',
+                    text: 'Error occurred while adding the user.',
+                    confirmButtonText: 'Try Again'
+                });
+            }
         }
-
-
-
-
     };
+    
 
     return (
         <div className="adminadduser-container">
@@ -255,7 +281,7 @@ fetchdesignaiton()
                             name="state"
                             value={formData.state}
                             onChange={handleChange}
-                            required
+                    
                         >
                             <option value="">Select a state</option>
                             {options.states
@@ -272,7 +298,7 @@ fetchdesignaiton()
                             name="city"
                             value={formData.city}
                             onChange={handleChange}
-                            required
+                        
                         >
                             <option value="">Select a city</option>
                             {options.cities

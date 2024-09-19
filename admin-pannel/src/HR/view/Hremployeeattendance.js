@@ -4,13 +4,36 @@ import axios from "axios";
 import { MdDelete, MdEdit, MdOutlineDone, MdCancel } from "react-icons/md";
 import { IoIosAdd } from "react-icons/io";
 import { FcAlphabeticalSortingAz, FcAlphabeticalSortingZa } from "react-icons/fc";
-import { useNavigate, useParams} from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import Swal from 'sweetalert2'; // Import SweetAlert
 
 const Attendance = () => {
-  const Navigate = useNavigate()
-  const userids = useParams()
-  const userid=userids.id
-  console.log(userid)
+
+  useEffect(() => {
+    const fetchIpAddress = async () => {
+      try {
+        const response = await axios.get('https://api.ipify.org?format=json');
+        setIpAddress(response.data.ip);
+      } catch (error) {
+        console.error('Error fetching IP address:', error);
+      }
+    };
+
+    fetchIpAddress();
+  }, []);
+
+
+
+
+  const [logip, setIpAddress] = useState('');
+  const logid = localStorage.getItem("id")
+
+
+
+
+  const Navigate = useNavigate();
+  const userids = useParams();
+  const userid = userids.id;
   const [attendanceData, setAttendanceData] = useState([]);
   const [error, setError] = useState('');
   const [editCommentId, setEditCommentId] = useState(null);
@@ -28,19 +51,16 @@ const Attendance = () => {
   const [statusFilter, setStatusFilter] = useState('');
   const limit = 10;
 
-
-
   useEffect(() => {
     async function fetchAttendance() {
       try {
         const response = await axios.get("http://localhost:7000/api/hr/showemployeeattendance", {
-          params: { page, limit, search, sort: userSort, month: monthFilter, year: yearFilter, startDate, endDate, status: statusFilter,userid},
+          params: { page, limit, search, sort: userSort, month: monthFilter, year: yearFilter, startDate, endDate, status: statusFilter, userid },
           headers: { "Content-Type": "application/json" }
         });
 
         if (response.data.success) {
           setAttendanceData(response.data.attendance);
-          console.log(response.data.attendance)
           setTotal(response.data.total);
         } else {
           setError('Failed to fetch data.');
@@ -88,12 +108,10 @@ const Attendance = () => {
     setPage(1);
   };
 
-
   const handleStartDateChange = (e) => {
     setStartDate(e.target.value);
     setPage(1);
   };
-
 
   const handleEndDateChange = (e) => {
     setEndDate(e.target.value);
@@ -138,8 +156,10 @@ const Attendance = () => {
   const handleSaveComment = async (id) => {
     try {
       await axios.put(`http://localhost:7000/admin/savecomment/${id}`, {
+
         comment: comments[id]
       }, {
+        params: { logid, logip },
         headers: { "Content-Type": "application/json" }
       });
 
@@ -147,9 +167,11 @@ const Attendance = () => {
         record.id === id ? { ...record, comment: comments[id] } : record
       ));
       setEditCommentId(null);
+      Swal.fire('Success!', 'Comment saved successfully!', 'success'); // Notification
     } catch (error) {
       setError('An error occurred while saving the comment.');
       console.error("Error saving comment:", error);
+      Swal.fire('Error!', 'Failed to save comment.', 'error'); // Error notification
     }
   };
 
@@ -159,6 +181,7 @@ const Attendance = () => {
         id,
         ...recordEdits
       }, {
+        params: { logid, logip },
         headers: { "Content-Type": "application/json" }
       });
 
@@ -167,9 +190,11 @@ const Attendance = () => {
       ));
       setEditRecordId(null);
       setEditCommentId(null);
+      Swal.fire('Success!', 'Record saved successfully!', 'success'); // Notification
     } catch (error) {
       setError('An error occurred while saving the record.');
       console.error("Error saving record:", error);
+      Swal.fire('Error!', 'Failed to save record.', 'error'); // Error notification
     }
   };
 
@@ -179,22 +204,35 @@ const Attendance = () => {
   };
 
   const handleDeleteButtonClick = (id) => {
-    if (window.confirm("Are you sure you want to delete this record?")) {
-      deleteAttendance(id);
-    }
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteAttendance(id);
+      }
+    });
   };
 
   const deleteAttendance = async (id) => {
     try {
       await axios.delete(`http://localhost:7000/admin/deleteattendance/${id}`, {
+        params: { logid, logip },
         headers: { "Content-Type": "application/json" }
       });
 
       setAttendanceData(prevData => prevData.filter(record => record.id !== id));
       setTotal(prevTotal => prevTotal - 1);
+      Swal.fire('Deleted!', 'Your record has been deleted.', 'success'); // Notification
     } catch (error) {
       setError('An error occurred while deleting the record.');
       console.error("Error deleting record:", error);
+      Swal.fire('Error!', 'Failed to delete record.', 'error'); // Error notification
     }
   };
 
@@ -207,8 +245,46 @@ const Attendance = () => {
   const years = Array.from(new Set(attendanceData.map(record => new Date(record.date).getFullYear())));
 
   const handleviewuser = (id) => {
-    Navigate(`/viewhruser/${id}`)
-  }
+    Navigate(`/viewhruser/${id}`);
+  };
+
+
+  const handledowloadattendance = async () => {
+    try {
+      const response = await axios.get("http://localhost:7000/admin/allattendancedownload", {
+        responseType: 'blob' // Important to handle blob response
+      });
+      
+      // Create a link to trigger download
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'Attendance.csv'); // Set the file name
+      document.body.appendChild(link);
+      link.click(); // Trigger the download
+      link.remove(); // Clean up
+  
+      // SweetAlert success notification
+      Swal.fire({
+        icon: 'success',
+        title: 'Download Successful!',
+        text: 'Your attendance file has been downloaded.',
+        showConfirmButton: false,
+        timer: 2000
+      });
+      
+    } catch (error) {
+      console.error(error);
+      
+      // SweetAlert error notification
+      Swal.fire({
+        icon: 'error',
+        title: 'Download Failed!',
+        text: 'There was an error downloading the file.',
+        confirmButtonText: 'Try Again'
+      });
+    }
+  };
 
 
 
@@ -254,6 +330,7 @@ const Attendance = () => {
               <option key={index} value={item}>{item}</option>
             ))}
           </select>
+          <span><button onClick={handledowloadattendance}>Download Attendance</button></span>
         </div>
       </div>
 
@@ -288,7 +365,6 @@ const Attendance = () => {
                   ) : <FcAlphabeticalSortingAz />}
                 </span></th>
                 <th>Status</th>
-
                 <th>Comment</th>
                 <th>Action</th>
               </tr>
@@ -296,8 +372,8 @@ const Attendance = () => {
             <tbody>
               {attendanceData.map((record) => (
                 <tr key={record.id}>
-                  <td>{record.id}</td>
-                  <td className='viewuserbyfield'  onClick={() => handleviewuser(record.user_id)}>{record.fullname}</td>
+                 <td className='viewuserbyfield' onClick={() => handleviewuser(record.user_id)}>{record.id}</td>
+                  <td className='viewuserbyfield' onClick={() => handleviewuser(record.user_id)}>{record.fullname}</td>
 
                   <td>
                     {editRecordId === record.id ? (
@@ -354,7 +430,7 @@ const Attendance = () => {
                       )
                     )}
                   </td>
-                 
+
                   <td>
                     {editCommentId === record.id ? (
                       <div>

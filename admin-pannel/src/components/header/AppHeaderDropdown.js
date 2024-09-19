@@ -10,7 +10,7 @@ import {
 } from '@coreui/react';
 import { cilLockLocked } from '@coreui/icons';
 import CIcon from '@coreui/icons-react';
-import avatar8 from '../../assets/images/avatars/1.jpg'; // Fallback avatar
+import avatar8 from '../../assets/images/avatars/1.jpg';
 import { useNavigate } from 'react-router-dom';
 
 const AppHeaderDropdown = () => {

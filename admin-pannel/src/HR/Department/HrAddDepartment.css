@@ -1,62 +1,62 @@
-.departmentadd-admin {
+.hrdepartment-add .departmentadd-admin {
     display: flex;
     justify-content: center;
     margin: 0;
     background-color: #f0f0f0; 
-    padding: 20px;
+
 }
 
-.departmentadd-admin .form-container {
+.hrdepartment-add .departmentadd-admin .form-container {
     background-color: white;
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     padding: 20px;
-    width: 100%; /* Full width for responsiveness */
-    max-width: 500px; /* Max width for large screens */
+    width: 100%; 
+    max-width: 500px; 
     text-align: center; 
     box-sizing: border-box;
 }
 
-.departmentadd-admin .department-form {
+.hrdepartment-add .departmentadd-admin .department-form {
     display: flex;
     flex-direction: column;
 }
 
-.departmentadd-admin .form-group {
+.hrdepartment-add .departmentadd-admin .form-group {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     width: 100%;
 }
 
-.departmentadd-admin label {
+.hrdepartment-add .departmentadd-admin label {
     margin-bottom: 5px; 
     font-weight: bold;
-    font-size: 1.5rem; /* Adjust font size */
+    font-size: 1.5rem; 
 }
 
-.departmentadd-admin .input-button-container {
+.hrdepartment-add .departmentadd-admin .input-button-container {
     display: flex;
     align-items: center; 
     width: 100%;
 }
 
-.departmentadd-admin input {
+.hrdepartment-add .departmentadd-admin input {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 1rem;
     transition: box-shadow 0.3s; 
-    flex-grow: 1; /* Take remaining space */
-    margin-right: 10px; /* Space between input and button */
+    flex-grow: 1;
+    margin-right: 10px;
 }
 
-.departmentadd-admin input:focus {
+.hrdepartment-add .departmentadd-admin input:focus {
     border-color: #4CAF50; 
     box-shadow: 0 0 5px rgba(76, 175, 80, 0.5); 
 }
 
-.departmentadd-admin .add-button {
+.hrdepartment-add .departmentadd-admin .add-button {
 
     background-color: #5856d6;
     color: white;
@@ -67,22 +67,22 @@
     font-size: 1rem; 
 }
 
-.departmentadd-admin .add-button:hover {
+.hrdepartment-add .departmentadd-admin .add-button:hover {
     background-color: #4979d4;
 }
 
-/* Responsive adjustments */
+
 @media (max-width: 600px) {
-    .departmentadd-admin .input-button-container {
-        flex-direction: column; /* Stack input and button vertically on smaller screens */
+    .hrdepartment-add .departmentadd-admin .input-button-container {
+        flex-direction: column;
     }
 
-    .departmentadd-admin input {
-        margin-right: 0; /* Remove right margin */
-        margin-bottom: 10px; /* Add bottom margin for spacing */
+    .hrdepartment-add .departmentadd-admin input {
+        margin-right: 0; 
+        margin-bottom: 10px;
     }
 
-    .departmentadd-admin .add-button {
-        width: 100%; /* Full width for button */
+    .hrdepartment-add .departmentadd-admin .add-button {
+        width: 100%;
     }
 }

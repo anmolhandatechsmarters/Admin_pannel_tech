@@ -4,7 +4,7 @@ import "./HrDesignation.css";
 import { MdDelete, MdEdit } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2'
-const DepartmentManagement = () => {
+const HrDesignation = () => {
     useEffect(() => {
         const fetchIpAddress = async () => {
             try {
@@ -23,11 +23,6 @@ const DepartmentManagement = () => {
 
     const [logip, setIpAddress] = useState('');
    
-
-
-
-
-
 
     const navigate = useNavigate();
     const logid = localStorage.getItem("id");
@@ -60,25 +55,14 @@ const DepartmentManagement = () => {
         }
     };
 
-    const handleAddDepartment = async () => {
-        try {
-            await axios.post("http://localhost:7000/admin/adddepartment", { name: newDepartment }, {
-                headers: { "Content-Type": "application/json" }
-            });
-            setNewDepartment('');
-            fetchDepartments();
-        } catch (error) {
-            console.error("Error adding department:", error);
-        }
-    };
-
+    
     const handleEditDepartment = async (id) => {
         try {
             await axios.put(`http://localhost:7000/admin/editdesignation/${id}`, { name: editValue, logid,logip }, {
                 headers: { "Content-Type": "application/json" }
             });
             
-            // Show success message
+  
             Swal.fire({
                 icon: 'success',
                 title: 'Success!',
@@ -88,11 +72,10 @@ const DepartmentManagement = () => {
     
             setEditingDepartment(null);
             setEditValue('');
-            fetchDepartments(); // Refresh the list of departments
+            fetchDepartments();
         } catch (error) {
             console.error("Error editing department:", error);
     
-            // Show specific error messages based on the response
             if (error.response && error.response.data && error.response.data.message) {
                 Swal.fire({
                     icon: 'error',
@@ -126,12 +109,12 @@ const DepartmentManagement = () => {
                 const response = await axios.delete(`http://localhost:7000/admin/deletedesignation/${id}`,{
                     params:{logid,logip}
                 });
-                fetchDepartments(); // Refresh the list of designations
+                fetchDepartments(); 
                 Swal.fire('Deleted!', 'Your designation has been deleted.', 'success');
             } catch (error) {
                 console.error("Error deleting designation:", error);
     
-                // Show specific error messages based on the response
+           
                 if (error.response && error.response.data && error.response.data.message) {
                     Swal.fire('Error!', error.response.data.message, 'error');
                 } else {
@@ -162,6 +145,7 @@ const DepartmentManagement = () => {
     };
 
     return (
+        <div className='hrDesignation'>
         <div className="department-management">
             <h1>Designation Management</h1>
 
@@ -195,7 +179,7 @@ const DepartmentManagement = () => {
                                     {editingDepartment === item.id ? (
                                         <input
                                             type="text"
-                                            value={editValue || ''} // Ensures controlled input
+                                            value={editValue || ''} 
                                             onChange={(e) => setEditValue(e.target.value)}
                                             autoFocus
                                         />
@@ -213,7 +197,7 @@ const DepartmentManagement = () => {
                                         <>
                                             <MdEdit onClick={() => {
                                                 setEditingDepartment(item.id);
-                                                setEditValue(item.designation_name); // Updated to use designation_name
+                                                setEditValue(item.designation_name);
                                             }} />
                                             <MdDelete onClick={() => handleDeleteDepartment(item.id)} />
                                         </>
@@ -235,7 +219,8 @@ const DepartmentManagement = () => {
                 </button>
             </div>
         </div>
+        </div>
     );
 };
 
-export default DepartmentManagement;
+export default HrDesignation;

@@ -10,77 +10,77 @@
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     padding: 20px;
-    width: 100%; /* Full width for responsiveness */
-    max-width: 400px; /* Max width for large screens */
-    text-align: center; /* Center text */
-    box-sizing: border-box; /* Include padding in width calculation */
+    width: 100%;
+    max-width: 400px; 
+    text-align: center;
+    box-sizing: border-box; 
 }
 
 .designation-form {
     display: flex;
-    flex-direction: column; /* Stack elements vertically */
+    flex-direction: column;
 }
 
 .designationadd-admin .form-group {
     display: flex;
-    flex-direction: column; /* Align label and input vertically */
-    width: 100%; /* Full width of the container */
+    flex-direction: column; 
+    width: 100%;
 }
 
 .designationadd-admin label {
-    margin-bottom: 5px; /* Space between label and input */
+    margin-bottom: 5px; 
     font-weight: bold;
-    font-size: 1.5em; /* Adjust font size */
+    font-size: 1.5em; 
 }
 
 .input-button-container {
-    display: flex; /* Align input and button in a row */
-    align-items: center; /* Center items vertically */
-    width: 100%; /* Full width of the container */
+    display: flex; 
+    align-items: center;
+    width: 100%; 
 }
 
 .designationadd-admin input {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    font-size: 1rem; /* Adjust font size */
-    transition: box-shadow 0.3s; /* Smooth transition */
-    flex-grow: 1; /* Allow input to take available space */
-    margin-right: 10px; /* Space between input and button */
+    font-size: 1rem;
+    transition: box-shadow 0.3s;
+    flex-grow: 1; 
+    margin-right: 10px; 
 }
 
 .designationadd-admin input:focus {
-    border-color: #4CAF50; /* Change border color on focus */
-    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5); /* Light green shadow on focus */
+    border-color: #4CAF50; 
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
 }
 
 .designationadd-admin .add-button {
-    padding: 10px 15px; /* Adjust padding for better button size */
-    background-color: #3336da; /* Blue color */
+    padding: 10px 15px;
+    background-color: #3336da; 
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.3s; /* Smooth transition */
-    font-size: 1rem; /* Adjust font size */
+    transition: background-color 0.3s;
+    font-size: 1rem; 
 }
 
 .designationadd-admin .add-button:hover {
-    background-color: #4f8ce1; /* Darker blue on hover */
+    background-color: #4f8ce1; 
 }
 
-/* Responsive adjustments */
+
 @media (max-width: 600px) {
     .input-button-container {
-        flex-direction: column; /* Stack input and button vertically on smaller screens */
+        flex-direction: column; 
     }
 
     .designationadd-admin input {
-        margin-right: 0; /* Remove right margin */
-        margin-bottom: 10px; /* Space between input and button when stacked */
+        margin-right: 0;
+        margin-bottom: 10px;
     }
 
     .designationadd-admin .add-button {
-        width: 100%; /* Full width for button */
+        width: 100%; 
     }
 }

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import './HrAddDepartment.css'; // Import the CSS file
+import './HrAddDepartment.css';
 import { useNavigate } from "react-router-dom";
 
-const DepartmentAdd = () => {
+const HrDepartmentAdd = () => {
     const [logip, setIpAddress] = useState('');
     const logid = localStorage.getItem("id");
     const [newDepartment, setNewDepartment] = useState('');
@@ -60,6 +60,7 @@ const DepartmentAdd = () => {
     };
 
     return (
+        <div className='hrdepartment-add'>
         <div className='departmentadd-admin'>
             <div className="form-container">
                 <form onSubmit={handleAddDepartment} className="department-form">
@@ -82,7 +83,8 @@ const DepartmentAdd = () => {
                 </form>
             </div>
         </div>
+        </div>
     );
 };
 
-export default DepartmentAdd;
+export default HrDepartmentAdd;

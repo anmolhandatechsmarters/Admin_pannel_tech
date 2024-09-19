@@ -6,7 +6,7 @@ import citiesData from '../../views/pages/register/cities.json';
 import Swal from 'sweetalert2';
 import "./Css/Addhruser.css";
 import {useNavigate} from "react-router-dom"
-const Register = () => {
+const AddHruser = () => {
     useEffect(() => {
         const fetchIpAddress = async () => {
             try {
@@ -132,7 +132,7 @@ fetchdesignaiton()
             setOptions(prevOptions => ({
                 ...prevOptions,
                 states: filteredStates,
-                cities: [] // Clear cities when country changes
+                cities: [] 
             }));
             setFormData(prevFormData => ({ ...prevFormData, state: '', city: '' }));
         }
@@ -169,7 +169,7 @@ fetchdesignaiton()
         } catch (error) {
             console.error('Error submitting form', error);
     
-            // Check if error response exists and includes a specific message
+           
             if (error.response && error.response.data) {
                 Swal.fire({
                     icon: 'error',
@@ -178,7 +178,7 @@ fetchdesignaiton()
                     confirmButtonText: 'Try Again'
                 });
             } else {
-                // Show generic error message
+            
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops!',
@@ -308,7 +308,6 @@ fetchdesignaiton()
                     </div>
                 </div>
 
-                {/* Department and Designation */}
                 <div className="row">
                     <div className="col">
                         <label>Department:</label>
@@ -372,4 +371,4 @@ fetchdesignaiton()
     );
 };
 
-export default Register;
+export default AddHruser;

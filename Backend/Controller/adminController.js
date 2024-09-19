@@ -5,7 +5,7 @@ const db = require('../Connection');
 const { Op } = require("sequelize");
 const { Parser } = require('json2csv');
 
-
+//make a multer
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'uploads/');
@@ -58,7 +58,7 @@ const uploadImage = async (req, res) => {
 };
 
 
-// Get user image
+
 const getImage = async (req, res) => {
     const { id } = req.params;
 
@@ -72,7 +72,7 @@ const getImage = async (req, res) => {
     }
 };
 
-// Add a new user
+
 const addUser = async (req, res) => {
     const logip = req.query.logip
     const {
@@ -93,18 +93,17 @@ const addUser = async (req, res) => {
         id
     } = req.body;
 
-    // Check for required fields
+ 
     if (!email || !first_name || !last_name || !street1 || !city || !state || !country || !password || !department || !designation) {
         return res.status(400).json({ message: 'Required fields are missing.' });
     }
 
 
     try {
-        // Check if the email already exists
+      
         const existingUser = await db.users.findOne({ where: { email } });
         if (existingUser) return res.status(400).json({ message: 'Email is already in use.' });
 
-        // Generate a unique employee ID
         const generateUniqueEmpId = async () => {
             let newEmpIdNumber = 1;
             while (true) {
@@ -117,7 +116,7 @@ const addUser = async (req, res) => {
 
         const newEmpId = await generateUniqueEmpId();
 
-        // Process the role
+  
         const roleMapping = {
             'Employee': '3',
             'HR': '2',
@@ -125,10 +124,6 @@ const addUser = async (req, res) => {
         const processedRole = roleMapping[role];
         if (!processedRole) return res.status(400).json({ message: 'Invalid role provided.' });
 
-        // Log the action
-
-
-        // Create the new user
         const newUser = await db.users.create({
             email,
             emp_id: newEmpId,
@@ -150,7 +145,7 @@ const addUser = async (req, res) => {
         res.status(201).json({ message: 'User created successfully', user: newUser });
         const currentDate = new Date();
         await db.logs.create({
-            user_id: id,  // Ensure req.user.id is correctly set
+            user_id: id, 
             api: "localhost:3000/adduser",
             message: "Success",
 
@@ -162,7 +157,7 @@ const addUser = async (req, res) => {
         console.error('Error creating user:', error);
         res.status(500).json({ message: 'Error occurred while creating user', error: error.message });
         await db.logs.create({
-            user_id: id,  // Ensure req.user.id is correctly set
+            user_id: id, 
             api: "localhost:3000/adduser",
             message: "failed",
 
@@ -175,7 +170,7 @@ const addUser = async (req, res) => {
     }
 };
 
-// Get all users with pagination, search, and sorting
+
 
 
 const getAllUsers = async (req, res) => {
@@ -188,18 +183,18 @@ const getAllUsers = async (req, res) => {
 
     const offset = (page - 1) * limit;
 
-    // Validate sort column
+
     const validSortColumns = ['id', 'first_name', 'last_name', 'email', 'emp_id', 'role', 'country', 'state', 'city', 'last_login', 'status'];
     if (!validSortColumns.includes(sortColumn)) {
         return res.status(400).json({ message: 'Invalid sort column' });
     }
 
     try {
-        // Fetch users with pagination, sorting, and filtering
+      
         const users = await db.users.findAll({
             attributes: [
                 'id', 'email', 'emp_id', 'first_name', 'last_name', 'country', 'state', 'city', 'street1', 'street2', 'last_login', 'status',
-                [Sequelize.col('roleDetails.role'), 'role']  // Include role name from Role table
+                [Sequelize.col('roleDetails.role'), 'role']  
             ],
             include: [
                 {
@@ -233,8 +228,8 @@ const getAllUsers = async (req, res) => {
                         ]
                     },
                     role ? Sequelize.where(Sequelize.col('roleDetails.role'), { [Op.like]: `%${role}%` }) : {},
-                    { emp_id: { [Op.ne]: 'admin' } },  // Exclude users with emp_id 'admin'
-                    { '$roleDetails.id$': { [Op.notIn]: [1] } }  // Exclude users with roles 1 or 2
+                    { emp_id: { [Op.ne]: 'admin' } },
+                    { '$roleDetails.id$': { [Op.notIn]: [1] } }
                 ],
             },
             order: [[sortColumn, sortOrder]],
@@ -242,7 +237,7 @@ const getAllUsers = async (req, res) => {
             offset,
         });
 
-        // Count total users matching the criteria
+
         const total = await db.users.count({
             include: [
                 {

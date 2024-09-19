@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import './HrAddDesignation.css'; // Import the CSS file
+import './HrAddDesignation.css';
 import { useNavigate } from "react-router-dom";
 
-const Designation = () => {
+const HrAddDesignation = () => {
     const [logip, setIpAddress] = useState('');
     const logid = localStorage.getItem("id");
     const [newDesignation, setNewDesignation] = useState('');
@@ -24,7 +24,7 @@ const Designation = () => {
     }, []);
 
     const handleAddDesignation = async (e) => {
-        e.preventDefault(); // Prevent form submission
+        e.preventDefault();
         try {
             const response = await axios.post("http://localhost:7000/admin/adddesignation", 
                 { name: newDesignation, logid, logip }, 
@@ -84,4 +84,4 @@ const Designation = () => {
     );
 };
 
-export default Designation;
+export default HrAddDesignation;

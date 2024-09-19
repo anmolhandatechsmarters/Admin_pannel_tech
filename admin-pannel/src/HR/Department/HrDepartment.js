@@ -4,7 +4,7 @@ import "./HrDepartment.css";
 import { MdDelete, MdEdit } from "react-icons/md";
 import { useNavigate } from "react-router-dom"
 import Swal from 'sweetalert2'
-const DepartmentManagement = () => {
+const HrDepartmentManagement = () => {
     useEffect(() => {
         const fetchIpAddress = async () => {
             try {
@@ -47,23 +47,13 @@ const DepartmentManagement = () => {
                 }
             });
             setDepartments(result.data.departments);
-            setTotal(result.data.total); // Update total count
+            setTotal(result.data.total); 
         } catch (error) {
             console.error("Error fetching departments:", error);
         }
     };
 
-    const handleAddDepartment = async () => {
-        try {
-            await axios.post("http://localhost:7000/admin/adddepartment", { name: newDepartment }, {
-                headers: { "Content-Type": "application/json" }
-            });
-            setNewDepartment('');
-            fetchDepartments(); // Refresh the list of departments
-        } catch (error) {
-            console.error("Error adding department:", error);
-        }
-    };
+    
 
     const handleEditDepartment = async (id) => {
         try {
@@ -71,7 +61,6 @@ const DepartmentManagement = () => {
                 headers: { "Content-Type": "application/json" }
             });
             
-            // Show success message
             Swal.fire({
                 icon: 'success',
                 title: 'Success!',
@@ -81,11 +70,11 @@ const DepartmentManagement = () => {
     
             setEditingDepartment(null);
             setEditValue('');
-            fetchDepartments(); // Refresh the list of departments
+            fetchDepartments(); 
         } catch (error) {
             console.error("Error editing department:", error);
     
-            // Show specific error messages based on the response
+      
             if (error.response && error.response.data && error.response.data.message) {
                 Swal.fire({
                     icon: 'error',
@@ -121,12 +110,12 @@ const DepartmentManagement = () => {
                 const response = await axios.delete(`http://localhost:7000/admin/deletedepartment/${id}`,{
                     params:{logid,logip}
                 });
-                fetchDepartments(); // Refresh the list of departments
+                fetchDepartments();
                 Swal.fire('Deleted!', 'Your department has been deleted.', 'success');
             } catch (error) {
                 console.error("Error deleting department:", error);
     
-                // Show specific error messages based on the response
+           
                 if (error.response && error.response.data && error.response.data.message) {
                     Swal.fire('Error!', error.response.data.message, 'error');
                 } else {
@@ -154,17 +143,14 @@ const DepartmentManagement = () => {
         navigate("/hradddepartment")
     }
     return (
+        <div className='hr-deparatment-management'>
         <div className="department-management">
             <h1>Department Management</h1>
 
-            {/* <div className="actions"> */}
 
                 <div className="d-grid gap-2 d-md-flex justify-content-md-end actions">
                     <button onClick={handlemovedepartment} className='btn btn-primary'>Add Department</button>
                 </div>
-
-
-            {/* </div> */}
 
             <div className="search">
                 <input
@@ -233,7 +219,8 @@ const DepartmentManagement = () => {
                 </button>
             </div>
         </div>
+        </div>
     );
 };
 
-export default DepartmentManagement;
+export default HrDepartmentManagement;

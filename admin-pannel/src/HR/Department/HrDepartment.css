@@ -1,15 +1,15 @@
-.department-management {
+.hr-deparatment-management .department-management {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
 }
 
-.department-management h1 {
+.hr-deparatment-management .department-management h1 {
     text-align: center;
     margin-bottom: 20px;
 }
 
-.department-management .actions,
+.hr-deparatment-management .department-management .actions,
 .search {
     margin-bottom: 20px;
     display: flex;
@@ -17,16 +17,16 @@
     align-items: center;
 }
 
-.department-management input[type="text"] {
+.hr-deparatment-management .department-management input[type="text"] {
     padding: 10px;
     font-size: 16px;
-    width: calc(100% - 130px); /* Adjust width for spacing */
+    width: calc(100% - 130px); 
     margin-right: 10px;
     border: 1px solid #ddd;
     border-radius: 5px;
 }
 
-.department-management button {
+.hr-deparatment-management .department-management button {
     padding: 10px 20px;
     font-size: 16px;
     cursor: pointer;
@@ -37,85 +37,85 @@
     transition: background-color 0.3s ease;
 }
 
-.department-management button:hover {
+.hr-deparatment-management .department-management button:hover {
     background-color: #0056b3;
 }
 
-table {
+.hr-deparatment-management table {
     width: 100%;
     border-collapse: collapse;
 }
 
-.department-management table,
+.hr-deparatment-management .department-management table,
 th,
 td {
     border: 1px solid #ddd;
 }
 
-.department-management th,
+.hr-deparatment-management .department-management th,
 td {
     padding: 15px;
     text-align: left;
 }
 
-.department-management thead {
+.hr-deparatment-management .department-management thead {
     background-color: #f4f4f4;
 }
 
-.department-management tbody tr:nth-child(even) {
+.hr-deparatment-management .department-management tbody tr:nth-child(even) {
     background-color: #f9f9f9;
 }
 
-/* Pagination Styles */
-.pagination {
+
+.hr-deparatment-management .pagination {
     display: flex;
     justify-content: center;
     align-items: center;
     margin-top: 20px;
 }
 
-.pagination button {
+.hr-deparatment-management .pagination button {
     margin: 0 10px;
 }
 
-.pagination span {
+.hr-deparatment-management .pagination span {
     font-size: 16px;
 }
 
-/* Responsive Styles */
+
 @media (max-width: 768px) {
-    .department-management .actions,
+    .hr-deparatment-management .department-management .actions,
     .search {
         flex-direction: column;
     }
 
-    .department-management input[type="text"] {
+    .hr-deparatment-management .department-management input[type="text"] {
         width: 100%;
         margin-right: 0;
-        margin-bottom: 10px; /* Add margin for better spacing */
+        margin-bottom: 10px;
     }
 
-    .department-management button {
+   .hr-deparatment-management  .department-management button {
         margin-top: 10px;
-        width: 100%; /* Full width for buttons on small screens */
+        width: 100%; 
     }
 
-    table,
+    .hr-deparatment-management table,
     th,
     td {
-        font-size: 14px; /* Smaller font size for tables */
+        font-size: 14px; 
     }
 
-    .pagination {
-        flex-direction: column; /* Stack pagination on small screens */
+   .hr-deparatment-management  .pagination {
+        flex-direction: column;
     }
 
-    .pagination button {
-        width: 100%; /* Full width for pagination buttons */
-        margin: 5px 0; /* Add margin for spacing */
+    .hr-deparatment-management .pagination button {
+        width: 100%;
+        margin: 5px 0; 
     }
 
-    .pagination span {
-        margin: 10px 0; /* Add margin for spacing */
+    .hr-deparatment-management .pagination span {
+        margin: 10px 0; 
     }
 }

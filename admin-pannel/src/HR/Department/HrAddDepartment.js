@@ -1,9 +1,14 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import './HrAddDepartment.css'; // Import the CSS file
-import {useNavigate} from "react-router-dom"
+import { useNavigate } from "react-router-dom";
+
 const DepartmentAdd = () => {
+    const [logip, setIpAddress] = useState('');
+    const logid = localStorage.getItem("id");
+    const [newDepartment, setNewDepartment] = useState('');
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchIpAddress = async () => {
@@ -18,36 +23,24 @@ const DepartmentAdd = () => {
         fetchIpAddress();
     }, []);
 
-
-
-
-    const [logip, setIpAddress] = useState('');
-const logid=localStorage.getItem("id")
-
-    const [newDepartment, setNewDepartment] = useState('');
-const navigate=useNavigate()
     const handleAddDepartment = async (e) => {
-        e.preventDefault(); // Prevent form submission
+        e.preventDefault();
         try {
-            const response = await axios.post("http://localhost:7000/admin/adddepartment", { name: newDepartment,logip,logid }, {
+            const response = await axios.post("http://localhost:7000/admin/adddepartment", { name: newDepartment, logip, logid }, {
                 headers: { "Content-Type": "application/json" }
             });
             setNewDepartment('');
-            // Show success message
             Swal.fire({
                 icon: 'success',
                 title: 'Success!',
                 text: response.data.message || 'Department added successfully!',
                 confirmButtonText: 'OK'
             });
-            setTimeout(()=>{
-                navigate("/hrdepartment")
-            },2000)
-
+            setTimeout(() => {
+                navigate("/hrdepartment");
+            }, 2000);
         } catch (error) {
             console.error("Error adding department:", error);
-            
-            // Check if it's a 409 error for existing department
             if (error.response && error.response.status === 409) {
                 Swal.fire({
                     icon: 'warning',
@@ -55,9 +48,7 @@ const navigate=useNavigate()
                     text: 'Department already exists.',
                     confirmButtonText: 'OK'
                 });
-
             } else {
-                // Show generic error message
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops!',
@@ -74,16 +65,20 @@ const navigate=useNavigate()
                 <form onSubmit={handleAddDepartment} className="department-form">
                     <div className="form-group">
                         <label htmlFor="departmentName">Add New Department</label>
-                        <input
-                            id="departmentName"
-                            type="text"
-                            placeholder="Enter Department Name"
-                            value={newDepartment}
-                            onChange={(e) => setNewDepartment(e.target.value)}
-                            required
-                        />
+                        <div className='d-flex'>
+                        <div className="input-button-container">
+                            <input
+                                id="departmentName"
+                                type="text"
+                                placeholder="Enter Department Name"
+                                value={newDepartment}
+                                onChange={(e) => setNewDepartment(e.target.value)}
+                                required
+                            />
+                            <button type="submit" className="add-button">Add</button>
+                        </div>
+                        </div>
                     </div>
-                    <button type="submit" className="add-button">Add</button>
                 </form>
             </div>
         </div>

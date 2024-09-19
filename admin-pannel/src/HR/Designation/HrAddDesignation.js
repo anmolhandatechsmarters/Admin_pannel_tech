@@ -1,9 +1,15 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import './HrAddDesignation.css'; // Import the CSS file
-import {useNavigate} from "react-router-dom"
+import { useNavigate } from "react-router-dom";
+
 const Designation = () => {
+    const [logip, setIpAddress] = useState('');
+    const logid = localStorage.getItem("id");
+    const [newDesignation, setNewDesignation] = useState('');
+    const navigate = useNavigate();
+
     useEffect(() => {
         const fetchIpAddress = async () => {
             try {
@@ -17,23 +23,13 @@ const Designation = () => {
         fetchIpAddress();
     }, []);
 
-
-
-
-    const [logip, setIpAddress] = useState('');
-    const logid=localStorage.getItem("id")
-
-
-
-
-    const [newDesignation, setNewDesignation] = useState('');
-const navigate=useNavigate()
     const handleAddDesignation = async (e) => {
         e.preventDefault(); // Prevent form submission
         try {
-            const response = await axios.post("http://localhost:7000/admin/adddesignation", { name: newDesignation,logid,logip }, {
-                headers: { "Content-Type": "application/json" }
-            });
+            const response = await axios.post("http://localhost:7000/admin/adddesignation", 
+                { name: newDesignation, logid, logip }, 
+                { headers: { "Content-Type": "application/json" } }
+            );
             setNewDesignation('');
             Swal.fire({
                 icon: 'success',
@@ -41,12 +37,9 @@ const navigate=useNavigate()
                 text: 'Designation added successfully!',
                 confirmButtonText: 'OK'
             });
-            
-        setTimeout(()=>{
-            navigate("/hrdesignation")
-        },2000)
-      
-       
+            setTimeout(() => {
+                navigate("/hrdesignation");
+            }, 2000);
         } catch (error) {
             console.error("Error adding designation:", error);
             if (error.response && error.response.status === 409) {
@@ -68,23 +61,25 @@ const navigate=useNavigate()
     };
 
     return (
-<div className='designationadd-admin'>
-        <div className="designation-container">
-            <form onSubmit={handleAddDesignation} className="designation-form">
-                <div className="form-group">
-                    <label htmlFor="designationName">New Designation</label>
-                    <input
-                        id="designationName"
-                        type="text"
-                        placeholder="Enter Designation Name"
-                        value={newDesignation}
-                        onChange={(e) => setNewDesignation(e.target.value)}
-                        required
-                    />
-                </div>
-                <button type="submit" className="add-button">Add</button>
-            </form>
-        </div>
+        <div className='designationadd-admin'>
+            <div className="designation-container">
+                <form onSubmit={handleAddDesignation} className="designation-form">
+                    <div className="form-group">
+                        <label htmlFor="designationName">New Designation</label>
+                        <div className="input-button-container">
+                            <input
+                                id="designationName"
+                                type="text"
+                                placeholder="Enter Designation Name"
+                                value={newDesignation}
+                                onChange={(e) => setNewDesignation(e.target.value)}
+                                required
+                            />
+                            <button type="submit" className="add-button">Add</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     );
 };

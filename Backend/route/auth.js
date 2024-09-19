@@ -11,7 +11,7 @@ const {
   forgotPassword,
   verifyOTP,
   verifyForgetPasswordToken,
-  updatePassword
+  updatePassword, downloadattendanceuser
 } = require('../Controller/userController');
 
 
@@ -44,5 +44,11 @@ router.get('/user/employee', authentication, authorize(['Employee']), (req, res)
 router.get('/user/hr', authentication, authorize(['HR', 'Employee']), (req, res) => {
   res.json('Welcome HR');
 });
+
+
+//user download attendance
+router.get("/attendancedownlaoduser/:id", downloadattendanceuser)
+
+
 
 module.exports = router;

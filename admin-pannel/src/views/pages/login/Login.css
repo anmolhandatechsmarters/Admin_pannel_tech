@@ -1,36 +1,51 @@
-/* src/App.css or any relevant CSS file */
-.signup-card {
-    width: 100%; /* Full width on smaller screens */
+
+
+.login-page .login-page {
+  background: linear-gradient(to right, #f0f0f0, #e0e0e0);
+}
+
+.login-page .card-animate {
+  transform: perspective(1000px);
+  transition: transform 0.5s ease;
+}
+
+.login-page .card-animate:hover {
+  transform: rotateY(10deg);
+}
+
+.login-page .signup-card {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .login-page .signup-card {
+    width: 100%;
+    margin-left: 0; /* Changed to 0 for better alignment */
   }
-  
-  @media (max-width: 768px) {
-    .signup-card {
-      width: 100%;
-      margin-left: -150px; /* Ensure card is full width on medium screens */
-    }
+}
+
+@media (max-width: 576px) {
+  .login-page .signup-card {
+    padding: 1rem;
+    margin-left: 0; /* Adjusted for smaller screens */
   }
-  
-  @media (max-width: 576px) {
-    .signup-card {
-      width: 100%; /* Ensure card is full width on small screens */
-      padding: 1rem;
-      margin-left: -100px; /* Adjust padding for smaller screens */
-    }
-  }
-  
-  checkbox-container {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1rem;
-    
-  }
-  
-  .checkbox-container input[type="checkbox"] {
-    margin-right: 0.5rem;
-    margin-left: -180px;
-  }
-  
-  .checkbox-container span {
-    font-size: 0.875rem;
-    color: #6c757d;
-  }
+}
+
+.login-page .checkbox-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.login-page .checkbox-container input[type="checkbox"] {
+  margin-right: 0.5rem;
+}
+
+.login-page .checkbox-container span {
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+.login-page .alert {
+  margin-top: 1rem;
+}

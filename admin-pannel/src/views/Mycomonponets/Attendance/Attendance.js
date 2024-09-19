@@ -358,19 +358,17 @@ const deleteAttendance = async (id) => {
   const handledowloadattendance = async () => {
     try {
       const response = await axios.get("http://localhost:7000/admin/allattendancedownload", {
-        responseType: 'blob' // Important to handle blob response
+        responseType: 'blob' 
       });
       
-      // Create a link to trigger download
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', 'Attendance.csv'); // Set the file name
+      link.setAttribute('download', 'Attendance.csv');
       document.body.appendChild(link);
-      link.click(); // Trigger the download
-      link.remove(); // Clean up
+      link.click();
+      link.remove();
   
-      // SweetAlert success notification
       Swal.fire({
         icon: 'success',
         title: 'Download Successful!',
@@ -382,7 +380,6 @@ const deleteAttendance = async (id) => {
     } catch (error) {
       console.error(error);
       
-      // SweetAlert error notification
       Swal.fire({
         icon: 'error',
         title: 'Download Failed!',

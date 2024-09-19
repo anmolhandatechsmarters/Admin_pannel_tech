@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import './Css/Hrattendance.css'; // Assuming you have a CSS file for styling
+import './Css/Hrattendance.css';
 import Swal from "sweetalert2"
+
+
 const AttendanceTable = () => {
   const id = localStorage.getItem("id");
   const [monthFilter, setMonthFilter] = useState('');
@@ -13,8 +15,10 @@ const AttendanceTable = () => {
   const [statusFilter, setStatusFilter] = useState('');
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
+
   const limit = 10;
 
+  const userid=localStorage.getItem("id")
   useEffect(() => {
     const fetchAttendance = async () => {
       try {
@@ -70,7 +74,41 @@ const AttendanceTable = () => {
     }
   };
 
-  
+const handleattendancedownlaod=async(userid)=>{
+
+  try {
+    const response = await axios.get(`http://localhost:7000/user/attendancedownlaoduser/${userid}`, {
+      responseType: 'blob' 
+    });
+    
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'Attendance.csv');
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Download Successful!',
+      text: 'Your attendance file has been downloaded.',
+      showConfirmButton: false,
+      timer: 2000
+    });
+    
+  } catch (error) {
+    console.error(error);
+    
+    Swal.fire({
+      icon: 'error',
+      title: 'Download Failed!',
+      text: 'There was an error downloading the file.',
+      confirmButtonText: 'Try Again'
+    });
+  }
+}  
+
 
 
 
@@ -111,10 +149,8 @@ const AttendanceTable = () => {
             <option key={index} value={item}>{item}</option>
           ))}
         </select>
-
-        {/* <div className="count-box">
-          <span>Total Attendance: {countattendance}</span>
-        </div> */}
+          <span><button onClick={()=>handleattendancedownlaod(userid)}>Downlaod</button></span>
+  
       </div>
 
       <table className="attendance-table">

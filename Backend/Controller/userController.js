@@ -2,7 +2,7 @@ const db = require('../Connection');
 const { generateOTP } = require('../utils/otpUtils');
 const { sendPasswordResetEmail } = require('../services/emailService');
 const jwt = require('jsonwebtoken');
-
+const { Parser } = require('json2csv');
 let otpStore = {};
 
 const createUser = async (req, res) => {
@@ -264,6 +264,63 @@ const updatePassword = async (req, res) => {
   }
 };
 
+
+const downloadattendanceuser = async (req, res) => {
+  const userId = req.params.id; // Get the user ID from the request parameters
+
+  // Validate userId
+  if (!userId) {
+      return res.status(400).send('User ID is required.');
+  }
+
+  try {
+      // Fetch attendance records for the specific user
+      const results = await db.attendances.findAll({
+          include: [{
+              model: db.users,
+              as: 'userDetails',
+              attributes: ['first_name', 'last_name', 'email'], // Include required user details
+              required: true
+          }],
+          where: {
+              user_id: userId // Match attendance by user ID
+          }
+      });
+
+      // Check if results are empty
+      if (results.length === 0) {
+          return res.status(404).send('No attendance records found for this user.');
+      }
+
+      // Transform the results to include user details
+      const transformedResults = results.map(item => {
+          const attendance = item.get({ plain: true });
+          const user = attendance.userDetails;
+          return {
+              in_time: attendance.in_time,
+              out_time: attendance.out_time,
+              date: attendance.date,
+              comment: attendance.comment,
+              status: attendance.status,
+              fullname: `${user.first_name} ${user.last_name}`,
+              email: user.email
+          };
+      });
+
+      // Convert results to CSV
+      const csv = new Parser().parse(transformedResults);
+
+      // Set headers for download
+      res.header('Content-Type', 'text/csv');
+      res.attachment('Attendance.csv');
+      res.send(csv);
+  } catch (error) {
+      console.error(error);
+      res.status(500).send('Error querying the database');
+  }
+};
+
+
 module.exports = {
   createUser,
   loginUser,
@@ -274,5 +331,6 @@ module.exports = {
   forgotPassword,
   verifyOTP,
   verifyForgetPasswordToken,
-  updatePassword
+  updatePassword,
+  downloadattendanceuser
 };

@@ -4,7 +4,8 @@ const Sequelize = require('sequelize');
 const db = require('../Connection');
 const { Op } = require("sequelize");
 const { Parser } = require('json2csv');
-//multer
+
+
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'uploads/');
@@ -15,7 +16,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// Upload image for a user
+
 const uploadImage = async (req, res) => {
     const { id } = req.params;
     const logid = req.query.logid
@@ -33,7 +34,7 @@ const uploadImage = async (req, res) => {
 
         const currentDate = new Date();
         await db.logs.create({
-            user_id: logid,  // Ensure req.user.id is correctly set
+            user_id: logid, 
             api: "localhost:3000/uploadimage",
             message: "Success",
 
@@ -45,7 +46,7 @@ const uploadImage = async (req, res) => {
         console.error('Error updating image:', error);
         res.status(500).json({ message: 'Internal server error' });
         await db.logs.create({
-            user_id: logid,  // Ensure req.user.id is correctly set
+            user_id: logid,  
             api: "localhost:3000/uploadimage",
             message: "Failed",
 
@@ -203,29 +204,35 @@ const getAllUsers = async (req, res) => {
             include: [
                 {
                     model: db.roles,
-                    as: 'roleDetails',  // Alias for the role association
-                    attributes: ['role'],  // Include role column for display
+                    as: 'roleDetails',
+                    attributes: ['role'],
                 },
                 {
                     model: db.cities,
                     as: 'cityDetails',
-                    attributes: ['name'],  // Assuming 'name' is a column in 'cities'
+                    attributes: ['name'],
                 },
                 {
                     model: db.states,
                     as: 'stateDetails',
-                    attributes: ['name'],  // Assuming 'name' is a column in 'states'
+                    attributes: ['name'],
                 },
                 {
                     model: db.countries,
                     as: 'countryDetails',
-                    attributes: ['name'],  // Assuming 'name' is a column in 'countries'
+                    attributes: ['name'],
                 }
             ],
             where: {
                 [Op.and]: [
-                    Sequelize.where(Sequelize.fn('concat', Sequelize.col('first_name'), ' ', Sequelize.col('last_name')), { [Op.like]: `%${search}%` }),
-                    role ? Sequelize.where(Sequelize.col('roleDetails.role'), { [Op.like]: `%${role}%` }) : {}, // Filter by role if provided
+                    {
+                        [Op.or]: [
+                            Sequelize.where(Sequelize.fn('concat', Sequelize.col('first_name'), ' ', Sequelize.col('last_name')), { [Op.like]: `%${search}%` }),
+                            { email: { [Op.like]: `%${search}%` } },
+                            { emp_id: { [Op.like]: `%${search}%` } }
+                        ]
+                    },
+                    role ? Sequelize.where(Sequelize.col('roleDetails.role'), { [Op.like]: `%${role}%` }) : {},
                     { emp_id: { [Op.ne]: 'admin' } },  // Exclude users with emp_id 'admin'
                     { '$roleDetails.id$': { [Op.notIn]: [1] } }  // Exclude users with roles 1 or 2
                 ],
@@ -241,13 +248,19 @@ const getAllUsers = async (req, res) => {
                 {
                     model: db.roles,
                     as: 'roleDetails',
-                    attributes: []  // Exclude role columns from Role table in count query
+                    attributes: []
                 }
             ],
             where: {
                 [Op.and]: [
-                    Sequelize.where(Sequelize.fn('concat', Sequelize.col('first_name'), ' ', Sequelize.col('last_name')), { [Op.like]: `%${search}%` }),
-                    role ? Sequelize.where(Sequelize.col('roleDetails.role'), { [Op.like]: `%${role}%` }) : {}, // Filter by role if provided
+                    {
+                        [Op.or]: [
+                            Sequelize.where(Sequelize.fn('concat', Sequelize.col('first_name'), ' ', Sequelize.col('last_name')), { [Op.like]: `%${search}%` }),
+                            { email: { [Op.like]: `%${search}%` } },
+                            { emp_id: { [Op.like]: `%${search}%` } }
+                        ]
+                    },
+                    role ? Sequelize.where(Sequelize.col('roleDetails.role'), { [Op.like]: `%${role}%` }) : {},
                     { emp_id: { [Op.ne]: 'admin' } },  // Exclude users with emp_id 'admin'
                     { '$roleDetails.id$': { [Op.notIn]: [1, 2] } }  // Exclude users with roles 1 or 2
                 ],
@@ -260,6 +273,7 @@ const getAllUsers = async (req, res) => {
         res.status(500).json({ message: 'Error fetching users' });
     }
 };
+
 
 
 
@@ -1222,7 +1236,7 @@ const getadmindesignation = async (req, res) => {
 
 const allattendancedownload = async (req, res) => {
     try {
-        // Fetch attendance records with user details, excluding specific roles
+
         const results = await db.attendances.findAll({
             include: [{
                 model: db.users,
@@ -1239,17 +1253,15 @@ const allattendancedownload = async (req, res) => {
         const transformedResults = results.map(item => {
             const attendance = item.get({ plain: true });
             const user = attendance.userDetails;
+            const role=attendance.roleDetails;
             return {
-                attendance_id: attendance.id,
+                fullname: `${user.first_name} ${user.last_name}`,
+                email: user.email,
+                emp_id: user.emp_id,
                 in_time: attendance.in_time,
                 out_time: attendance.out_time,
                 date: attendance.date,
-                comment: attendance.comment,
-                status: attendance.status,
-                fullname: `${user.first_name} ${user.last_name}`,
-                emp_id: user.emp_id,
-                email: user.email,
-                role: user.role // Optionally include role if needed
+                status: attendance.status,  
             };
         });
 

@@ -4,7 +4,7 @@ import './Css/Hrattendance.css';
 import Swal from "sweetalert2"
 
 
-const AttendanceTable = () => {
+const HrAttendanceTable = () => {
   const id = localStorage.getItem("id");
   const [monthFilter, setMonthFilter] = useState('');
   const [yearFilter, setYearFilter] = useState('');
@@ -51,7 +51,6 @@ const AttendanceTable = () => {
  
   }, [id, monthFilter, yearFilter, startDate, endDate, statusFilter, page]);
 
-  // Calculate the years from the user attendance data
   const years = Array.from(new Set(userattendance.map(record => new Date(record.date).getFullYear())));
   
   const months = [
@@ -113,6 +112,7 @@ const handleattendancedownlaod=async(userid)=>{
 
 
   return (
+    <div className='hr-attendance-table'>
     <div className="attendance-container">
       <div className="filters">
         <select value={monthFilter} onChange={handleMonthChange}>
@@ -184,7 +184,8 @@ const handleattendancedownlaod=async(userid)=>{
         </button>
       </div>
     </div>
+    </div>
   );
 };
 
-export default AttendanceTable;
+export default HrAttendanceTable;

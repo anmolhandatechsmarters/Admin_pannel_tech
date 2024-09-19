@@ -72,7 +72,7 @@ const userNav=[
 
     {
       component: CNavItem,
-      name: 'Detail',
+      name: 'Dashboard',
       to: '/employeedetail',
       icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
       badge: {
@@ -95,7 +95,7 @@ const userNav=[
 const hrNav=[
   {
     component: CNavItem,
-    name: 'Detail',
+    name: 'Dashboard',
     to: '/hrDetail',
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
     badge: {

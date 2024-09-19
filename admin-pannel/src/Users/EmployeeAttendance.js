@@ -69,7 +69,40 @@ const AttendanceTable = () => {
       setPage(newPage);
     }
   };
+  const handleattendancedownlaod=async(userid)=>{
 
+    try {
+      const response = await axios.get(`http://localhost:7000/user/attendancedownlaoduser/${userid}`, {
+        responseType: 'blob' 
+      });
+      
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'Attendance.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+  
+      Swal.fire({
+        icon: 'success',
+        title: 'Download Successful!',
+        text: 'Your attendance file has been downloaded.',
+        showConfirmButton: false,
+        timer: 2000
+      });
+      
+    } catch (error) {
+      console.error(error);
+      
+      Swal.fire({
+        icon: 'error',
+        title: 'Download Failed!',
+        text: 'There was an error downloading the file.',
+        confirmButtonText: 'Try Again'
+      });
+    }
+  }  
   return (
     <div className="attendance-container">
       <div className="filters">

@@ -291,48 +291,51 @@ const Attendance = () => {
   return (
     <div className='attendance-admin'>
       <div className="search-bar">
-        <div className="admin-searchoptionfield">
-          <input
+    <div className="admin-searchoptionfield">
+        <input
             type="text"
             placeholder="Search..."
             value={search}
             onChange={handleSearch}
-          />
-        </div>
-        <div className="filter-options">
-          <select value={monthFilter} onChange={handleMonthChange}>
+        />
+    </div>
+    <div className="filter-options">
+        <select value={monthFilter} onChange={handleMonthChange}>
             <option value="">All Months</option>
             {months.map((item, index) => (
-              <option key={index} value={index + 1}>{item}</option>
+                <option key={index} value={index + 1}>{item}</option>
             ))}
-          </select>
-          <select value={yearFilter} onChange={handleYearChange}>
+        </select>
+        <select value={yearFilter} onChange={handleYearChange}>
             <option value="">All Years</option>
             {years.map((year, index) => (
-              <option key={index} value={year}>{year}</option>
+                <option key={index} value={year}>{year}</option>
             ))}
-          </select>
-          <input
+        </select>
+        <input
             type="date"
             value={startDate}
             onChange={handleStartDateChange}
             placeholder="Start Date"
-          />
-          <input
+        />
+        <input
             type="date"
             value={endDate}
             onChange={handleEndDateChange}
             placeholder="End Date"
-          />
-          <select value={statusFilter} onChange={handleStatusChange}>
+        />
+        <select value={statusFilter} onChange={handleStatusChange}>
             <option value="">Status</option>
             {status.map((item, index) => (
-              <option key={index} value={item}>{item}</option>
+                <option key={index} value={item}>{item}</option>
             ))}
-          </select>
-          <span><button onClick={handledowloadattendance}>Download Attendance</button></span>
-        </div>
-      </div>
+        </select>
+        <span>
+            <button onClick={handledowloadattendance}>Download Attendance</button>
+        </span>
+    </div>
+</div>
+
 
       <div className='attendance-table'>
         <div className='attendance-table-container'>

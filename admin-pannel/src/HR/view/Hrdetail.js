@@ -112,7 +112,7 @@ const logid=localStorage.getItem('id')
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
 
-  const profileImageUrl = user?.image ? `http://localhost:7000/${user.image}` : '/path/to/default/image.jpg'; // Default image path
+  const profileImageUrl =`http://localhost:7000/${user.image}` // Default image path
 
   return (
     <div className='employee-Main-box'>

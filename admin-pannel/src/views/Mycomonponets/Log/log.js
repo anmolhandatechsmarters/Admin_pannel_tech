@@ -117,7 +117,9 @@ const ShowAllUser = () => {
           <tbody>
             {log.map((userlog) => (
               <tr key={userlog.id}>
-                <td>{userlog.id}</td>
+                < td className='viewuserbyfield' onClick={() => handleviewuser(userlog.user_id)}>
+                        {userlog.id}
+                      </td>
                 < td className='viewuserbyfield' onClick={() => handleviewuser(userlog.user_id)}>
                         {userlog.user_id}
                       </td>

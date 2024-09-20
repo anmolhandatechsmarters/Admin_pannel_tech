@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './Css/Hrattendance.css';
 import Swal from 'sweetalert2';
+import { MdHelp } from 'react-icons/md';
 
 const HrAttendanceTable = () => {
   const id = localStorage.getItem("id");
@@ -66,7 +67,7 @@ const HrAttendanceTable = () => {
     }
   };
 
-  const handleattendancedownlaod = async (userid) => {
+  const handleAttendanceDownload = async (userid) => {
     try {
       const response = await axios.get(`http://localhost:7000/user/attendancedownlaoduser/${userid}`, {
         responseType: 'blob' 
@@ -97,6 +98,15 @@ const HrAttendanceTable = () => {
         confirmButtonText: 'Try Again'
       });
     }
+  };
+
+  const handleHelpClick = (comment) => {
+    Swal.fire({
+      title: 'Comment',
+      text: comment,
+      icon: 'info',
+      confirmButtonText: 'Close',
+    });
   };
 
   return (
@@ -138,7 +148,7 @@ const HrAttendanceTable = () => {
             ))}
           </select>
 
-          <button onClick={() => handleattendancedownlaod(id)}>Download</button>
+          <button onClick={() => handleAttendanceDownload(id)}>Download</button>
         </div>
 
         <table className="attendance-table">
@@ -147,18 +157,39 @@ const HrAttendanceTable = () => {
               <th>Date</th>
               <th>Intime</th>
               <th>Outtime</th>
+              <th>Comment</th>
               <th>Status</th>
             </tr>
           </thead>
           <tbody>
-            {userattendance.map((user, index) => (
-              <tr key={index}>
-                <td>{new Date(user.date).toLocaleDateString()}</td>
-                <td>{user.in_time}</td>
-                <td>{user.out_time}</td>
-                <td>{user.status}</td>
-              </tr>
-            ))}
+            {userattendance.map((user, index) => {
+              const shortComment = user.comment && user.comment.length > 20 ? user.comment.substring(0, 20) + '...' : user.comment;
+
+              return (
+                <tr key={index}>
+                  <td>{new Date(user.date).toLocaleDateString()}</td>
+                  <td>{user.in_time}</td>
+                  <td>{user.out_time}</td>
+                  <td>
+                    {shortComment}
+                    {user.comment && user.comment.length > 20 && (
+                      <MdHelp onClick={() => handleHelpClick(user.comment)} style={{ cursor: 'pointer', marginLeft: '8px' }} />
+                    )}
+                  </td>
+                  <td>
+                    {user.status === "Present" ? (
+                      <span className="badge badge-success">Present</span>
+                    ) : user.status === "Absent" ? (
+                      <span className="badge badge-danger">Absent</span>
+                    ) : user.status === "Halfday" ? (
+                      <span className="badge badge-warning">Halfday</span>
+                    ) : (
+                      <span className="badge badge-secondary">Pending</span>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
 

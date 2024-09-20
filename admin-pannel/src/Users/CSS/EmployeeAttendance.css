@@ -1,26 +1,26 @@
 /* CSS file: AttendanceTable.css */
 
 /* Container for the whole table and filters */
-.attendance-container {
+.employee-attandance-page .attendance-container {
     padding: 20px;
   }
   
   /* Styling for the filters section */
-  .filters {
+  .employee-attandance-page .filters {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     margin-bottom: 20px;
   }
   
-  .filters select,
+  .employee-attandance-page .filters select,
   .filters input {
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
   }
   
-  .count-box {
+  .employee-attandance-page .count-box {
     margin-left: auto;
     padding: 10px;
     border: 1px solid #ddd;
@@ -29,30 +29,30 @@
   }
   
   /* Styling for the table */
-  .attendance-table {
+  .employee-attandance-page .attendance-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
   }
   
-  .attendance-table th,
+  .employee-attandance-page .attendance-table th,
   .attendance-table td {
     padding: 10px;
     border: 1px solid #ddd;
     text-align: left;
   }
   
-  .attendance-table thead {
+  .employee-attandance-page .attendance-table thead {
     background-color: #f5f5f5;
   }
   
   @media (max-width: 768px) {
-    .filters {
+    .employee-attandance-page .filters {
       flex-direction: column;
     }
   
-    .filters select,
-    .filters input {
+    .employee-attandance-page .filters select,
+    .employee-attandance-page    .filters input {
       width: 100%;
       margin-bottom: 10px;
     }
@@ -61,7 +61,7 @@
   /* EmployeeAttendance.css */
 
 /* Container for pagination */
-.pagination {
+.employee-attandance-page .pagination {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -70,7 +70,7 @@
 }
 
 /* Pagination buttons */
-.pagination button {
+.employee-attandance-page .pagination button {
   background-color: #007bff;
   border: none;
   color: white;
@@ -81,46 +81,46 @@
   font-size: 16px;
 }
 
-.pagination button:disabled {
+.employee-attandance-page .pagination button:disabled {
   background-color: #d6d6d6;
   cursor: not-allowed;
 }
 
 /* Pagination text */
-.pagination span {
+.employee-attandance-page .pagination span {
   font-size: 16px;
   margin: 0 10px;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .pagination {
+  .employee-attandance-page  .pagination {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .pagination button {
+  .employee-attandance-page  .pagination button {
     width: 100%;
     margin-bottom: 5px;
   }
 
-  .pagination span {
+  .employee-attandance-page .pagination span {
     margin: 10px 0;
     text-align: center;
   }
 }
 
 @media (max-width: 480px) {
-  .pagination {
+  .employee-attandance-page   .pagination {
     padding: 5px;
   }
 
-  .pagination button {
+  .employee-attandance-page   .pagination button {
     padding: 8px 16px;
     font-size: 14px;
   }
 
-  .pagination span {
+  .employee-attandance-page  .pagination span {
     font-size: 14px;
   }
 }

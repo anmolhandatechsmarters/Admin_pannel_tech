@@ -26,15 +26,8 @@ const adminNav = [
     name: 'Dashboard',
     to: '/dashboard',
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-    badge: {
-      color: 'info',
-      text: 'NEW',
-    },
   },
-  {
-    component: CNavTitle,
-    name: 'User',
-  },
+
 
   {
     component: CNavItem,
@@ -75,15 +68,9 @@ const userNav=[
       name: 'Dashboard',
       to: '/employeedetail',
       icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-      badge: {
-        color: 'info',
-        text: 'NEW',
-      },
+      
     },
-    {
-      component: CNavTitle,
-      name: 'Theme',
-    },
+
     {
       component: CNavItem,
       name: 'Attendance',
@@ -98,15 +85,8 @@ const hrNav=[
     name: 'Dashboard',
     to: '/hrDetail',
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-    badge: {
-      color: 'info',
-      text: 'NEW',
-    },
   },
-  {
-    component: CNavTitle,
-    name: 'Theme',
-  },
+
   {
     component: CNavItem,
     name: 'My Attendance',

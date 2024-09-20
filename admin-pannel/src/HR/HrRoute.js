@@ -75,57 +75,14 @@ const HrDepartment=React.lazy(()=>import('./Department/HrDepartment'))
 const HrAddDepartment =React.lazy(()=>import('./Department/HrAddDepartment'))
 const HrDesignation =React.lazy(()=>import('./Designation/HrDesignation'))
 const HrAddDesignation =React.lazy(()=>import('./Designation/HrAddDesignation'))
-
+const HrEditProfile =React.lazy(()=>import('./HrEditProfile/HrEditProfile'))
 
 const routes = [
-  { path: '/', name: 'Home', element: Detailemployee },
-  { path: '/theme', name: 'Theme', element: Colors, exact: true },
+  
+
   { path: '/edituser/:id', name: 'edituser', element: Edituser, exact: true },
-  // { path: '/adduser', name: 'adduser', element:Addser, exact: true },
-  { path: "/adduser", name: "AddUser", element: AddUser, exact: true },
-  { path: "/alluser", name: "AllUser", element: ShowAllUser, exact: true },
-  { path: '/theme/colors', name: 'Colors', element: Colors },
-  { path: '/theme/typography', name: 'Typography', element: Typography },
-  { path: '/base', name: 'Base', element: Cards, exact: true },
-  { path: '/base/accordion', name: 'Accordion', element: Accordion },
-  { path: '/base/breadcrumbs', name: 'Breadcrumbs', element: Breadcrumbs },
-  { path: '/base/cards', name: 'Cards', element: Cards },
-  { path: '/base/carousels', name: 'Carousel', element: Carousels },
-  { path: '/base/collapses', name: 'Collapse', element: Collapses },
-  { path: '/base/list-groups', name: 'List Groups', element: ListGroups },
-  { path: '/base/navs', name: 'Navs', element: Navs },
-  { path: '/base/paginations', name: 'Paginations', element: Paginations },
-  { path: '/base/placeholders', name: 'Placeholders', element: Placeholders },
-  { path: '/base/popovers', name: 'Popovers', element: Popovers },
-  { path: '/base/progress', name: 'Progress', element: Progress },
-  { path: '/base/spinners', name: 'Spinners', element: Spinners },
-  { path: '/base/tabs', name: 'Tabs', element: Tabs },
-  { path: '/base/tables', name: 'Tables', element: Tables },
-  { path: '/base/tooltips', name: 'Tooltips', element: Tooltips },
-  { path: '/buttons', name: 'Buttons', element: Buttons, exact: true },
-  { path: '/buttons/buttons', name: 'Buttons', element: Buttons },
-  { path: '/buttons/dropdowns', name: 'Dropdowns', element: Dropdowns },
-  { path: '/buttons/button-groups', name: 'Button Groups', element: ButtonGroups },
-  { path: '/charts', name: 'Charts', element: Charts },
-  { path: '/forms', name: 'Forms', element: FormControl, exact: true },
-  { path: '/forms/form-control', name: 'Form Control', element: FormControl },
-  { path: '/forms/select', name: 'Select', element: Select },
-  { path: '/forms/checks-radios', name: 'Checks & Radios', element: ChecksRadios },
-  { path: '/forms/range', name: 'Range', element: Range },
-  { path: '/forms/input-group', name: 'Input Group', element: InputGroup },
-  { path: '/forms/floating-labels', name: 'Floating Labels', element: FloatingLabels },
-  { path: '/forms/layout', name: 'Layout', element: Layout },
-  { path: '/forms/validation', name: 'Validation', element: Validation },
-  { path: '/icons', exact: true, name: 'Icons', element: CoreUIIcons },
-  { path: '/icons/coreui-icons', name: 'CoreUI Icons', element: CoreUIIcons },
-  { path: '/icons/flags', name: 'Flags', element: Flags },
-  { path: '/icons/brands', name: 'Brands', element: Brands },
-  { path: '/notifications', name: 'Notifications', element: Alerts, exact: true },
-  { path: '/notifications/alerts', name: 'Alerts', element: Alerts },
-  { path: '/notifications/badges', name: 'Badges', element: Badges },
-  { path: '/notifications/modals', name: 'Modals', element: Modals },
-  { path: '/notifications/toasts', name: 'Toasts', element: Toasts },
-  { path: '/widgets', name: 'Widgets', element: Widgets },
+
+
 
   // my routes
   { path: '/hrDetail', name: 'Widgets', element: Hrdetail },
@@ -135,12 +92,13 @@ const routes = [
   { path: '/hrdashboard', name: 'Widgets', element:Hremployeedashboard},
   { path: '/hremployeeshow', name: 'Widgets', element:Hrshowemployee},
   { path: '/hraddemployee', name: 'Widgets', element:Hradduser},
-  {path:'hredituser/:id',name:"HrEditUser",element:Hredituser},
+  {path:'/hredituser/:id',name:"HrEditUser",element:Hredituser},
   { path: '/viewhruser/:id', name: 'Widgets', element:Hrviewuser},
   {path:'/hrdepartment' ,name:'HrDepartment',element:HrDepartment},
   {path:'/hradddepartment',name:'HrAddDepartment',element:HrAddDepartment},
   {path:'/hrdesignation',name:'HrDesignation',element:HrDesignation},
-  {path:'/hradddesignation',name:'HrAddDesignation',element:HrAddDesignation}
+  {path:'/hradddesignation',name:'HrAddDesignation',element:HrAddDesignation},
+  {path:'/hreditprofile/:id',name:'EditProfile',element:HrEditProfile},
 ]
 
 

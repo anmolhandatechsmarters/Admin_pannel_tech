@@ -1,18 +1,18 @@
 .main-container-view-user {
   display: flex;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
   gap: 20px;
   height: 100vh; /* Full viewport height */
-  flex-wrap: wrap; /* Allow wrapping on smaller screens */
 }
 
 .main-container-view-user .sidebarss {
   width: 250px; /* Fixed width for sidebar */
+  padding: 20px;
   background-color: rgb(233, 233, 224);
+  border-right: 2px solid #ddd; /* Right border for sidebar */
+  box-sizing: border-box;
   display: flex;
   flex-direction: column; /* Stack items vertically */
-  padding: 20px;
-  box-sizing: border-box;
-  border-right: 2px solid #ddd; /* Right border for sidebar */
 }
 
 .main-container-view-user .profile {
@@ -43,15 +43,15 @@
 
 .main-container-view-user .menu button {
   padding: 15px;
-  cursor: pointer;
+  margin-bottom: 5px; /* Space between buttons */
   border: none;
+  border-radius: 5px;
+  cursor: pointer;
   background-color: #f0f0f0;
   color: #333;
-  border-radius: 5px;
   text-align: center;
-  transition: background-color 0.3s, color 0.3s;
   font-weight: bold;
-  margin-bottom: 5px; /* Space between buttons */
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .main-container-view-user .menu button:hover,
@@ -68,26 +68,34 @@
   overflow-y: auto; /* Enable scrolling if content overflows */
 }
 
-.main-container-view-user .text-center {
-  text-align: center;
+.user-info {
+  display: flex;
+  flex-direction: column; /* Stack user info vertically */
 }
 
-.main-container-view-user .view-user-user-info {
-  display: flex;
-  flex-wrap: wrap; /* Allow wrapping on smaller screens */
-  justify-content: space-between;
+.view-user-user-info {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* Four equal columns */
+  gap: 15px; /* Space between grid items */
   margin-top: 20px;
 }
 
-.main-container-view-user .view-user-user-info div {
-  flex: 1;
-  min-width: 200px;
-  margin: 10px;
+.view-user-user-info div {
+  display: flex;
+  flex-direction: column; /* Stack label and value vertically */
 }
 
-.main-container-view-user .view-user-user-info p {
+.view-user-user-info p {
   font-size: 18px;
   margin: 5px 0;
+}
+
+.view-user-user-info .label {
+  font-weight: bold; /* Bold for labels */
+}
+
+.view-user-user-info .value {
+  margin-left: 10px; /* Space between label and value */
 }
 
 /* Media Queries for Responsiveness */
@@ -102,21 +110,13 @@
     border-bottom: 2px solid #ddd; /* Bottom border for sidebar */
   }
 
-  .main-container-view-user .view-user-user-info {
-    flex-direction: column; /* Stack user info sections vertically */
-  }
-
-  .main-container-view-user .view-user-user-info div {
-    margin: 10px 0;
+  .view-user-user-info {
+    grid-template-columns: repeat(2, 1fr); /* Two columns on smaller screens */
   }
 }
 
 @media (max-width: 480px) {
-  .main-container-view-user .menu button {
-    font-size: 14px; /* Smaller font size for buttons */
-  }
-
-  .main-container-view-user .view-user-user-info p {
-    font-size: 16px; /* Adjust font size for user info */
+  .view-user-user-info {
+    grid-template-columns: 1fr; /* One column on very small screens */
   }
 }

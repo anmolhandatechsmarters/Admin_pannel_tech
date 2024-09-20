@@ -1,18 +1,18 @@
 .main-container-view-user {
   display: flex;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
   gap: 20px;
   height: 100vh; /* Full viewport height */
-  flex-wrap: wrap; /* Allow wrapping on smaller screens */
 }
 
 .main-container-view-user .sidebarss {
   width: 250px; /* Fixed width for sidebar */
+  padding: 20px;
   background-color: rgb(233, 233, 224);
+  border-right: 2px solid #ddd; /* Right border for sidebar */
+  box-sizing: border-box;
   display: flex;
   flex-direction: column; /* Stack items vertically */
-  padding: 20px;
-  box-sizing: border-box;
-  border-right: 2px solid #ddd; /* Right border for sidebar */
 }
 
 .main-container-view-user .profile {
@@ -43,16 +43,29 @@
 
 .main-container-view-user .menu button {
   padding: 15px;
-  cursor: pointer;
+  margin-bottom: 5px; /* Space between buttons */
   border: none;
+  border-radius: 5px;
+  cursor: pointer;
   background-color: #f0f0f0;
   color: #333;
-  border-radius: 5px;
   text-align: center;
-  transition: background-color 0.3s, color 0.3s;
   font-weight: bold;
-  margin-bottom: 5px; /* Space between buttons */
+  transition: background-color 0.3s, color 0.3s;
 }
+.container {
+  margin-top: 20px;
+}
+
+.row {
+  margin-bottom: 15px; /* Add space between rows */
+}
+
+strong {
+  display: inline-block;
+  width: 150px; /* Set a fixed width for labels */
+}
+
 
 .main-container-view-user .menu button:hover,
 .main-container-view-user .menu button.active {

@@ -6,6 +6,7 @@ import { IoIosAdd } from "react-icons/io";
 import { FcAlphabeticalSortingAz, FcAlphabeticalSortingZa } from "react-icons/fc";
 import { useNavigate, useParams} from 'react-router-dom';
 import Swal from 'sweetalert2'
+import { MdHelp } from "react-icons/md";
 const Attendance = () => {
 
   useEffect(() => {
@@ -159,62 +160,79 @@ const [logip, setIpAddress] = useState('');
     }));
   };
 
-  
+  const handleShowComment = (comment) => {
+    Swal.fire({
+        title: 'Comment',
+        text: comment,
+        icon: 'info',
+        confirmButtonText: 'Close'
+    });
+};
+  const handleAddComment = (record) => {
+    Swal.fire({
+      title: 'Add Comment',
+      input: 'textarea',
+      inputPlaceholder: 'Type your comment...',
+      inputValue: '',
+      showCancelButton: true,
+      confirmButtonText: 'Save',
+      preConfirm: (comment) => {
+        if (!comment) {
+          Swal.showValidationMessage('Please enter a comment');
+        }
+        return comment;
+      },
+      didOpen: () => {
+        const input = Swal.getInput();
+        input.addEventListener('input', () => {
+          const words = input.value.split(/\s+/).filter(Boolean);
+          if (words.length > 20) {
+            const tooltip = document.createElement('span');
+            tooltip.textContent = 'Click for full comment';
+            tooltip.style.position = 'absolute';
+            tooltip.style.top = '0';
+            tooltip.style.left = '0';
+            tooltip.style.backgroundColor = '#fff';
+            tooltip.style.border = '1px solid #ccc';
+            tooltip.style.padding = '4px';
+            tooltip.style.zIndex = '1000';
+            tooltip.style.cursor = 'pointer';
+            tooltip.style.display = 'none';
 
-  const handleSaveComment = async (id) => {
-      // Show confirmation dialog
-      const result = await Swal.fire({
-          title: 'Are you sure?',
-          text: "Do you want to save this comment?",
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Yes, save it!',
-          cancelButtonText: 'No, cancel!'
-      });
-  
-      // If the user confirmed, proceed with saving the comment
-      if (result.isConfirmed) {
-          try {
-              await axios.put(`http://localhost:7000/admin/savecomment/${id}`,
-                  {
-                      comment: comments[id]
-                  },
-                  {
-                      params: { logid, logip },
-                      headers: { "Content-Type": "application/json" }
-                  }
-              );
-  
-              // Update state with the new comment
-              setAttendanceData(prevData => prevData.map(record =>
-                  record.id === id ? { ...record, comment: comments[id] } : record
-              ));
-              setEditCommentId(null);
-  
-              // Show success alert
-              Swal.fire({
-                  icon: 'success',
-                  title: 'Saved!',
-                  text: 'The comment has been saved.',
-                  confirmButtonText: 'OK'
-              });
-          } catch (error) {
-              setError('An error occurred while saving the comment.');
-              console.error("Error saving comment:", error);
-  
-              // Show error alert
-              Swal.fire({
-                  icon: 'error',
-                  title: 'Error!',
-                  text: 'Failed to save the comment. Please try again.',
-                  confirmButtonText: 'OK'
-              });
+            input.parentElement.appendChild(tooltip);
+
+            input.addEventListener('mouseover', () => {
+              tooltip.textContent = input.value;
+              tooltip.style.display = 'block';
+            });
+            input.addEventListener('mouseout', () => {
+              tooltip.style.display = 'none';
+            });
           }
+        });
       }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const newComment = result.value;
+        handleSaveComment(record.id, newComment);
+      }
+    });
   };
-  
+
+  const handleSaveComment = async (id, comment) => {
+    try {
+      await axios.put(`http://localhost:7000/admin/savecomment/${id}`, { comment }, {
+        params: { logid, logip },
+        headers: { "Content-Type": "application/json" }
+      });
+      setAttendanceData(prevData => prevData.map(record => record.id === id ? { ...record, comment } : record));
+      Swal.fire('Success!', 'Comment saved successfully!', 'success');
+    } catch (error) {
+      setError('An error occurred while saving the comment.');
+      console.error("Error saving comment:", error);
+      Swal.fire('Error!', 'Failed to save comment.', 'error');
+    }
+  };
 
 
   const handleSaveRecord = async (id) => {
@@ -431,7 +449,7 @@ const deleteAttendance = async (id) => {
             {status.map((item, index) => (
               <option key={index} value={item}>{item}</option>
             ))}
-          </select>    // You can show an error message to the user here if needed
+          </select>   
           <span><button onClick={handledowloadattendance}>Download Attendance</button></span>
         </div>
       </div>
@@ -535,32 +553,60 @@ const deleteAttendance = async (id) => {
                   </td>
                  
                   <td>
-                    {editCommentId === record.id ? (
-                      <div>
-                        <textarea
-                          value={comments[record.id] || ''}
-                          onChange={(e) => handleCommentChange(record.id, e)}
-                        />
-                        <span onClick={() => handleSaveComment(record.id)}><MdOutlineDone /></span>
-                        <span onClick={handleCancelRecord}><MdCancel /></span>
-                      </div>
-                    ) : (
-                      <div>
-                        {record.comment ? (
-                          <span>{record.comment}</span>
-                        ) : (
-                          <span onClick={() => {
-                            setEditCommentId(record.id);
-                            setComments(prevComments => ({
-                              ...prevComments,
-                              [record.id]: ''
-                            }));
-                          }}>
-                            <IoIosAdd />
-                          </span>
-                        )}
-                      </div>
-                    )}
+                  {editCommentId === record.id ? (
+            <div>
+              <textarea
+                value={comments[record.id] || ''}
+                onChange={(e) => handleCommentChange(record.id, e)}
+              />
+              <span onClick={() => handleSaveComment(record.id)}>
+                <MdOutlineDone />
+              </span>
+              <span onClick={() => setEditCommentId(null)}>
+                <MdCancel />
+              </span>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              {record.comment ? (
+                <>
+                  <span
+                    style={{
+                      cursor: 'default',
+                      maxWidth: '200px',
+                      overflow: 'hidden',
+                      whiteSpace: 'nowrap',
+                      textOverflow: 'ellipsis',
+                    }}
+                    title={record.comment}
+                  >
+                    {record.comment.length > 20 ? `${record.comment.slice(0, 20)}...` : record.comment}
+                  </span>
+                  {record.comment.length > 20 && (
+                    <span
+                    onClick={()=>handleShowComment(record.comment)}
+                    >
+                      <MdHelp />
+                    </span>
+                  )}
+                </>
+              ) : (
+                <span onClick={() => handleAddComment(record)}>
+                  <IoIosAdd />
+                </span>
+              )}
+              <span onClick={() => {
+                setEditCommentId(record.id);
+                setComments(prevComments => ({
+                  ...prevComments,
+                  [record.id]: record.comment || '',
+                }));
+              }}>
+                {/* Uncomment if you want to show an edit icon */}
+                {/* <MdEdit /> */}
+              </span>
+            </div>
+          )}
                   </td>
                   <td>
                     {editRecordId === record.id ? (

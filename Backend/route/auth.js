@@ -11,7 +11,9 @@ const {
   forgotPassword,
   verifyOTP,
   verifyForgetPasswordToken,
-  updatePassword, downloadattendanceuser
+  updatePassword, downloadattendanceuser,
+  userprofileget,
+  useridcheck
 } = require('../Controller/userController');
 
 
@@ -49,6 +51,11 @@ router.get('/user/hr', authentication, authorize(['HR', 'Employee']), (req, res)
 //user download attendance
 router.get("/attendancedownlaoduser/:id", downloadattendanceuser)
 
+router.get("/getuserprofile/:id", userprofileget)
+
+
+
+router.get("/checkid/:id",useridcheck)
 
 
 module.exports = router;

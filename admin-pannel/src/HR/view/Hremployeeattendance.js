@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import "./Css/Hrattendance.css";
+import "./Css/Hremployeeattendance.css";
 import axios from "axios";
 import { MdDelete, MdEdit, MdOutlineDone, MdCancel } from "react-icons/md";
 import { IoIosAdd } from "react-icons/io";
 import { FcAlphabeticalSortingAz, FcAlphabeticalSortingZa } from "react-icons/fc";
 import { useNavigate, useParams } from 'react-router-dom';
 import Swal from 'sweetalert2'; // Import SweetAlert
-
+import { MdHelp } from "react-icons/md";
 const Attendance = () => {
 
   useEffect(() => {
@@ -153,28 +153,72 @@ const Attendance = () => {
     }));
   };
 
-  const handleSaveComment = async (id) => {
-    try {
-      await axios.put(`http://localhost:7000/admin/savecomment/${id}`, {
 
-        comment: comments[id]
-      }, {
+  const handleAddComment = (record) => {
+    Swal.fire({
+      title: 'Add Comment',
+      input: 'textarea',
+      inputPlaceholder: 'Type your comment...',
+      inputValue: '',
+      showCancelButton: true,
+      confirmButtonText: 'Save',
+      preConfirm: (comment) => {
+        if (!comment) {
+          Swal.showValidationMessage('Please enter a comment');
+        }
+        return comment;
+      },
+      didOpen: () => {
+        const input = Swal.getInput();
+        input.addEventListener('input', () => {
+          const words = input.value.split(/\s+/).filter(Boolean);
+          if (words.length > 20) {
+            const tooltip = document.createElement('span');
+            tooltip.textContent = 'Click for full comment';
+            tooltip.style.position = 'absolute';
+            tooltip.style.top = '0';
+            tooltip.style.left = '0';
+            tooltip.style.backgroundColor = '#fff';
+            tooltip.style.border = '1px solid #ccc';
+            tooltip.style.padding = '4px';
+            tooltip.style.zIndex = '1000';
+            tooltip.style.cursor = 'pointer';
+            tooltip.style.display = 'none';
+
+            input.parentElement.appendChild(tooltip);
+
+            input.addEventListener('mouseover', () => {
+              tooltip.textContent = input.value;
+              tooltip.style.display = 'block';
+            });
+            input.addEventListener('mouseout', () => {
+              tooltip.style.display = 'none';
+            });
+          }
+        });
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const newComment = result.value;
+        handleSaveComment(record.id, newComment);
+      }
+    });
+  };
+
+  const handleSaveComment = async (id, comment) => {
+    try {
+      await axios.put(`http://localhost:7000/admin/savecomment/${id}`, { comment }, {
         params: { logid, logip },
         headers: { "Content-Type": "application/json" }
       });
-
-      setAttendanceData(prevData => prevData.map(record =>
-        record.id === id ? { ...record, comment: comments[id] } : record
-      ));
-      setEditCommentId(null);
-      Swal.fire('Success!', 'Comment saved successfully!', 'success'); // Notification
+      setAttendanceData(prevData => prevData.map(record => record.id === id ? { ...record, comment } : record));
+      Swal.fire('Success!', 'Comment saved successfully!', 'success');
     } catch (error) {
       setError('An error occurred while saving the comment.');
       console.error("Error saving comment:", error);
-      Swal.fire('Error!', 'Failed to save comment.', 'error'); // Error notification
+      Swal.fire('Error!', 'Failed to save comment.', 'error');
     }
   };
-
   const handleSaveRecord = async (id) => {
     try {
       await axios.put(`http://localhost:7000/admin/saverecord/${id}`, {
@@ -219,6 +263,17 @@ const Attendance = () => {
     });
   };
 
+  const handleShowComment = (comment) => {
+    Swal.fire({
+        title: 'Comment',
+        text: comment,
+        icon: 'info',
+        confirmButtonText: 'Close'
+    });
+};
+
+
+
   const deleteAttendance = async (id) => {
     try {
       await axios.delete(`http://localhost:7000/admin/deleteattendance/${id}`, {
@@ -254,7 +309,7 @@ const Attendance = () => {
       const response = await axios.get("http://localhost:7000/admin/allattendancedownload", {
         responseType: 'blob' // Important to handle blob response
       });
-      
+
       // Create a link to trigger download
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
@@ -263,7 +318,7 @@ const Attendance = () => {
       document.body.appendChild(link);
       link.click(); // Trigger the download
       link.remove(); // Clean up
-  
+
       // SweetAlert success notification
       Swal.fire({
         icon: 'success',
@@ -272,10 +327,10 @@ const Attendance = () => {
         showConfirmButton: false,
         timer: 2000
       });
-      
+
     } catch (error) {
       console.error(error);
-      
+
       // SweetAlert error notification
       Swal.fire({
         icon: 'error',
@@ -289,52 +344,52 @@ const Attendance = () => {
 
 
   return (
-    <div className='attendance-admin'>
+    <div className='attendance-hr'>
       <div className="search-bar">
-    <div className="admin-searchoptionfield">
-        <input
+        <div className="admin-searchoptionfield">
+          <input
             type="text"
             placeholder="Search..."
             value={search}
             onChange={handleSearch}
-        />
-    </div>
-    <div className="filter-options">
-        <select value={monthFilter} onChange={handleMonthChange}>
+          />
+        </div>
+        <div className="filter-options">
+          <select value={monthFilter} onChange={handleMonthChange}>
             <option value="">All Months</option>
             {months.map((item, index) => (
-                <option key={index} value={index + 1}>{item}</option>
+              <option key={index} value={index + 1}>{item}</option>
             ))}
-        </select>
-        <select value={yearFilter} onChange={handleYearChange}>
+          </select>
+          <select value={yearFilter} onChange={handleYearChange}>
             <option value="">All Years</option>
             {years.map((year, index) => (
-                <option key={index} value={year}>{year}</option>
+              <option key={index} value={year}>{year}</option>
             ))}
-        </select>
-        <input
+          </select>
+          <input
             type="date"
             value={startDate}
             onChange={handleStartDateChange}
             placeholder="Start Date"
-        />
-        <input
+          />
+          <input
             type="date"
             value={endDate}
             onChange={handleEndDateChange}
             placeholder="End Date"
-        />
-        <select value={statusFilter} onChange={handleStatusChange}>
+          />
+          <select value={statusFilter} onChange={handleStatusChange}>
             <option value="">Status</option>
             {status.map((item, index) => (
-                <option key={index} value={item}>{item}</option>
+              <option key={index} value={item}>{item}</option>
             ))}
-        </select>
-        <span>
-            <button onClick={handledowloadattendance}>Download Attendance</button>
-        </span>
-    </div>
-</div>
+          </select>
+          <span>
+            <button onClick={handledowloadattendance} className='attendancebuttoncss'>Download Attendance</button>
+          </span>
+        </div>
+      </div>
 
 
       <div className='attendance-table'>
@@ -375,7 +430,7 @@ const Attendance = () => {
             <tbody>
               {attendanceData.map((record) => (
                 <tr key={record.id}>
-                 <td className='viewuserbyfield' onClick={() => handleviewuser(record.user_id)}>{record.id}</td>
+                  <td className='viewuserbyfield' onClick={() => handleviewuser(record.user_id)}>{record.id}</td>
                   <td className='viewuserbyfield' onClick={() => handleviewuser(record.user_id)}>{record.fullname}</td>
 
                   <td>
@@ -435,32 +490,64 @@ const Attendance = () => {
                   </td>
 
                   <td>
-                    {editCommentId === record.id ? (
-                      <div>
-                        <textarea
-                          value={comments[record.id] || ''}
-                          onChange={(e) => handleCommentChange(record.id, e)}
-                        />
-                        <span onClick={() => handleSaveComment(record.id)}><MdOutlineDone /></span>
-                        <span onClick={handleCancelRecord}><MdCancel /></span>
-                      </div>
-                    ) : (
-                      <div>
-                        {record.comment ? (
-                          <span>{record.comment}</span>
-                        ) : (
-                          <span onClick={() => {
-                            setEditCommentId(record.id);
-                            setComments(prevComments => ({
-                              ...prevComments,
-                              [record.id]: ''
-                            }));
-                          }}>
-                            <IoIosAdd />
-                          </span>
-                        )}
-                      </div>
-                    )}
+
+
+                  {editCommentId === record.id ? (
+            <div>
+              <textarea
+                value={comments[record.id] || ''}
+                onChange={(e) => handleCommentChange(record.id, e)}
+              />
+              <span onClick={() => handleSaveComment(record.id)}>
+                <MdOutlineDone />
+              </span>
+              <span onClick={() => setEditCommentId(null)}>
+                <MdCancel />
+              </span>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              {record.comment ? (
+                <>
+                  <span
+                    style={{
+                      cursor: 'default',
+                      maxWidth: '200px',
+                      overflow: 'hidden',
+                      whiteSpace: 'nowrap',
+                      textOverflow: 'ellipsis',
+                    }}
+                    title={record.comment}
+                  >
+                    {record.comment.length > 20 ? `${record.comment.slice(0, 20)}...` : record.comment}
+                  </span>
+                  {record.comment.length > 20 && (
+                    <span
+                    onClick={()=>handleShowComment(record.comment)}
+                    >
+                      <MdHelp />
+                    </span>
+                  )}
+                </>
+              ) : (
+                <span onClick={() => handleAddComment(record)}>
+                  <IoIosAdd />
+                </span>
+              )}
+              <span onClick={() => {
+                setEditCommentId(record.id);
+                setComments(prevComments => ({
+                  ...prevComments,
+                  [record.id]: record.comment || '',
+                }));
+              }}>
+                {/* Uncomment if you want to show an edit icon */}
+                {/* <MdEdit /> */}
+              </span>
+            </div>
+          )}
+  
+
                   </td>
                   <td>
                     {editRecordId === record.id ? (

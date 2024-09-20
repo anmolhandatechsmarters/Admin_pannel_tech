@@ -508,7 +508,8 @@ const getAttendance = async (req, res) => {
                 [sortColumn, sortOrder]
             ],
             limit,
-            offset
+            offset,
+            
         });
 
         // Filter out records where user role is "Admin" and user_id is 1
@@ -615,8 +616,7 @@ const deleteAttendance = async (req, res) => {
             res.status(404).json({ success: false, message: 'Attendance record not found' });
         }
         const currentDate = new Date();
-        const dateString = currentDate.toISOString();
-        const timeString = currentDate.toLocaleTimeString();
+  
 
         await db.logs.create({
             user_id: logid,  // Ensure req.user.id is correctly set
@@ -661,11 +661,10 @@ const saveRecord = async (req, res) => {
 
 
         const currentDate = new Date();
-        const dateString = currentDate.toISOString();
-        const timeString = currentDate.toLocaleTimeString();
+
 
         await db.logs.create({
-            user_id: logid,  // Ensure req.user.id is correctly set
+            user_id: logid,  
             api: `localhost:3000/editattendance/${id}`,
             message: "Success",
 
@@ -680,7 +679,7 @@ const saveRecord = async (req, res) => {
         console.error('Error updating attendance record:', error);
         res.status(500).json({ success: false, message: 'Error updating attendance record' });
         await db.logs.create({
-            user_id: logid,  // Ensure req.user.id is correctly set
+            user_id: logid,  
             api: `localhost:3000/editattendance/${id}`,
             message: "Failed",
 
@@ -692,12 +691,12 @@ const saveRecord = async (req, res) => {
 };
 
 const viewUser = async (req, res) => {
-    const { id } = req.params; // This should be the user_id
+    const { id } = req.params; 
 
     try {
-        // Fetch the user based on user_id
+       
         const user = await db.users.findOne({
-            where: { id }, // Use user_id here
+            where: { id }, 
             include: [
                 {
                     model: db.roles,

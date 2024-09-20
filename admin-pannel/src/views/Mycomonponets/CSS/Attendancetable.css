@@ -81,6 +81,16 @@
     margin-bottom: 20px;
     gap: 10px;
 }
+.filter-options button {
+    padding:6px;
+    background-color: #007bff; /* Primary color */
+    color: white;
+    cursor: pointer;
+}
+.filter-options button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
 .viewuserbyfield:hover{
     color: blue;
   }
@@ -133,3 +143,41 @@
     min-width: 120px; /* Adjust if necessary */
 }
 
+@media (max-width: 768px) {
+    .search-bar {
+        flex-direction: column; /* Stack elements on smaller screens */
+    }
+
+    .filter-options {
+        flex-direction: column; /* Stack filter options */
+    }
+
+    .filter-options select,
+    .filter-options input[type="date"],
+    .filter-options button {
+        width: 100%; /* Full width on smaller screens */
+        margin-bottom: 10px; /* Space below each element */
+    }
+}
+
+@media (max-width: 480px) {
+    .pagination {
+        padding: 5px;
+    }
+
+    .pagination button {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+
+    .pagination span {
+        font-size: 14px;
+    }
+}
+
+/* Error message styling */
+.error {
+    color: red;
+    text-align: center;
+    margin-top: 20px;
+}

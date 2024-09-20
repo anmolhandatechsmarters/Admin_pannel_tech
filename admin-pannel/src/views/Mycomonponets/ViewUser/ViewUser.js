@@ -73,7 +73,7 @@ function ViewUser() {
   const profileImageUrl = `http://localhost:7000/${user.image}`;
 
   const handleAttendanceUser = (userid) => {
-    navigate(`/attendance/${userid}`);
+    navigate(`/hremployeeattendance/${userid}`);
   };
 
   const formatDate = (isoDateString) => {
@@ -87,15 +87,6 @@ function ViewUser() {
         <div className="profile">
           <div className="img">
             <img src={profileImageUrl} alt="Profile" />
-            
-              <FaCamera className="camera-icon" onClick={handleCameraClick} />
-          
-            <input
-              type="file"
-              onChange={handleImageChange}
-              ref={fileInputRef} // Attach ref to file input
-              style={{ display: 'none' }} // Hide the file input
-            />
           </div>
           <p>{user.emp_id}</p>
         </div>
@@ -107,7 +98,7 @@ function ViewUser() {
             User Info
           </button>
           <button
-            onClick={() => handleAttendanceUser(user.emp_id)}
+            onClick={() => handleAttendanceUser(user.id)}
           >
             Attendance
           </button>
@@ -117,24 +108,34 @@ function ViewUser() {
         {activeSection === 'user' && (
           <div className="user-info">
             <h2 className='text-center'>User Information</h2>
-            <div className='view-user-user-info'>
-              <div>
-                <p><span className='fw-bold'>Employee ID</span>: {user.emp_id}</p>
-                <p><span className='fw-bold'>First Name</span>: {user.first_name}</p>
-                <p><span className='fw-bold'>Last Name</span>: {user.last_name}</p>
-                <p><span className='fw-bold'>Email ID</span>: {user.email}</p>
-                <p><span className='fw-bold'>Role</span>: {user.roleDetails ? user.roleDetails.role : 'N/A'}</p>
-                <p><span className='fw-bold'>Created by</span>: {user.created_by}</p>
-                <p><span className='fw-bold'>Status</span>: {user.status === 1 ? "InActive" : "Active"}</p>
+            <div className="container">
+              <div className="row mb-3">
+                <div className="col-6"><strong>Employee ID:</strong> {user.emp_id}</div>
+                <div className="col-6"><strong>First Name:</strong> {user.first_name}</div>
               </div>
-              <div>
-                <p><span className='fw-bold'>Country</span>: {user.countryDetails ? user.countryDetails.name : 'N/A'}</p>
-                <p><span className='fw-bold'>State</span>: {user.stateDetails ? user.stateDetails.name : 'N/A'}</p>
-                <p><span className='fw-bold'>City</span>: {user.cityDetails ? user.cityDetails.name : 'N/A'}</p>
-                <p><span className='fw-bold'>IP</span>: {user.ip}</p>
-                <p><span className='fw-bold'>Last Login</span>: {formatDate(user.last_login)}</p>
-                <p><span className='fw-bold'>Created on</span>: {formatDate(user.created_on)}</p>
-                <p><span className='fw-bold'>Updated on</span>: {formatDate(user.updated_on)}</p>
+              <div className="row mb-3">
+                <div className="col-6"><strong>Last Name:</strong> {user.last_name}</div>
+                <div className="col-6"><strong>Email ID:</strong> {user.email}</div>
+              </div>
+              <div className="row mb-3">
+                <div className="col-6"><strong>Role:</strong> {user.roleDetails ? user.roleDetails.role : 'N/A'}</div>
+                <div className="col-6"><strong>Created By:</strong> {user.created_by}</div>
+              </div>
+              <div className="row mb-3">
+                <div className="col-6"><strong>Status:</strong> {user.status === 1 ? "Inactive" : "Active"}</div>
+                <div className="col-6"><strong>Country:</strong> {user.countryDetails ? user.countryDetails.name : 'N/A'}</div>
+              </div>
+              <div className="row mb-3">
+                <div className="col-6"><strong>State:</strong> {user.stateDetails ? user.stateDetails.name : 'N/A'}</div>
+                <div className="col-6"><strong>City:</strong> {user.cityDetails ? user.cityDetails.name : 'N/A'}</div>
+              </div>
+              <div className="row mb-3">
+                <div className="col-6"><strong>IP:</strong> {user.ip}</div>
+                <div className="col-6"><strong>Last Login:</strong> {formatDate(user.last_login)}</div>
+              </div>
+              <div className="row mb-3">
+                <div className="col-6"><strong>Created On:</strong> {formatDate(user.created_on)}</div>
+                <div className="col-6"><strong>Updated On:</strong> {formatDate(user.updated_on)}</div>
               </div>
             </div>
           </div>

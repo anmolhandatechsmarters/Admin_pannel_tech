@@ -169,9 +169,11 @@ const gethremployeeattendance = async (req, res) => {
 
 
 // Fetch employee list with pagination and filtering
+
+
 const getemployee = async (req, res) => {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
     const search = req.query.search || '';
     const role = req.query.role || '';
     const sortColumn = req.query.sort?.column || 'id';
@@ -198,7 +200,13 @@ const getemployee = async (req, res) => {
             ],
             where: {
                 [Op.and]: [
-                    Sequelize.where(Sequelize.fn('concat', Sequelize.col('first_name'), ' ', Sequelize.col('last_name')), { [Op.like]: `%${search}%` }),
+                    {
+                        [Op.or]: [
+                            Sequelize.where(Sequelize.fn('concat', Sequelize.col('first_name'), ' ', Sequelize.col('last_name')), { [Op.like]: `%${search}%` }),
+                            { email: { [Op.like]: `%${search}%` } },
+                            { emp_id: { [Op.like]: `%${search}%` } }
+                        ]
+                    },
                     role ? Sequelize.where(Sequelize.col('roleDetails.role'), { [Op.like]: `%${role}%` }) : {},
                     { emp_id: { [Op.ne]: 'admin' } },
                     { '$roleDetails.id$': { [Op.notIn]: [1, 2] } }
@@ -207,6 +215,7 @@ const getemployee = async (req, res) => {
             order: [[sortColumn, sortOrder]],
             limit,
             offset,
+           
         });
 
         const total = await db.users.count({

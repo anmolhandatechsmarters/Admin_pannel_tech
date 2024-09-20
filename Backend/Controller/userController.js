@@ -3,6 +3,7 @@ const { generateOTP } = require('../utils/otpUtils');
 const { sendPasswordResetEmail } = require('../services/emailService');
 const jwt = require('jsonwebtoken');
 const { Parser } = require('json2csv');
+const Sequelize = require('sequelize');
 let otpStore = {};
 
 const createUser = async (req, res) => {
@@ -60,8 +61,8 @@ const createUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
-const ip=req.query.ip
-const userAgent=req.query.userAgent
+  const ip = req.query.ip
+  const userAgent = req.query.userAgent
   if (!email || !password) {
     return res.status(400).json({ message: 'Email and password are required' });
   }
@@ -78,7 +79,7 @@ const userAgent=req.query.userAgent
 
     // Update the last login time and status
     await db.users.update(
-      { last_login: new Date(), status: '1',ip:ip,user_agent:userAgent },
+      { last_login: new Date(), status: '1', ip: ip, user_agent: userAgent },
       { where: { id: user.id } }
     );
 
@@ -270,55 +271,144 @@ const downloadattendanceuser = async (req, res) => {
 
   // Validate userId
   if (!userId) {
-      return res.status(400).send('User ID is required.');
+    return res.status(400).send('User ID is required.');
   }
 
   try {
-      // Fetch attendance records for the specific user
-      const results = await db.attendances.findAll({
-          include: [{
-              model: db.users,
-              as: 'userDetails',
-              attributes: ['first_name', 'last_name', 'email'], // Include required user details
-              required: true
-          }],
-          where: {
-              user_id: userId // Match attendance by user ID
-          }
-      });
-
-      // Check if results are empty
-      if (results.length === 0) {
-          return res.status(404).send('No attendance records found for this user.');
+    // Fetch attendance records for the specific user
+    const results = await db.attendances.findAll({
+      include: [{
+        model: db.users,
+        as: 'userDetails',
+        attributes: ['first_name', 'last_name', 'email'], // Include required user details
+        required: true
+      }],
+      where: {
+        user_id: userId // Match attendance by user ID
       }
+    });
 
-      // Transform the results to include user details
-      const transformedResults = results.map(item => {
-          const attendance = item.get({ plain: true });
-          const user = attendance.userDetails;
-          return {
-              in_time: attendance.in_time,
-              out_time: attendance.out_time,
-              date: attendance.date,
-              comment: attendance.comment,
-              status: attendance.status,
-              fullname: `${user.first_name} ${user.last_name}`,
-              email: user.email
-          };
-      });
+    // Check if results are empty
+    if (results.length === 0) {
+      return res.status(404).send('No attendance records found for this user.');
+    }
 
-      // Convert results to CSV
-      const csv = new Parser().parse(transformedResults);
+    // Transform the results to include user details
+    const transformedResults = results.map(item => {
+      const attendance = item.get({ plain: true });
+      const user = attendance.userDetails;
+      return {
+        in_time: attendance.in_time,
+        out_time: attendance.out_time,
+        date: attendance.date,
+        comment: attendance.comment,
+        status: attendance.status,
+        fullname: `${user.first_name} ${user.last_name}`,
+        email: user.email
+      };
+    });
 
-      // Set headers for download
-      res.header('Content-Type', 'text/csv');
-      res.attachment('Attendance.csv');
-      res.send(csv);
+    // Convert results to CSV
+    const csv = new Parser().parse(transformedResults);
+
+    // Set headers for download
+    res.header('Content-Type', 'text/csv');
+    res.attachment('Attendance.csv');
+    res.send(csv);
   } catch (error) {
-      console.error(error);
-      res.status(500).send('Error querying the database');
+    console.error(error);
+    res.status(500).send('Error querying the database');
   }
 };
+
+
+//=====================================================================
+const userprofileget = async (req, res) => {
+  const id = req.params.id;
+
+  // Basic validation for the ID
+  if (!id) {
+    return res.status(400).json({ message: 'User ID is required' });
+  }
+
+  try {
+    const result = await db.users.findAll({
+      where: { id: id },
+      attributes: [
+        'id', 'email', 'emp_id', 'first_name', 'last_name',
+        'country', 'state', 'city', 'street1', 'street2',
+        'last_login', 'status', 'image', 'department_id', 'designation_id',
+        [Sequelize.col('roleDetails.role'), 'role'],
+        [Sequelize.col('departmentDetails.department_name'), 'department'],
+        [Sequelize.col('designationDetails.designation_name'), 'designation']
+      ],
+      include: [
+        {
+          model: db.roles,
+          as: 'roleDetails',
+          attributes: ['role'],
+        },
+        {
+          model:db.departments,
+          as:'departmentDetails',
+          attributes:['department_name']
+
+        },
+        {
+          model:db.designations,
+          as:'designationDetails',
+          attributes:['designation_name']
+
+        },
+        
+        
+        {
+          model: db.cities,
+          as: 'cityDetails',
+          attributes: ['name'],
+        },
+        {
+          model: db.states,
+          as: 'stateDetails',
+          attributes: ['name'],
+        },
+        {
+          model: db.countries,
+          as: 'countryDetails',
+          attributes: ['name'],
+        }
+      ],
+    });
+
+    if (result.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.error(error); // Log the error for debugging
+    res.status(500).json({ message: 'An error occurred while fetching the user profile' });
+  }
+};
+
+
+const useridcheck=async(req,res)=>{
+  const { id } = req.params;
+
+
+  try {
+    const user = await users.findByPk(id); // Find user by primary key
+
+    if (user) {
+      return res.json({ exists: true });
+    } else {
+      return res.json({ exists: false });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
 
 
 module.exports = {
@@ -332,5 +422,6 @@ module.exports = {
   verifyOTP,
   verifyForgetPasswordToken,
   updatePassword,
-  downloadattendanceuser
+  downloadattendanceuser,
+  userprofileget,useridcheck
 };

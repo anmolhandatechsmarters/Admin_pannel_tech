@@ -17,7 +17,7 @@ const AppHeaderDropdown = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const id = localStorage.getItem('id');
-
+const role=localStorage.getItem('role')
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -49,6 +49,21 @@ const AppHeaderDropdown = () => {
     }
   };
 
+
+  const handaeditprofile=(id)=>{
+ if(role==="Admin"){
+  navigate(`/editprofile/${id}`)
+ }
+ else if(role==="HR"){
+  navigate(`/hreditprofile/${id}`)
+ }
+ else if(role ==="Employee"){
+  navigate(`/empeditprofile/${id}`)
+ }
+  }
+
+
+
   // Fallback profile image if user data is not available
   const profileImageUrl = user && user.image ? `http://localhost:7000/${user.image}` : avatar8;
 
@@ -61,10 +76,17 @@ const AppHeaderDropdown = () => {
         <CDropdownHeader className="bg-body-secondary fw-semibold mb-2">Account</CDropdownHeader>
         <CDropdownItem>
           <CIcon icon={cilLockLocked} className="me-2" />
-          <span onClick={handleLogout} style={{ cursor: 'pointer' }}>
-            Lock Account
+          <span onClick={()=>handaeditprofile(id)} style={{ cursor: 'pointer' }}>
+          Edit Profile
           </span>
         </CDropdownItem>
+        <CDropdownItem>
+          <CIcon icon={cilLockLocked} className="me-2" />
+          <span onClick={handleLogout} style={{ cursor: 'pointer' }}>
+          Logout
+          </span>
+        </CDropdownItem>
+        
       </CDropdownMenu>
     </CDropdown>
   );

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Css/unauthorized.css'; // Import the CSS file
+// import './Css/unauthorized.css'; // Import the CSS file
 
 const UnauthorizedPage = () => {
   const navigate = useNavigate();
@@ -10,7 +10,7 @@ const UnauthorizedPage = () => {
 
   function goback() {
     if (role === "Admin") {
-      navigate("/user/admin");
+      navigate("/dashboard");
     } else if (role === "Employee") {
       navigate("/user/employee");
     } else if (role === "HR") {
@@ -19,11 +19,11 @@ const UnauthorizedPage = () => {
   }
 
   return (
-    <div className="container">
-      {/* <h1>Unauthorized</h1>
+    <div className="container-unathorized">
+      <h1>Unauthorized</h1>
       <p>You are accessing an unauthorized page</p>
       <p>Please go back</p>
-      <button onClick={goback}>Go Back</button> */}
+      <button onClick={goback}>Go Back</button>
     </div>
   );
 };

@@ -1,56 +1,148 @@
-.attendance-admin .search-bar {
+.attendance-hr {
+    padding: 20px;
+}
+
+/* Search bar and filter options */
+.search-bar {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
+    align-items: center; /* Align items vertically */
+    flex-wrap: wrap; /* Allow wrapping for smaller screens */
+    gap: 10px; /* Space between elements */
     margin-bottom: 20px;
-    gap: 10px;
 }
 
-.attendance-admin .search-bar .filter-options {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    width: 100%;
+.admin-searchoptionfield {
+    flex: 1; /* Allow search input to take available space */
 }
 
-.attendance-admin .search-bar input[type="text"],
-.attendance-admin .search-bar select,
-.attendance-admin .search-bar input[type="date"],
-.attendance-admin .search-bar button {
-    padding: 8px;
+.admin-searchoptionfield input {
+    width: 100%; /* Full width */
+    padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
-    flex: 1;
-    min-width: 120px;
 }
 
-.attendance-admin .search-bar button {
-    flex-shrink: 0;
-    min-width: 150px;
+.filter-options {
+    display: flex; /* Keep filter options in a row */
+    align-items: center; /* Center items vertically */
+    gap: 10px; /* Space between elements */
 }
 
+.filter-options select,
+.filter-options input[type="date"],
+.filter-options button {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+/* Attendance table container */
+.attendance-table-container {
+    overflow-x: auto; /* Enable horizontal scrolling */
+    width: 100%; /* Full width */
+}
+
+/* Adjusting table styles */
+.attendance-table {
+    min-width: 600px; /* Set a minimum width for the table */
+    border-collapse: collapse;
+}
+
+
+/* Button styling */
+.filter-options button {
+    background-color: #007bff; /* Primary color */
+    color: white;
+    cursor: pointer;
+}
+
+.filter-options button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Attendance table */
+.attendance-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.attendance-table th,
+.attendance-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.attendance-table thead {
+    background-color: #f5f5f5;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    margin-top: 20px;
+}
+
+.pagination button {
+    background-color: #007bff; /* Primary color */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    margin: 0 5px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.pagination button:disabled {
+    background-color: #d6d6d6; /* Disabled button color */
+    cursor: not-allowed;
+}
+
+.pagination span {
+    font-size: 16px;
+    margin: 0 10px;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
-    .attendance-admin .search-bar {
-        flex-direction: column; /* Stack elements vertically */
-        align-items: stretch; /* Stretch items to fill width */
+    .search-bar {
+        flex-direction: column; /* Stack elements on smaller screens */
     }
 
-    .attendance-admin .search-bar .filter-options {
-        flex-direction: column; /* Stack filter options vertically */
-        width: 100%; /* Full width for filter options */
+    .filter-options {
+        flex-direction: column; /* Stack filter options */
     }
 
-    .attendance-admin .search-bar input[type="text"],
-    .attendance-admin .search-bar select,
-    .attendance-admin .search-bar input[type="date"],
-    .attendance-admin .search-bar button {
-        width: 100%; /* Full width for smaller screens */
-        margin-bottom: 10px; /* Add spacing */
+    .filter-options select,
+    .filter-options input[type="date"],
+    .filter-options button {
+        width: 100%; /* Full width on smaller screens */
+        margin-bottom: 10px; /* Space below each element */
+    }
+}
+
+@media (max-width: 480px) {
+    .pagination {
+        padding: 5px;
     }
 
-    .attendance-admin .search-bar button {
-        margin-top: 10px; /* Add some spacing above the button */
+    .pagination button {
+        padding: 8px 16px;
+        font-size: 14px;
     }
+
+    .pagination span {
+        font-size: 14px;
+    }
+}
+
+/* Error message styling */
+.error {
+    color: red;
+    text-align: center;
+    margin-top: 20px;
 }

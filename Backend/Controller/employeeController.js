@@ -113,7 +113,7 @@ const UnmarkAttendance = async (req, res) => {
 
     try {
         const outtime = new Date();
-        const timeString = outtime.toLocaleTimeString();
+        const timeString = outtime.toLocaleTimeString('en-US', { hour12: true });
 
         // Find the latest attendance record for the user
         const latestRecord = await db.attendances.findOne({
@@ -140,12 +140,12 @@ const UnmarkAttendance = async (req, res) => {
             where: { id: latestRecord.id }
         });
 
-        const inTime = new Date(`${updatedRecord.date}T${updatedRecord.in_time}`);
-        const outTime = new Date(`${updatedRecord.date}T${timeString}`);
+        const inTime = new Date(`${updatedRecord.date}T${convertTo24Hour(updatedRecord.in_time)}`);
+        const outTime = new Date(`${updatedRecord.date}T${convertTo24Hour(timeString)}`);
 
         // Calculate the difference in milliseconds
         const diffMs = outTime - inTime;
-        const diffHours = diffMs / (1000 * 60 * 60);
+        const diffHours = diffMs / (1000 * 60 * 60); // Convert milliseconds to hours
 
         // Determine status based on the duration
         let status = '';
@@ -164,12 +164,32 @@ const UnmarkAttendance = async (req, res) => {
         );
 
         // Respond with the updated record
-        return res.json({ success: true, record: updatedRecord });
+        return res.json({ success: true, record: { ...updatedRecord.toJSON(), status } });
     } catch (error) {
         console.error("Error updating attendance:", error);
         return res.status(500).json({ success: false, message: "An error occurred while updating attendance" });
     }
 };
+
+// Helper function to convert 12-hour format to 24-hour format
+const convertTo24Hour = (timeStr) => {
+    const [time, modifier] = timeStr.split(' ');
+    let [hours, minutes, seconds] = time.split(':');
+
+    if (modifier === 'PM' && hours !== '12') {
+        hours = parseInt(hours, 10) + 12;
+    }
+    if (modifier === 'AM' && hours === '12') {
+        hours = '00';
+    }
+
+    return `${hours}:${minutes}:${seconds}`;
+};
+
+
+
+
+
 
 const Getattendance = async (req, res) => {
     const { id } = req.params;

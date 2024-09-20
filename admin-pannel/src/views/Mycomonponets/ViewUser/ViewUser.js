@@ -73,7 +73,11 @@ function ViewUser() {
   const profileImageUrl = `http://localhost:7000/${user.image}`;
 
   const handleAttendanceUser = (userid) => {
-    navigate(`/hremployeeattendance/${userid}`);
+    navigate(`/attendance/${userid}`);
+  };
+
+  const handleEditUser = (userid) => {
+    navigate(`/edituser/${userid}`);
   };
 
   const formatDate = (isoDateString) => {
@@ -91,14 +95,13 @@ function ViewUser() {
           <p>{user.emp_id}</p>
         </div>
         <div className="menu">
-          <button
-            onClick={() => setActiveSection('user')}
-            className={activeSection === 'user' ? 'active' : ''}
+        <button
+            onClick={() => handleEditUser(user.id)}
           >
-            User Info
+            Edit User
           </button>
           <button
-            onClick={() => handleAttendanceUser(user.id)}
+            onClick={() => handleAttendanceUser(user.emp_id)}
           >
             Attendance
           </button>
